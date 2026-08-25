@@ -1,0 +1,272 @@
+// Design tokens — Semantic
+// Source: Figma "PR Brand (DS)" → Semantic collection (modes: Light, Dark)
+// Each token has a Light value (the default) and a Dark override.
+
+@use 'primitive' as p;
+
+$background-default: p.$color-neutral-50;
+$background-default--dark: p.$color-neutral-950;
+$background-subtle: p.$color-neutral-100;
+$background-subtle--dark: p.$color-neutral-900;
+
+$surface-default: p.$color-neutral-0;
+$surface-default--dark: p.$color-neutral-900;
+$surface-raised: p.$color-neutral-0;
+$surface-raised--dark: p.$color-neutral-800;
+
+$text-primary: p.$color-neutral-950;
+$text-primary--dark: p.$color-neutral-0;
+$text-secondary: p.$color-neutral-700;
+$text-secondary--dark: p.$color-neutral-200;
+$text-muted: p.$color-neutral-500;
+$text-muted--dark: p.$color-neutral-300;
+$text-inverse: p.$color-neutral-0;
+$text-inverse--dark: p.$color-neutral-950;
+
+$border-default: p.$color-neutral-200;
+$border-default--dark: p.$color-neutral-700;
+$border-strong: p.$color-neutral-400;
+$border-strong--dark: p.$color-neutral-500;
+
+$focus-ring: p.$color-brand-cyan-700;
+$focus-ring--dark: p.$color-brand-cyan-500;
+
+$status-success: p.$color-brand-green-700;
+$status-success--dark: p.$color-brand-green-500;
+$status-warning: p.$color-brand-yellow-700;
+$status-warning--dark: p.$color-brand-yellow-500;
+$status-danger: p.$color-brand-red-700;
+$status-danger--dark: p.$color-brand-red-500;
+
+$action-primary-background: p.$color-neutral-900;
+$action-primary-background--dark: p.$color-neutral-0;
+$action-primary-background-hover: p.$color-neutral-800;
+$action-primary-background-hover--dark: p.$color-neutral-100;
+$action-primary-background-pressed: p.$color-neutral-950;
+$action-primary-background-pressed--dark: p.$color-neutral-200;
+$action-primary-text: p.$color-neutral-0;
+$action-primary-text--dark: p.$color-neutral-950;
+
+$action-secondary-background: p.$color-neutral-transparent;
+$action-secondary-background--dark: p.$color-neutral-transparent;
+$action-secondary-background-hover: p.$color-neutral-100;
+$action-secondary-background-hover--dark: p.$color-neutral-800;
+$action-secondary-background-pressed: p.$color-neutral-200;
+$action-secondary-background-pressed--dark: p.$color-neutral-700;
+$action-secondary-border: p.$color-neutral-900;
+$action-secondary-border--dark: p.$color-neutral-0;
+$action-secondary-text: p.$color-neutral-900;
+$action-secondary-text--dark: p.$color-neutral-0;
+
+$action-ghost-background: p.$color-neutral-transparent;
+$action-ghost-background--dark: p.$color-neutral-transparent;
+$action-ghost-background-hover: p.$color-neutral-100;
+$action-ghost-background-hover--dark: p.$color-neutral-800;
+$action-ghost-background-pressed: p.$color-neutral-200;
+$action-ghost-background-pressed--dark: p.$color-neutral-700;
+$action-ghost-text: p.$color-brand-cyan-700;
+$action-ghost-text--dark: p.$color-brand-cyan-500;
+
+$action-disabled-background: p.$color-neutral-100;
+$action-disabled-background--dark: p.$color-neutral-800;
+$action-disabled-text: p.$color-neutral-500;
+$action-disabled-text--dark: p.$color-neutral-400;
+$action-disabled-border: p.$color-neutral-200;
+$action-disabled-border--dark: p.$color-neutral-700;
+
+$component-button-surface: p.$color-neutral-0;
+$component-button-surface--dark: p.$color-neutral-900;
+$component-button-text: p.$color-neutral-900;
+$component-button-text--dark: p.$color-base-off-white;
+$component-button-icon: p.$color-neutral-900;
+$component-button-icon--dark: p.$color-base-white;
+$component-button-border: p.$color-neutral-900;
+$component-button-border--dark: p.$color-base-white;
+$component-button-overlay-default: p.$color-neutral-transparent;
+$component-button-overlay-default--dark: p.$color-overlay-black-20;
+$component-button-overlay-hover: p.$color-overlay-black-8;
+$component-button-overlay-hover--dark: p.$color-overlay-black-40;
+$component-button-overlay-pressed: p.$color-overlay-black-16;
+$component-button-overlay-pressed--dark: p.$color-overlay-black-60;
+$component-button-shadow-color: p.$color-overlay-black-12;
+$component-button-shadow-color--dark: p.$color-overlay-black-35;
+$component-button-shadow-offset-y: 2px;
+$component-button-shadow-offset-y--dark: 5px;
+$component-button-shadow-radius: 8px;
+$component-button-shadow-radius--dark: 15px;
+$component-button-shadow-spread: 0px;
+$component-button-shadow-spread--dark: 0px;
+
+$component-link-text: p.$color-neutral-950;
+$component-link-text--dark: p.$color-neutral-0;
+$component-link-focus-ring: p.$color-brand-cyan-700;
+$component-link-focus-ring--dark: p.$color-brand-cyan-500;
+
+$component-navlink-text: p.$color-neutral-700;
+$component-navlink-text--dark: p.$color-neutral-200;
+$component-navlink-surface-hover: p.$color-neutral-100;
+$component-navlink-surface-hover--dark: p.$color-neutral-900;
+
+$component-header-surface-default: p.$color-neutral-transparent;
+$component-header-surface-default--dark: p.$color-neutral-transparent;
+$component-header-surface-scrolled: p.$color-neutral-0;
+$component-header-surface-scrolled--dark: p.$color-neutral-900;
+$component-header-border: p.$color-neutral-200;
+$component-header-border--dark: p.$color-neutral-700;
+$component-header-icon: p.$color-neutral-950;
+$component-header-icon--dark: p.$color-neutral-0;
+
+$component-logo-safety-surface: p.$color-neutral-950;
+$component-logo-safety-surface--dark: p.$color-neutral-950;
+
+// Field tokens reference other Semantic tokens above rather than Primitive directly.
+$component-field-surface: $surface-default;
+$component-field-surface--dark: $surface-default--dark;
+$component-field-text: $text-primary;
+$component-field-text--dark: $text-primary--dark;
+$component-field-placeholder: $text-muted;
+$component-field-placeholder--dark: $text-muted--dark;
+$component-field-label: $text-primary;
+$component-field-label--dark: $text-primary--dark;
+$component-field-helper: $text-secondary;
+$component-field-helper--dark: $text-secondary--dark;
+$component-field-border-default: $border-default;
+$component-field-border-default--dark: $border-default--dark;
+$component-field-border-hover: $border-strong;
+$component-field-border-hover--dark: $border-strong--dark;
+$component-field-border-error: $status-danger;
+$component-field-border-error--dark: $status-danger--dark;
+$component-field-surface-disabled: $action-disabled-background;
+$component-field-surface-disabled--dark: $action-disabled-background--dark;
+$component-field-text-disabled: $action-disabled-text;
+$component-field-text-disabled--dark: $action-disabled-text--dark;
+$component-field-border-disabled: $action-disabled-border;
+$component-field-border-disabled--dark: $action-disabled-border--dark;
+
+$semantic-light: (
+	'background-default': $background-default,
+	'background-subtle': $background-subtle,
+	'surface-default': $surface-default,
+	'surface-raised': $surface-raised,
+	'text-primary': $text-primary,
+	'text-secondary': $text-secondary,
+	'text-muted': $text-muted,
+	'text-inverse': $text-inverse,
+	'border-default': $border-default,
+	'border-strong': $border-strong,
+	'focus-ring': $focus-ring,
+	'status-success': $status-success,
+	'status-warning': $status-warning,
+	'status-danger': $status-danger,
+	'action-primary-background': $action-primary-background,
+	'action-primary-background-hover': $action-primary-background-hover,
+	'action-primary-background-pressed': $action-primary-background-pressed,
+	'action-primary-text': $action-primary-text,
+	'action-secondary-background': $action-secondary-background,
+	'action-secondary-background-hover': $action-secondary-background-hover,
+	'action-secondary-background-pressed': $action-secondary-background-pressed,
+	'action-secondary-border': $action-secondary-border,
+	'action-secondary-text': $action-secondary-text,
+	'action-ghost-background': $action-ghost-background,
+	'action-ghost-background-hover': $action-ghost-background-hover,
+	'action-ghost-background-pressed': $action-ghost-background-pressed,
+	'action-ghost-text': $action-ghost-text,
+	'action-disabled-background': $action-disabled-background,
+	'action-disabled-text': $action-disabled-text,
+	'action-disabled-border': $action-disabled-border,
+	'component-button-surface': $component-button-surface,
+	'component-button-text': $component-button-text,
+	'component-button-icon': $component-button-icon,
+	'component-button-border': $component-button-border,
+	'component-button-overlay-default': $component-button-overlay-default,
+	'component-button-overlay-hover': $component-button-overlay-hover,
+	'component-button-overlay-pressed': $component-button-overlay-pressed,
+	'component-button-shadow-color': $component-button-shadow-color,
+	'component-button-shadow-offset-y': $component-button-shadow-offset-y,
+	'component-button-shadow-radius': $component-button-shadow-radius,
+	'component-button-shadow-spread': $component-button-shadow-spread,
+	'component-link-text': $component-link-text,
+	'component-link-focus-ring': $component-link-focus-ring,
+	'component-navlink-text': $component-navlink-text,
+	'component-navlink-surface-hover': $component-navlink-surface-hover,
+	'component-header-surface-default': $component-header-surface-default,
+	'component-header-surface-scrolled': $component-header-surface-scrolled,
+	'component-header-border': $component-header-border,
+	'component-header-icon': $component-header-icon,
+	'component-logo-safety-surface': $component-logo-safety-surface,
+	'component-field-surface': $component-field-surface,
+	'component-field-text': $component-field-text,
+	'component-field-placeholder': $component-field-placeholder,
+	'component-field-label': $component-field-label,
+	'component-field-helper': $component-field-helper,
+	'component-field-border-default': $component-field-border-default,
+	'component-field-border-hover': $component-field-border-hover,
+	'component-field-border-error': $component-field-border-error,
+	'component-field-surface-disabled': $component-field-surface-disabled,
+	'component-field-text-disabled': $component-field-text-disabled,
+	'component-field-border-disabled': $component-field-border-disabled,
+);
+
+$semantic-dark: (
+	'background-default': $background-default--dark,
+	'background-subtle': $background-subtle--dark,
+	'surface-default': $surface-default--dark,
+	'surface-raised': $surface-raised--dark,
+	'text-primary': $text-primary--dark,
+	'text-secondary': $text-secondary--dark,
+	'text-muted': $text-muted--dark,
+	'text-inverse': $text-inverse--dark,
+	'border-default': $border-default--dark,
+	'border-strong': $border-strong--dark,
+	'focus-ring': $focus-ring--dark,
+	'status-success': $status-success--dark,
+	'status-warning': $status-warning--dark,
+	'status-danger': $status-danger--dark,
+	'action-primary-background': $action-primary-background--dark,
+	'action-primary-background-hover': $action-primary-background-hover--dark,
+	'action-primary-background-pressed': $action-primary-background-pressed--dark,
+	'action-primary-text': $action-primary-text--dark,
+	'action-secondary-background': $action-secondary-background--dark,
+	'action-secondary-background-hover': $action-secondary-background-hover--dark,
+	'action-secondary-background-pressed': $action-secondary-background-pressed--dark,
+	'action-secondary-border': $action-secondary-border--dark,
+	'action-secondary-text': $action-secondary-text--dark,
+	'action-ghost-background': $action-ghost-background--dark,
+	'action-ghost-background-hover': $action-ghost-background-hover--dark,
+	'action-ghost-background-pressed': $action-ghost-background-pressed--dark,
+	'action-ghost-text': $action-ghost-text--dark,
+	'action-disabled-background': $action-disabled-background--dark,
+	'action-disabled-text': $action-disabled-text--dark,
+	'action-disabled-border': $action-disabled-border--dark,
+	'component-button-surface': $component-button-surface--dark,
+	'component-button-text': $component-button-text--dark,
+	'component-button-icon': $component-button-icon--dark,
+	'component-button-border': $component-button-border--dark,
+	'component-button-overlay-default': $component-button-overlay-default--dark,
+	'component-button-overlay-hover': $component-button-overlay-hover--dark,
+	'component-button-overlay-pressed': $component-button-overlay-pressed--dark,
+	'component-button-shadow-color': $component-button-shadow-color--dark,
+	'component-button-shadow-offset-y': $component-button-shadow-offset-y--dark,
+	'component-button-shadow-radius': $component-button-shadow-radius--dark,
+	'component-button-shadow-spread': $component-button-shadow-spread--dark,
+	'component-link-text': $component-link-text--dark,
+	'component-link-focus-ring': $component-link-focus-ring--dark,
+	'component-navlink-text': $component-navlink-text--dark,
+	'component-navlink-surface-hover': $component-navlink-surface-hover--dark,
+	'component-header-surface-default': $component-header-surface-default--dark,
+	'component-header-surface-scrolled': $component-header-surface-scrolled--dark,
+	'component-header-border': $component-header-border--dark,
+	'component-header-icon': $component-header-icon--dark,
+	'component-logo-safety-surface': $component-logo-safety-surface--dark,
+	'component-field-surface': $component-field-surface--dark,
+	'component-field-text': $component-field-text--dark,
+	'component-field-placeholder': $component-field-placeholder--dark,
+	'component-field-label': $component-field-label--dark,
+	'component-field-helper': $component-field-helper--dark,
+	'component-field-border-default': $component-field-border-default--dark,
+	'component-field-border-hover': $component-field-border-hover--dark,
+	'component-field-border-error': $component-field-border-error--dark,
+	'component-field-surface-disabled': $component-field-surface-disabled--dark,
+	'component-field-text-disabled': $component-field-text-disabled--dark,
+	'component-field-border-disabled': $component-field-border-disabled--dark,
+);

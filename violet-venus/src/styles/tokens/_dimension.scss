@@ -1,0 +1,93 @@
+// Design tokens — Dimension
+// Source: Figma "PR Brand (DS)" → Dimension collection (mode: Value)
+
+$space-0: 0px;
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-6: 24px;
+$space-8: 32px;
+$space-12: 48px;
+$space-16: 64px;
+$space-24: 96px;
+$space-32: 128px;
+
+$radius-none: 0px;
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-full: 999px;
+
+$control-sm: 36px;
+$control-md: 44px;
+$control-lg: 52px;
+
+$icon-sm: 16px;
+$icon-md: 20px;
+$icon-lg: 24px;
+
+$layout-reading-max: 720px;
+$gutter-mobile: 20px;
+$gutter-tablet: 32px;
+$gutter-desktop: 48px;
+$section-mobile: 64px;
+$section-tablet: 96px;
+$section-desktop: 128px;
+
+$border-width: 1px;
+$focus-width: 2px;
+
+// Unitless 0–100 scale, as stored in Figma. Consume as
+// opacity: calc(var(--opacity-disabled) / 100).
+$opacity-disabled: 30;
+
+$component-header-height-desktop: 88px;
+$component-header-height-mobile: 72px;
+$component-header-menu-height: 420px;
+$component-field-height-md: 48px;
+$component-field-height-lg: 56px;
+$component-textarea-height-md: 144px;
+$component-textarea-height-lg: 176px;
+
+$dimension: (
+	'space-0': $space-0,
+	'space-1': $space-1,
+	'space-2': $space-2,
+	'space-3': $space-3,
+	'space-4': $space-4,
+	'space-6': $space-6,
+	'space-8': $space-8,
+	'space-12': $space-12,
+	'space-16': $space-16,
+	'space-24': $space-24,
+	'space-32': $space-32,
+	'radius-none': $radius-none,
+	'radius-sm': $radius-sm,
+	'radius-md': $radius-md,
+	'radius-lg': $radius-lg,
+	'radius-full': $radius-full,
+	'control-sm': $control-sm,
+	'control-md': $control-md,
+	'control-lg': $control-lg,
+	'icon-sm': $icon-sm,
+	'icon-md': $icon-md,
+	'icon-lg': $icon-lg,
+	'layout-reading-max': $layout-reading-max,
+	'gutter-mobile': $gutter-mobile,
+	'gutter-tablet': $gutter-tablet,
+	'gutter-desktop': $gutter-desktop,
+	'section-mobile': $section-mobile,
+	'section-tablet': $section-tablet,
+	'section-desktop': $section-desktop,
+	'border-width': $border-width,
+	'focus-width': $focus-width,
+	'opacity-disabled': $opacity-disabled,
+	'component-header-height-desktop': $component-header-height-desktop,
+	'component-header-height-mobile': $component-header-height-mobile,
+	'component-header-menu-height': $component-header-menu-height,
+	'component-field-height-md': $component-field-height-md,
+	'component-field-height-lg': $component-field-height-lg,
+	'component-textarea-height-md': $component-textarea-height-md,
+	'component-textarea-height-lg': $component-textarea-height-lg,
+);

@@ -1,0 +1,24 @@
+// Compiles the SCSS design tokens into CSS custom properties.
+// Source of truth: Figma "PR Brand (DS)" → Primitive / Semantic / Dimension collections.
+
+@use 'primitive' as p;
+@use 'dimension' as d;
+@use 'semantic' as s;
+@use 'gradient' as g;
+
+@mixin custom-properties($map) {
+	@each $name, $value in $map {
+		--#{$name}: #{$value};
+	}
+}
+
+:root {
+	@include custom-properties(p.$primitive);
+	@include custom-properties(d.$dimension);
+	@include custom-properties(s.$semantic-light);
+	@include custom-properties(g.$gradient);
+}
+
+.dark {
+	@include custom-properties(s.$semantic-dark);
+}

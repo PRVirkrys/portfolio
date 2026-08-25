@@ -1,0 +1,29 @@
+// Design tokens — Gradients
+// Source: Figma "PR Brand (DS)" → local paint styles.
+// Gradients aren't a Figma variable type, so they live in styles rather
+// than the Primitive/Semantic/Dimension collections and are pulled in
+// separately here. Angle is derived from each style's gradientTransform;
+// it reproduces the design exactly only at the aspect ratio the gradient
+// was authored at in Figma (gradients bake in the source shape's ratio).
+
+// Figma style: "Grandient/1"
+$gradient-1: linear-gradient(199.8deg, #2bbafe 0%, #b64f93 36%, #f41e4f 100%);
+// Figma style: "Grandient/2"
+$gradient-2: linear-gradient(171.3deg, #ff3064 0%, #ff6152 54%, #ffcd2b 100%);
+// Figma style: "Grandient/3"
+$gradient-3: linear-gradient(351.4deg, #30ff83 0%, #fcff52 53%, #fff72b 100%);
+// Figma style: "Button/Border/Gradient/Primary" — same stops as gradient-1, different angle
+$button-border-gradient-primary: linear-gradient(356.7deg, #2bbafe 0%, #b64f93 36%, #f41e4f 100%);
+// Figma style: "Button/Border/Gradient/Primary/Reversed" — same stops as gradient-1, different angle
+$button-border-gradient-primary-reversed: linear-gradient(163deg, #2bbafe 0%, #b64f93 36%, #f41e4f 100%);
+// Figma style: "Card/Accent/Gradient/Warm" — same stops as gradient-2, different angle
+$card-accent-gradient-warm: linear-gradient(270deg, #ff3064 0%, #ff6152 54%, #ffcd2b 100%);
+
+$gradient: (
+	'gradient-1': $gradient-1,
+	'gradient-2': $gradient-2,
+	'gradient-3': $gradient-3,
+	'button-border-gradient-primary': $button-border-gradient-primary,
+	'button-border-gradient-primary-reversed': $button-border-gradient-primary-reversed,
+	'card-accent-gradient-warm': $card-accent-gradient-warm,
+);
