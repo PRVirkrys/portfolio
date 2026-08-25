@@ -5,10 +5,22 @@
 @use 'dimension' as d;
 @use 'semantic' as s;
 @use 'gradient' as g;
+@use 'effect' as e;
+@use 'typography' as t;
 
 @mixin custom-properties($map) {
 	@each $name, $value in $map {
 		--#{$name}: #{$value};
+	}
+}
+
+// Typography tokens are nested maps (one map of properties per style name),
+// so they need their own loop to emit --typography-{name}-{property}.
+@mixin typography-custom-properties($map) {
+	@each $name, $props in $map {
+		@each $prop, $value in $props {
+			--typography-#{$name}-#{$prop}: #{$value};
+		}
 	}
 }
 
@@ -17,6 +29,8 @@
 	@include custom-properties(d.$dimension);
 	@include custom-properties(s.$semantic-light);
 	@include custom-properties(g.$gradient);
+	@include custom-properties(e.$effect);
+	@include typography-custom-properties(t.$typography);
 }
 
 .dark {

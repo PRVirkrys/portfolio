@@ -1,0 +1,30 @@
+// Design tokens — Effects (shadows / elevation)
+// Source: Figma "PR Brand (DS)" → local effect styles.
+// Like gradients, effects aren't a Figma variable type, so they live in
+// styles rather than the variable collections. Effect styles are single-mode
+// in Figma (no Light/Dark), so these values apply regardless of theme.
+
+// Figma style: "Elevation/Floating"
+$elevation-floating: 0px 8px 24px -6px rgba(16, 16, 31, 0.16);
+// Figma style: "Elevation/Button/Default"
+$elevation-button-default: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
+// Figma style: "Elevation/Button/Adaptive" — identical value to Default in the current file
+$elevation-button-adaptive: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
+// Figma style: "Elevation/Button/Focus" — focus ring + Button/Default shadow
+$elevation-button-focus: 0px 0px 0px 2px #45bfe1, 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
+// Figma style: "Elevation/Button/Focus Adaptive" — identical value to Focus in the current file
+$elevation-button-focus-adaptive: 0px 0px 0px 2px #45bfe1, 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
+// Figma style: "Focus/Link"
+$focus-link: 0px 0px 0px 2px #45bfe1;
+// Figma style: "Card/Shadow/Light"
+$card-shadow-light: 0px 6px 18px -4px rgba(0, 0, 0, 0.08);
+
+$effect: (
+	'elevation-floating': $elevation-floating,
+	'elevation-button-default': $elevation-button-default,
+	'elevation-button-adaptive': $elevation-button-adaptive,
+	'elevation-button-focus': $elevation-button-focus,
+	'elevation-button-focus-adaptive': $elevation-button-focus-adaptive,
+	'focus-link': $focus-link,
+	'card-shadow-light': $card-shadow-light,
+);

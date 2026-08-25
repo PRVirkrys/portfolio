@@ -1,0 +1,164 @@
+// Design tokens — Typography
+// Source: Figma "PR Brand (DS)" → local text styles (current set only;
+// "Legacy / Typography/*" styles are excluded, matching the Legacy
+// variable collections we already skip). Requires the Space Grotesk and
+// Manrope variable fonts, loaded in global.css.
+//
+// Each style becomes a group of custom properties:
+//   --typography-{name}-font-family
+//   --typography-{name}-font-weight
+//   --typography-{name}-font-size
+//   --typography-{name}-line-height
+//   --typography-{name}-letter-spacing
+//
+// Use the typography() mixin below to apply a style in one line.
+
+$font-family-space-grotesk: 'Space Grotesk Variable', 'Space Grotesk', sans-serif;
+$font-family-manrope: 'Manrope Variable', 'Manrope', sans-serif;
+
+$typography: (
+	'caption': (
+		'font-family': $font-family-manrope,
+		'font-weight': 400,
+		'font-size': 12px,
+		'line-height': 1.5,
+		'letter-spacing': 0.3px,
+	),
+	'display-xl-desktop': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 72px,
+		'line-height': 1.05,
+		'letter-spacing': -1px,
+	),
+	'display-xl-mobile': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 44px,
+		'line-height': 1.05,
+		'letter-spacing': -0.6px,
+	),
+	'display-l-desktop': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 56px,
+		'line-height': 1.08,
+		'letter-spacing': -0.75px,
+	),
+	'display-l-mobile': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 38px,
+		'line-height': 1.08,
+		'letter-spacing': -0.45px,
+	),
+	'heading-h1-desktop': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 40px,
+		'line-height': 1.15,
+		'letter-spacing': -0.5px,
+	),
+	'heading-h1-mobile': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 32px,
+		'line-height': 1.15,
+		'letter-spacing': -0.35px,
+	),
+	'heading-h2-desktop': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 32px,
+		'line-height': 1.2,
+		'letter-spacing': -0.3px,
+	),
+	'heading-h2-mobile': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 26px,
+		'line-height': 1.2,
+		'letter-spacing': -0.2px,
+	),
+	'heading-h3-desktop': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 24px,
+		'line-height': 1.3,
+		'letter-spacing': -0.15px,
+	),
+	'heading-h3-mobile': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 21px,
+		'line-height': 1.3,
+		'letter-spacing': -0.1px,
+	),
+	'body-l': (
+		'font-family': $font-family-manrope,
+		'font-weight': 400,
+		'font-size': 18px,
+		'line-height': 1.6,
+		'letter-spacing': 0px,
+	),
+	'body-m': (
+		'font-family': $font-family-manrope,
+		'font-weight': 400,
+		'font-size': 16px,
+		'line-height': 1.6,
+		'letter-spacing': 0px,
+	),
+	'body-s': (
+		'font-family': $font-family-manrope,
+		'font-weight': 400,
+		'font-size': 14px,
+		'line-height': 1.5,
+		'letter-spacing': 0.2px,
+	),
+	'ui-label': (
+		'font-family': $font-family-manrope,
+		'font-weight': 600,
+		'font-size': 14px,
+		'line-height': 1.4,
+		'letter-spacing': 0.2px,
+	),
+	'ui-button': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 500,
+		'font-size': 16px,
+		'line-height': normal,
+		'letter-spacing': 0,
+	),
+	'ui-brandmark': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 700,
+		'font-size': 20px,
+		'line-height': 24px,
+		'letter-spacing': -0.5px,
+	),
+	'ui-link-md': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 500,
+		'font-size': 14px,
+		'line-height': 20px,
+		'letter-spacing': 0,
+	),
+	'ui-link-lg': (
+		'font-family': $font-family-space-grotesk,
+		'font-weight': 500,
+		'font-size': 16px,
+		'line-height': 24px,
+		'letter-spacing': 0,
+	),
+);
+
+// Applies a typography token's properties directly (font-family, weight,
+// size, line-height, letter-spacing) via its custom properties.
+// Usage: h1 { @include typography('heading-h1-desktop'); }
+@mixin typography($name) {
+	font-family: var(--typography-#{$name}-font-family);
+	font-weight: var(--typography-#{$name}-font-weight);
+	font-size: var(--typography-#{$name}-font-size);
+	line-height: var(--typography-#{$name}-line-height);
+	letter-spacing: var(--typography-#{$name}-letter-spacing);
+}
