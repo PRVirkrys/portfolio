@@ -1,0 +1,36 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Button from '../components/ui/Button.astro';
+import TextLink from '../components/ui/TextLink.astro';
+import Logo from '../components/ui/Logo.astro';
+---
+
+<html lang="en" class="dark">
+	<head>
+		<BaseHead title="Component preview" description="temp" />
+	</head>
+	<body style="background: var(--color-bg); color: var(--color-text); padding: 2rem; display: flex; flex-direction: column; gap: 2rem;">
+		<button onclick="document.documentElement.classList.toggle('dark')">Toggle dark/light</button>
+
+		<section style="display:flex; gap:1rem; align-items:center;">
+			<Logo theme="dark" />
+			<Logo theme="light" />
+			<Logo theme="light-op2" />
+		</section>
+
+		<section style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+			<Button variant="primary" size="md">View project</Button>
+			<Button variant="secondary" size="md">Secondary</Button>
+			<Button variant="ghost" size="md">Ghost</Button>
+			<Button variant="primary" size="lg">Primary Lg</Button>
+			<Button variant="primary" size="md" disabled>Disabled</Button>
+		</section>
+
+		<section style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+			<TextLink href="#">View project</TextLink>
+			<TextLink href="#" size="lg">Large link</TextLink>
+			<TextLink href="#" showIcon={false}>No icon</TextLink>
+			<TextLink href="#" disabled>Disabled</TextLink>
+		</section>
+	</body>
+</html>

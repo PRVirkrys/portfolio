@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local implementation guide (not for version control)
+portfolio-brand-ui-implementation-guide.md

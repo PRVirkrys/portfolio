@@ -1,0 +1,144 @@
+---
+// Figma: PR Brand (DS) → UI kit → TextLink (node 15659:2182)
+// Underline uses the interactive gradient (default orientation at rest,
+// reversed on hover/focus/pressed) — same pair used by Button's border.
+export interface Props {
+	href: string;
+	size?: 'md' | 'lg';
+	showIcon?: boolean;
+	disabled?: boolean;
+	class?: string;
+}
+
+const { href, size = 'md', showIcon = true, disabled = false, class: className, ...rest } = Astro.props;
+---
+
+<a
+	class:list={['text-link', className]}
+	data-size={size}
+	href={!disabled ? href : undefined}
+	aria-disabled={disabled ? 'true' : undefined}
+	tabindex={disabled ? -1 : undefined}
+	{...rest}
+>
+	<span class="text-link__content">
+		<span class="text-link__label"><slot /></span>
+		{
+			showIcon && (
+				<svg class="text-link__icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+					<path
+						d="M5 11L11 5M11 5H6M11 5V10"
+						stroke="currentColor"
+						stroke-width="1.3"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			)
+		}
+	</span>
+	<span class="text-link__underline"></span>
+</a>
+
+<style>
+	/* Animating a gradient's own angle argument (even via @property) isn't
+	   reliably repainted per frame across browsers — see the longer note in
+	   Button.astro. background-position doesn't have that problem, so the
+	   hover shimmer slides a repeating gradient tile instead of rotating an
+	   angle. --gradient-interactive-stops-loop is symmetric (cyan-mauve-red-
+	   mauve-cyan) so the tile has no visible seam; sliding by exactly one
+	   tile width (60px) loops seamlessly. */
+	@keyframes link-shimmer {
+		to {
+			background-position: -60px 0;
+		}
+	}
+
+	.text-link {
+		display: inline-flex;
+		flex-direction: column;
+		padding: var(--space-1);
+		color: var(--link-text);
+		text-decoration: none;
+		outline: none;
+	}
+
+	.text-link[aria-disabled='true'] {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+
+	.text-link__content {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+		font-family: var(--typography-ui-link-md-font-family);
+		font-weight: var(--typography-ui-link-md-font-weight);
+		font-size: var(--typography-ui-link-md-font-size);
+		line-height: var(--typography-ui-link-md-line-height);
+		letter-spacing: var(--typography-ui-link-md-letter-spacing);
+	}
+
+	.text-link[data-size='lg'] .text-link__content {
+		font-family: var(--typography-ui-link-lg-font-family);
+		font-weight: var(--typography-ui-link-lg-font-weight);
+		font-size: var(--typography-ui-link-lg-font-size);
+		line-height: var(--typography-ui-link-lg-line-height);
+		letter-spacing: var(--typography-ui-link-lg-letter-spacing);
+	}
+
+	.text-link__icon {
+		flex-shrink: 0;
+		width: var(--icon-sm);
+		height: var(--icon-sm);
+		color: inherit;
+	}
+
+	.text-link__underline {
+		height: 1px;
+		background-image: var(--button-border-gradient-primary);
+		transition: height var(--duration-fast) var(--ease-standard);
+	}
+
+	.text-link:hover .text-link__underline,
+	.text-link:focus-visible .text-link__underline,
+	.text-link:active .text-link__underline {
+		height: 2px;
+	}
+
+	/* Hover: switch to a repeating tile and slide it — see link-shimmer above. */
+	.text-link:hover .text-link__underline {
+		background-image: linear-gradient(90deg, var(--gradient-interactive-stops-loop));
+		background-repeat: repeat-x;
+		background-size: 60px 100%;
+		animation: link-shimmer 1.5s linear infinite;
+	}
+
+	.text-link:focus-visible .text-link__underline {
+		background-image: var(--button-border-gradient-primary-reversed);
+	}
+
+	/* Pressing freezes the shimmer exactly where it is, rather than jumping.
+	   Declared after :hover so it always wins when combined with it. */
+	.text-link:active .text-link__underline {
+		animation-play-state: paused;
+	}
+
+	.text-link:focus-visible {
+		box-shadow: var(--link-focus-ring);
+		border-radius: var(--radius-sm);
+	}
+
+	.text-link[aria-disabled='true'] .text-link__underline {
+		height: 1px;
+		background-image: none;
+		background-color: var(--link-text);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.text-link__underline {
+			transition: none;
+			animation: none;
+		}
+	}
+</style>

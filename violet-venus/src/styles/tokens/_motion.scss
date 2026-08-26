@@ -1,0 +1,15 @@
+// Design tokens — Motion
+// Source: portfolio-brand-ui-implementation-guide.md §10 (not in Figma —
+// Figma variables don't encode motion timing; this is guide-authored).
+
+$duration-fast: 150ms;
+$duration-medium: 250ms;
+$duration-slow: 400ms;
+$ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+$motion: (
+	'duration-fast': $duration-fast,
+	'duration-medium': $duration-medium,
+	'duration-slow': $duration-slow,
+	'ease-standard': $ease-standard,
+);

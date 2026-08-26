@@ -1,0 +1,234 @@
+---
+// Figma: PR Brand (DS) → UI kit → Button (node 15629:62)
+// Primary keeps the Legacy/Button-primary-01 gradient border; hover, pressed,
+// and focus use the reversed gradient orientation (see gradient tokens).
+export interface Props {
+	variant?: 'primary' | 'secondary' | 'ghost';
+	size?: 'md' | 'lg';
+	href?: string;
+	type?: 'button' | 'submit' | 'reset';
+	disabled?: boolean;
+	class?: string;
+}
+
+const {
+	variant = 'primary',
+	size = 'md',
+	href,
+	type = 'button',
+	disabled = false,
+	class: className,
+	...rest
+} = Astro.props;
+
+const hasLeadingIcon = Astro.slots.has('icon-leading');
+const hasTrailingIcon = Astro.slots.has('icon-trailing');
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+	class:list={['button', className]}
+	data-variant={variant}
+	data-size={size}
+	href={!disabled ? href : undefined}
+	type={!href ? type : undefined}
+	disabled={!href && disabled ? true : undefined}
+	aria-disabled={href && disabled ? 'true' : undefined}
+	tabindex={href && disabled ? -1 : undefined}
+	{...rest}
+>
+	{
+		hasLeadingIcon && (
+			<span class="button__icon" aria-hidden="true">
+				<slot name="icon-leading" />
+			</span>
+		)
+	}
+	<span class="button__label"><slot /></span>
+	{
+		hasTrailingIcon && (
+			<span class="button__icon" aria-hidden="true">
+				<slot name="icon-trailing" />
+			</span>
+		)
+	}
+</Tag>
+
+<style>
+	/* 356.7deg -> 716.7deg (+360) renders identically at the loop seam, so the
+	   spin reads as continuous rather than snapping back each cycle. */
+	@keyframes gradient-spin {
+		to {
+			--gradient-angle-interactive: 716.7deg;
+		}
+	}
+
+	/* One-shot version for focus (no continuous spin from keyboard focus
+	   alone). Deliberately an animation, not a `transition` on
+	   --gradient-angle-interactive — mixing a transition and an animation on
+	   the same custom property causes the hover spin to collapse into a
+	   single instant jump instead of looping. */
+	@keyframes gradient-focus-shift {
+		from {
+			--gradient-angle-interactive: 356.7deg;
+		}
+		to {
+			--gradient-angle-interactive: 523deg;
+		}
+	}
+
+	.button {
+		--btn-overlay: transparent;
+		--btn-surface: transparent;
+		--btn-border-color: transparent;
+		--btn-border-image: none;
+		--btn-shadow: none;
+
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-1);
+		border: var(--border-width) solid var(--btn-border-color);
+		border-radius: var(--radius-sm);
+		background:
+			linear-gradient(var(--btn-overlay), var(--btn-overlay)) padding-box,
+			linear-gradient(var(--btn-surface), var(--btn-surface)) padding-box,
+			var(--btn-border-image) border-box;
+		box-shadow: var(--btn-shadow);
+		color: var(--button-text);
+		font-family: var(--typography-ui-button-font-family);
+		font-weight: var(--typography-ui-button-font-weight);
+		font-size: var(--typography-ui-button-font-size);
+		line-height: var(--typography-ui-button-line-height);
+		letter-spacing: var(--typography-ui-button-letter-spacing);
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			background-image var(--duration-fast) var(--ease-standard),
+			box-shadow var(--duration-fast) var(--ease-standard);
+	}
+
+	.button:disabled,
+	.button[aria-disabled='true'] {
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+
+	.button__icon {
+		display: inline-flex;
+		flex-shrink: 0;
+		width: var(--icon-sm);
+		height: var(--icon-sm);
+		color: var(--button-icon);
+	}
+
+	.button__icon :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Size */
+	.button[data-size='md'] {
+		height: var(--control-md);
+		padding-inline: var(--space-6);
+		padding-block: var(--space-3);
+	}
+
+	.button[data-size='lg'] {
+		height: var(--control-lg);
+		padding-inline: var(--space-8);
+		padding-block: var(--space-4);
+	}
+
+	.button[data-variant='primary'] {
+		--btn-surface: var(--button-surface);
+		--btn-overlay: var(--button-overlay-default);
+		--gradient-angle-interactive: 356.7deg;
+		--btn-border-image: linear-gradient(var(--gradient-angle-interactive), var(--gradient-interactive-stops));
+		--btn-shadow:
+			var(--button-shadow-color) 0 var(--button-shadow-y) var(--button-shadow-blur) var(--button-shadow-spread);
+	}
+
+	.button[data-variant='primary']:hover {
+		--btn-overlay: var(--button-overlay-hover);
+		animation: gradient-spin 3s linear infinite;
+	}
+
+	.button[data-variant='primary']:focus-visible {
+		--btn-overlay: var(--button-overlay-default);
+		animation: gradient-focus-shift var(--duration-medium) var(--ease-standard) forwards;
+		--btn-shadow: var(--elevation-button-focus);
+	}
+
+	/* Pressing freezes whichever animation is running (spin or focus-shift)
+	   exactly where it is — animation-play-state holds the current
+	   interpolated angle instead of jumping to a fixed one. Declared after
+	   :hover and :focus-visible so it always wins when combined with them. */
+	.button[data-variant='primary']:active {
+		--btn-overlay: var(--button-overlay-pressed);
+		animation-play-state: paused;
+		--btn-shadow: none;
+	}
+
+	.button[data-variant='primary']:disabled,
+	.button[data-variant='primary'][aria-disabled='true'] {
+		--btn-overlay: var(--button-overlay-pressed);
+		--gradient-angle-interactive: 356.7deg;
+		--btn-shadow: none;
+	}
+
+	/* Secondary */
+	.button[data-variant='secondary'] {
+		--btn-surface: var(--button-surface);
+		--btn-border-color: var(--button-border);
+		--btn-shadow:
+			var(--button-shadow-color) 0 var(--button-shadow-y) var(--button-shadow-blur) var(--button-shadow-spread);
+	}
+
+	.button[data-variant='secondary']:hover,
+	.button[data-variant='secondary']:active,
+	.button[data-variant='secondary']:disabled,
+	.button[data-variant='secondary'][aria-disabled='true'] {
+		--btn-overlay: var(--button-overlay-hover);
+	}
+
+	.button[data-variant='secondary']:active,
+	.button[data-variant='secondary']:disabled,
+	.button[data-variant='secondary'][aria-disabled='true'] {
+		--btn-shadow: none;
+	}
+
+	.button[data-variant='secondary']:focus-visible {
+		--btn-overlay: transparent;
+		--btn-shadow: var(--elevation-button-focus);
+	}
+
+	/* Ghost */
+	.button[data-variant='ghost'] {
+		--btn-shadow:
+			var(--button-shadow-color) 0 var(--button-shadow-y) var(--button-shadow-blur) var(--button-shadow-spread);
+	}
+
+	.button[data-variant='ghost']:hover,
+	.button[data-variant='ghost']:active,
+	.button[data-variant='ghost']:disabled,
+	.button[data-variant='ghost'][aria-disabled='true'] {
+		--btn-surface: var(--button-surface);
+		--btn-overlay: var(--button-overlay-hover);
+		--btn-shadow: none;
+	}
+
+	.button[data-variant='ghost']:focus-visible {
+		--btn-surface: transparent;
+		--btn-overlay: transparent;
+		--btn-shadow: var(--elevation-button-focus);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.button {
+			transition: none;
+			animation: none;
+		}
+	}
+</style>

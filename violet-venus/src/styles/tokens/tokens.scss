@@ -7,6 +7,15 @@
 @use 'gradient' as g;
 @use 'effect' as e;
 @use 'typography' as t;
+@use 'motion' as m;
+
+// Used only by Button's primary border-rotation animation. Must stay a
+// top-level rule, not nested inside :root.
+@property --gradient-angle-interactive {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: #{g.$gradient-angle-default};
+}
 
 @mixin custom-properties($map) {
 	@each $name, $value in $map {
@@ -30,6 +39,7 @@
 	@include custom-properties(s.$semantic-light);
 	@include custom-properties(g.$gradient);
 	@include custom-properties(e.$effect);
+	@include custom-properties(m.$motion);
 	@include typography-custom-properties(t.$typography);
 }
 

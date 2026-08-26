@@ -12,12 +12,28 @@ $gradient-1: linear-gradient(199.8deg, #2bbafe 0%, #b64f93 36%, #f41e4f 100%);
 $gradient-2: linear-gradient(171.3deg, #ff3064 0%, #ff6152 54%, #ffcd2b 100%);
 // Figma style: "Grandient/3"
 $gradient-3: linear-gradient(351.4deg, #30ff83 0%, #fcff52 53%, #fff72b 100%);
-// Figma style: "Button/Border/Gradient/Primary" — same stops as gradient-1, different angle
-$button-border-gradient-primary: linear-gradient(356.7deg, #2bbafe 0%, #b64f93 36%, #f41e4f 100%);
-// Figma style: "Button/Border/Gradient/Primary/Reversed" — same stops as gradient-1, different angle
-$button-border-gradient-primary-reversed: linear-gradient(163deg, #2bbafe 0%, #b64f93 36%, #f41e4f 100%);
 // Figma style: "Card/Accent/Gradient/Warm" — same stops as gradient-2, different angle
 $card-accent-gradient-warm: linear-gradient(270deg, #ff3064 0%, #ff6152 54%, #ffcd2b 100%);
+
+// Interactive border/underline gradient — Button/Border/Gradient/Primary,
+// static at rest. See portfolio-brand-ui-implementation-guide.md §3.3:
+// "hover, focus y pressed: orientación invertida."
+$gradient-angle-default: 356.7deg;
+$gradient-interactive-stops: #2bbafe 0%, #b64f93 36%, #f41e4f 100%;
+$button-border-gradient-primary: linear-gradient(#{$gradient-angle-default}, #{$gradient-interactive-stops});
+
+// Static alternate orientation, used for the one-shot focus state only.
+$gradient-angle-reversed: 163deg;
+$button-border-gradient-primary-reversed: linear-gradient(#{$gradient-angle-reversed}, #{$gradient-interactive-stops});
+
+// Loop-safe tile for the hover animation: symmetric (cyan→mauve→red→mauve→
+// cyan) so both ends match and a repeat-x tile has no visible seam. Animating
+// background-position (not a gradient's own angle argument) is what actually
+// works reliably across browsers for continuous motion — see the note left
+// in Button.astro / TextLink.astro on why the earlier @property-angle
+// approach was abandoned.
+$gradient-interactive-stops-loop:
+	#2bbafe 0%, #b64f93 25%, #f41e4f 50%, #b64f93 75%, #2bbafe 100%;
 
 $gradient: (
 	'gradient-1': $gradient-1,
@@ -25,5 +41,7 @@ $gradient: (
 	'gradient-3': $gradient-3,
 	'button-border-gradient-primary': $button-border-gradient-primary,
 	'button-border-gradient-primary-reversed': $button-border-gradient-primary-reversed,
+	'gradient-interactive-stops': $gradient-interactive-stops,
+	'gradient-interactive-stops-loop': $gradient-interactive-stops-loop,
 	'card-accent-gradient-warm': $card-accent-gradient-warm,
 );
