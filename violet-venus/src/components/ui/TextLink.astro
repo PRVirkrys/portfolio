@@ -1,7 +1,9 @@
 ---
 // Figma: PR Brand (DS) → UI kit → TextLink (node 15659:2182)
-// Underline uses the interactive gradient (default orientation at rest,
-// reversed on hover/focus/pressed) — same pair used by Button's border.
+// Underline is a single persistent ::after (see .text-link::after): the same
+// --gradient-link-underline background-image, at the same oversized
+// background-size, is declared once and never swapped between states. Only
+// animation-play-state toggles on hover; background-position is what slides.
 export interface Props {
 	href: string;
 	size?: 'md' | 'lg';
@@ -37,20 +39,26 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 			)
 		}
 	</span>
-	<span class="text-link__underline"></span>
 </a>
 
 <style>
-	/* Animating a gradient's own angle argument (even via @property) isn't
-	   reliably repainted per frame across browsers — see the longer note in
-	   Button.astro. background-position doesn't have that problem, so the
-	   hover shimmer slides a repeating gradient tile instead of rotating an
-	   angle. --gradient-interactive-stops-loop is symmetric (cyan-mauve-red-
-	   mauve-cyan) so the tile has no visible seam; sliding by exactly one
-	   tile width (60px) loops seamlessly. */
-	@keyframes link-shimmer {
+	/* --gradient-link-underline is a symmetric red-mauve-blue-mauve-red
+	   palindrome rendered at background-size 200% 100%, so the box only ever
+	   shows half of it at a time. Sliding background-position by exactly one
+	   full image period returns to a pixel-identical view — no seam at the
+	   loop point — and passes through the mirrored/inverted orientation
+	   naturally at the midpoint, so no separate "reversed" gradient or state
+	   selector is needed for that. The target is -200% rather than +200% so
+	   the sweep runs right-to-left; it's still exactly one image period
+	   (just traversed the other way), and the base value below is still 0%,
+	   so the resting/first frame is untouched. Sliding position this way
+	   (rather than rotating the gradient's own angle, tried earlier) is also
+	   what avoids the jump the previous version had: rotating a gradient's
+	   direction degenerates badly on a box this thin, while a plain
+	   horizontal translation doesn't care about the box's aspect ratio. */
+	@keyframes link-underline-slide {
 		to {
-			background-position: 60px 0;
+			background-position: -200% 0;
 		}
 	}
 
@@ -94,34 +102,40 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 		color: inherit;
 	}
 
-	.text-link__underline {
+	/* The underline itself: a generated box, not a markup span, so there is
+	   only ever one element and it can't be replaced or duplicated between
+	   states. background-image, background-size and background-position are
+	   declared once here and never touched by any state selector — at
+	   background-position 0% (its resting value) the oversized layer shows
+	   exactly the gradient's left half: red at the left edge fading through
+	   mauve to blue at the right edge, matching the approved Default look.
+	   The animation is always declared too — only animation-play-state ever
+	   changes, so it's never created or destroyed by a state selector. */
+	.text-link::after {
+		content: '';
+		display: block;
 		height: 1px;
-		background-image: var(--button-border-gradient-primary);
+		background-image: var(--gradient-link-underline);
+		background-repeat: repeat-x;
+		background-size: 200% 100%;
+		background-position: 0% 0;
 		transition: height var(--duration-fast) var(--ease-standard);
+		animation: link-underline-slide 3s linear infinite;
+		animation-play-state: paused;
 	}
 
-	.text-link:hover .text-link__underline,
-	.text-link:focus-visible .text-link__underline,
-	.text-link:active .text-link__underline {
+	.text-link:hover::after,
+	.text-link:focus-visible::after,
+	.text-link:active::after {
 		height: 2px;
 	}
 
-	/* Hover: switch to a repeating tile and slide it — see link-shimmer above. */
-	.text-link:hover .text-link__underline {
-		background-image: linear-gradient(90deg, var(--gradient-interactive-stops-loop));
-		background-repeat: repeat-x;
-		background-size: 60px 100%;
-		animation: link-shimmer 1.5s linear infinite;
-	}
-
-	.text-link:focus-visible .text-link__underline {
-		background-image: var(--button-border-gradient-primary-reversed);
-	}
-
-	/* Pressing freezes the shimmer exactly where it is. Declared after
-	   :hover so it always wins when combined with it. */
-	.text-link:active .text-link__underline {
-		animation-play-state: paused;
+	/* Only hover starts the slide — focus-visible and :active leave
+	   animation-play-state untouched (still paused, or still running if the
+	   pointer also happens to be hovering), so neither can restart or reset
+	   the animation on its own. */
+	.text-link:hover::after {
+		animation-play-state: running;
 	}
 
 	.text-link:focus-visible {
@@ -129,16 +143,22 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 		border-radius: var(--radius-sm);
 	}
 
-	.text-link[aria-disabled='true'] .text-link__underline {
+	.text-link[aria-disabled='true']::after {
 		height: 1px;
 		background-image: none;
 		background-color: var(--link-text);
+		animation: none;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.text-link__underline {
+		.text-link::after {
 			transition: none;
-			animation: none;
+		}
+
+		/* Overrides the :hover rule above (declared after it, same
+		   specificity) so hovering can never start the slide. */
+		.text-link:hover::after {
+			animation-play-state: paused;
 		}
 	}
 </style>

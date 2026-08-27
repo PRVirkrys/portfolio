@@ -26,14 +26,18 @@ $button-border-gradient-primary: linear-gradient(#{$gradient-angle-default}, #{$
 $gradient-angle-reversed: 163deg;
 $button-border-gradient-primary-reversed: linear-gradient(#{$gradient-angle-reversed}, #{$gradient-interactive-stops});
 
-// Loop-safe tile for the hover animation: symmetric (cyan→mauve→red→mauve→
-// cyan) so both ends match and a repeat-x tile has no visible seam. Animating
-// background-position (not a gradient's own angle argument) is what actually
-// works reliably across browsers for continuous motion — see the note left
-// in Button.astro / TextLink.astro on why the earlier @property-angle
-// approach was abandoned.
-$gradient-interactive-stops-loop:
-	#2bbafe 0%, #b64f93 25%, #f41e4f 50%, #b64f93 75%, #2bbafe 100%;
+// TextLink's underline gradient — a symmetric, seamlessly repeatable
+// palindrome (red→mauve→blue→mauve→red), distinct from Button's border
+// gradient above. Animating this by rotating a gradient's own angle (the
+// earlier approach) produced a visible jump on the underline's very thin
+// box — rotating a linear-gradient's direction degenerates badly on an
+// extremely oblong box. So this is built for a plain background-position
+// slide instead: rendered at background-size 200% 100% with position at 0%
+// (its resting state), the element shows only this gradient's left half —
+// red at the left edge fading through mauve to blue at the right edge,
+// matching the approved Default look exactly. See TextLink.astro for the
+// animation.
+$gradient-link-underline: linear-gradient(90deg, #f41e4f 0%, #b64f93 25%, #2bbafe 50%, #b64f93 75%, #f41e4f 100%);
 
 $gradient: (
 	'gradient-1': $gradient-1,
@@ -42,6 +46,6 @@ $gradient: (
 	'button-border-gradient-primary': $button-border-gradient-primary,
 	'button-border-gradient-primary-reversed': $button-border-gradient-primary-reversed,
 	'gradient-interactive-stops': $gradient-interactive-stops,
-	'gradient-interactive-stops-loop': $gradient-interactive-stops-loop,
+	'gradient-link-underline': $gradient-link-underline,
 	'card-accent-gradient-warm': $card-accent-gradient-warm,
 );
