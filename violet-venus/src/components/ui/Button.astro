@@ -55,28 +55,6 @@ const Tag = href ? 'a' : 'button';
 </Tag>
 
 <style>
-	/* 356.7deg -> 716.7deg (+360) renders identically at the loop seam, so the
-	   spin reads as continuous rather than snapping back each cycle. */
-	@keyframes gradient-spin {
-		to {
-			--gradient-angle-interactive: 716.7deg;
-		}
-	}
-
-	/* One-shot version for focus (no continuous spin from keyboard focus
-	   alone). Deliberately an animation, not a `transition` on
-	   --gradient-angle-interactive — mixing a transition and an animation on
-	   the same custom property causes the hover spin to collapse into a
-	   single instant jump instead of looping. */
-	@keyframes gradient-focus-shift {
-		from {
-			--gradient-angle-interactive: 356.7deg;
-		}
-		to {
-			--gradient-angle-interactive: 523deg;
-		}
-	}
-
 	.button {
 		--btn-overlay: transparent;
 		--btn-surface: transparent;
@@ -142,39 +120,38 @@ const Tag = href ? 'a' : 'button';
 	}
 
 	.button[data-variant='primary'] {
+		/* Angle fed to the border gradient below. 356.7deg matches Figma's
+		   static token exactly, so at rest (before any hover) this is
+		   pixel-identical to --button-border-gradient-primary. The <script>
+		   block below rewrites this custom property with
+		   requestAnimationFrame while hovered, which is what actually spins
+		   the border — see that block for why JS drives it instead of a CSS
+		   @keyframes/@property animation. */
+		--border-angle: 356.7deg;
 		--btn-surface: var(--button-surface);
 		--btn-overlay: var(--button-overlay-default);
-		--gradient-angle-interactive: 356.7deg;
-		--btn-border-image: linear-gradient(var(--gradient-angle-interactive), var(--gradient-interactive-stops));
+		--btn-border-image: linear-gradient(var(--border-angle), var(--gradient-interactive-stops));
 		--btn-shadow:
 			var(--button-shadow-color) 0 var(--button-shadow-y) var(--button-shadow-blur) var(--button-shadow-spread);
 	}
 
 	.button[data-variant='primary']:hover {
 		--btn-overlay: var(--button-overlay-hover);
-		animation: gradient-spin 3s linear infinite;
 	}
 
 	.button[data-variant='primary']:focus-visible {
 		--btn-overlay: var(--button-overlay-default);
-		animation: gradient-focus-shift var(--duration-medium) var(--ease-standard) forwards;
 		--btn-shadow: var(--elevation-button-focus);
 	}
 
-	/* Pressing freezes whichever animation is running (spin or focus-shift)
-	   exactly where it is — animation-play-state holds the current
-	   interpolated angle instead of jumping to a fixed one. Declared after
-	   :hover and :focus-visible so it always wins when combined with them. */
 	.button[data-variant='primary']:active {
 		--btn-overlay: var(--button-overlay-pressed);
-		animation-play-state: paused;
 		--btn-shadow: none;
 	}
 
 	.button[data-variant='primary']:disabled,
 	.button[data-variant='primary'][aria-disabled='true'] {
 		--btn-overlay: var(--button-overlay-pressed);
-		--gradient-angle-interactive: 356.7deg;
 		--btn-shadow: none;
 	}
 
@@ -228,7 +205,69 @@ const Tag = href ? 'a' : 'button';
 	@media (prefers-reduced-motion: reduce) {
 		.button {
 			transition: none;
-			animation: none;
 		}
 	}
 </style>
+
+<script>
+	// Rotates the primary button's border gradient continuously while
+	// hovered, by rewriting --border-angle every animation frame.
+	//
+	// A CSS @keyframes/@property animation on --border-angle was tried
+	// before this (see git history) and dropped: browsers don't reliably
+	// repaint a registered custom property interpolated by a CSS animation
+	// every frame, so the rotation stuttered. Writing the property from JS
+	// on a rAF loop is a plain style mutation each frame, which always
+	// repaints, so it's the more robust option here — not a preference for
+	// JS over CSS in general.
+	//
+	// Each button gets its own closure (angle, rafId, lastTime), so hovering
+	// several buttons at once animates them independently. The angle is
+	// never reset on pointerleave — only the rAF loop is cancelled — so
+	// re-entering hover resumes from exactly where it stopped.
+	const DEG_PER_SECOND = 120; // one full turn every 3s, matches the previous spin
+
+	const prefersReducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	const isDisabled = (button: HTMLElement) =>
+		(button as HTMLButtonElement).disabled === true || button.getAttribute('aria-disabled') === 'true';
+
+	document.querySelectorAll<HTMLElement>('.button[data-variant="primary"]').forEach((button) => {
+		let angle = 356.7; // mirrors the --border-angle default set in CSS
+		let rafId: number | null = null;
+		let lastTime: number | null = null;
+
+		const tick = (time: number) => {
+			if (isDisabled(button) || !button.isConnected) {
+				rafId = null;
+				lastTime = null;
+				return;
+			}
+			if (lastTime !== null) {
+				angle = (angle + ((time - lastTime) / 1000) * DEG_PER_SECOND) % 360;
+				button.style.setProperty('--border-angle', `${angle}deg`);
+			}
+			lastTime = time;
+			rafId = requestAnimationFrame(tick);
+		};
+
+		const start = () => {
+			if (rafId !== null || isDisabled(button) || prefersReducedMotion()) return;
+			const current = parseFloat(button.style.getPropertyValue('--border-angle'));
+			if (Number.isFinite(current)) angle = current;
+			lastTime = null;
+			rafId = requestAnimationFrame(tick);
+		};
+
+		const stop = () => {
+			if (rafId !== null) {
+				cancelAnimationFrame(rafId);
+				rafId = null;
+			}
+			lastTime = null;
+		};
+
+		button.addEventListener('pointerenter', start);
+		button.addEventListener('pointerleave', stop);
+	});
+</script>

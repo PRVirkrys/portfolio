@@ -50,7 +50,7 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	   tile width (60px) loops seamlessly. */
 	@keyframes link-shimmer {
 		to {
-			background-position: -60px 0;
+			background-position: 60px 0;
 		}
 	}
 
@@ -118,8 +118,8 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 		background-image: var(--button-border-gradient-primary-reversed);
 	}
 
-	/* Pressing freezes the shimmer exactly where it is, rather than jumping.
-	   Declared after :hover so it always wins when combined with it. */
+	/* Pressing freezes the shimmer exactly where it is. Declared after
+	   :hover so it always wins when combined with it. */
 	.text-link:active .text-link__underline {
 		animation-play-state: paused;
 	}

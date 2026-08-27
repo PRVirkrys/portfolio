@@ -9,14 +9,6 @@
 @use 'typography' as t;
 @use 'motion' as m;
 
-// Used only by Button's primary border-rotation animation. Must stay a
-// top-level rule, not nested inside :root.
-@property --gradient-angle-interactive {
-	syntax: '<angle>';
-	inherits: false;
-	initial-value: #{g.$gradient-angle-default};
-}
-
 @mixin custom-properties($map) {
 	@each $name, $value in $map {
 		--#{$name}: #{$value};
