@@ -133,10 +133,48 @@ const Tag = href ? 'a' : 'button';
 		--btn-border-image: linear-gradient(var(--border-angle), var(--gradient-interactive-stops));
 		--btn-shadow:
 			var(--button-shadow-color) 0 var(--button-shadow-y) var(--button-shadow-blur) var(--button-shadow-spread);
+		position: relative;
+	}
+
+	/* Glow — Figma node 15719:7797. A ::before behind the button, sharing
+	   --border-angle (inherited from .button[data-variant='primary'] above,
+	   the same value the <script> block spins) instead of any animation or
+	   custom property of its own: border and glow read one phase, so they're
+	   guaranteed to always agree and never need separate syncing. Only
+	   opacity is state-driven (via a plain transition, not an animation).
+	   The background is a linear-gradient — same gradient type as
+	   --btn-border-image above, same angle variable, same color order/
+	   positions, no +180deg or flip — because linear-gradient and
+	   conic-gradient place their 0% stop by different conventions (opposite
+	   the angle vs. exactly at it): a conic-gradient here rotated in sync
+	   but with cyan/pink landing on opposite edges from the border. Matching
+	   the border's gradient type is what keeps them spatially aligned.
+	   #e22b62 is Figma's exact pink for this glow (distinct from the
+	   border's own #f41e4f). inset: 0 plus a scale (not a larger inset) is
+	   what keeps the halo tight to the button instead of the diffuse
+	   version tried earlier; don't add a separate colored box-shadow
+	   alongside this, or the halo doubles up. --btn-shadow above is the
+	   unrelated static elevation shadow and stays untouched. */
+	.button[data-variant='primary']::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		z-index: -1;
+		pointer-events: none;
+		background: linear-gradient(var(--border-angle), #2bbafe, #b64f93, #e22b62, #2bbafe);
+		filter: blur(9px);
+		opacity: 0;
+		transform: scale(1.03);
+		transition: opacity 200ms ease;
 	}
 
 	.button[data-variant='primary']:hover {
 		--btn-overlay: var(--button-overlay-hover);
+	}
+
+	.button[data-variant='primary']:hover::before {
+		opacity: 0.6;
 	}
 
 	.button[data-variant='primary']:focus-visible {
