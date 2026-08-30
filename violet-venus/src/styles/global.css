@@ -154,6 +154,16 @@ hr {
 	}
 }
 
+@media (min-width: 840px) {
+	html {
+		zoom: 0.8;
+	}
+
+	body {
+		padding-left: var(--component-sidebar-width);
+	}
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;
