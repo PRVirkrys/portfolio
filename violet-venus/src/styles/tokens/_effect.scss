@@ -14,6 +14,8 @@ $elevation-button-adaptive: 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
 $elevation-button-focus: 0px 0px 0px 2px #45bfe1, 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
 // Figma style: "Elevation/Button/Focus Adaptive" — identical value to Focus in the current file
 $elevation-button-focus-adaptive: 0px 0px 0px 2px #45bfe1, 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
+// Figma style: "Elevation/Button/Hover/Glow"
+$elevation-button-hover-glow: 0px 2px 8px 0px rgba(226, 43, 98, 0.5), 0px -2px 9px 0px rgba(43, 186, 254, 0.5), 0px 5px 15px 0px rgba(0, 0, 0, 0.35);
 // Figma style: "Focus/Link"
 $focus-link: 0px 0px 0px 2px #45bfe1;
 // Figma style: "Card/Shadow/Light"
@@ -25,6 +27,7 @@ $effect: (
 	'elevation-button-adaptive': $elevation-button-adaptive,
 	'elevation-button-focus': $elevation-button-focus,
 	'elevation-button-focus-adaptive': $elevation-button-focus-adaptive,
+	'elevation-button-hover-glow': $elevation-button-hover-glow,
 	'focus-link': $focus-link,
 	'card-shadow-light': $card-shadow-light,
 );

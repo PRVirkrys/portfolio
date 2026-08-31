@@ -38,19 +38,15 @@ const Tag = href ? 'a' : 'button';
 	{...rest}
 >
 	{
-		hasLeadingIcon && (
-			<span class="button__icon" aria-hidden="true">
-				<slot name="icon-leading" />
-			</span>
-		)
+		<span class="button__icon" aria-hidden="true">
+			{hasLeadingIcon ? <slot name="icon-leading" /> : <img src="/icons/button-link.svg" alt="" />}
+		</span>
 	}
 	<span class="button__label"><slot /></span>
 	{
-		hasTrailingIcon && (
-			<span class="button__icon" aria-hidden="true">
-				<slot name="icon-trailing" />
-			</span>
-		)
+		<span class="button__icon" aria-hidden="true">
+			{hasTrailingIcon ? <slot name="icon-trailing" /> : <img src="/icons/button-trailing.svg" alt="" />}
+		</span>
 	}
 </Tag>
 
@@ -89,6 +85,7 @@ const Tag = href ? 'a' : 'button';
 
 	.button:disabled,
 	.button[aria-disabled='true'] {
+		opacity: calc(var(--opacity-disabled) / 100);
 		cursor: not-allowed;
 		pointer-events: none;
 	}
@@ -102,6 +99,11 @@ const Tag = href ? 'a' : 'button';
 	}
 
 	.button__icon :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	.button__icon img {
 		width: 100%;
 		height: 100%;
 	}
@@ -202,9 +204,16 @@ const Tag = href ? 'a' : 'button';
 	}
 
 	.button[data-variant='secondary']:hover,
-	.button[data-variant='secondary']:active,
 	.button[data-variant='secondary']:disabled,
 	.button[data-variant='secondary'][aria-disabled='true'] {
+		--btn-overlay: var(--button-overlay-hover);
+	}
+
+	.button[data-variant='secondary']:hover {
+		--btn-shadow: var(--elevation-button-hover-glow);
+	}
+
+	.button[data-variant='secondary']:active {
 		--btn-overlay: var(--button-overlay-hover);
 	}
 
