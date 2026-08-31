@@ -1,0 +1,88 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import { works } from '../data/work-navigation';
+import Button from './ui/Button.astro';
+import ClientBubble from './ui/ClientBubble.astro';
+import Tag from './ui/Tag.astro';
+import WorkBubble from './ui/WorkBubble.astro';
+---
+
+<div class="work-navigation">
+	<div class="work-navigation__overlay" aria-hidden="true"></div>
+	<nav class="work-navigation__control" aria-label="Experiencia profesional">
+		<div class="work-navigation__bubbles">
+			{works.map((work) => <WorkBubble id={work.id} name={work.name} logo={work.logo} />)}
+		</div>
+		{works.map((work) => (
+			<section class="work-panel" id={`work-panel-${work.id}`} aria-label={`Experiencia ${work.name}`} hidden>
+				{work.clients && <div class="work-panel__clients">{work.clients.map((client) => <ClientBubble {...client} />)}</div>}
+				{work.tags && <div class="work-panel__tags">{work.tags.map((tag) => <Tag category={tag.category}>{tag.label}</Tag>)}</div>}
+				{work.ctaHref ? <Button href={work.ctaHref} variant="secondary" size="md" showLeadingIcon={false}>{work.ctaLabel}</Button> : <span class="work-panel__cta" aria-disabled="true">{work.ctaLabel}<ArrowRight /></span>}
+			</section>
+		))}
+	</nav>
+</div>
+
+<style>
+	.work-navigation { position: relative; z-index: 1; pointer-events: none; }
+	.work-navigation__control { position: relative; pointer-events: auto; }
+	.work-navigation__overlay { position: fixed; inset: 0; z-index: 45; pointer-events: none; background: var(--color-overlay-black-40); opacity: 0; transition: opacity var(--duration-medium) var(--ease-standard); }
+	.work-navigation__overlay.is-visible { opacity: 1; pointer-events: auto; }
+	:global(.header:has(.work-panel:not([hidden]))) { z-index: 50; }
+	@supports (backdrop-filter: blur(3px)) { .work-navigation__overlay.is-visible { backdrop-filter: blur(3px); } }
+	.work-navigation__bubbles { display: flex; align-items: center; }
+	.work-navigation__bubbles :global(.work-bubble) { margin-right: calc(var(--space-4) * -1 - 1px); }
+	.work-navigation__bubbles :global(.work-bubble:last-child) { margin-right: 0; }
+	.work-navigation.is-hovering .work-navigation__bubbles :global(.work-bubble:not(.is-active)) { opacity: calc(var(--opacity-disabled) / 100); }
+	.work-navigation__bubbles :global(.work-bubble.is-active) { z-index: 1; transform: scale(1.2); }
+	.work-panel { position: absolute; top: calc(var(--component-work-bubble-size) + var(--space-3)); right: 0; max-height: calc(100dvh - var(--component-work-bubble-size) - var(--space-12)); overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-6); padding: var(--space-8); background: var(--color-neutral-950); box-shadow: 0 16px 8px rgba(0, 0, 0, 0.25); }
+	.work-panel[hidden] { display: none; }
+	.work-panel__clients { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+	.work-panel__clients :global(.client-bubble) { transform-origin: left center; }
+	.work-panel__clients:hover :global(.client-bubble) { opacity: calc(var(--opacity-disabled) / 100); }
+	.work-panel__clients :global(.client-bubble:hover) { z-index: 1; opacity: 1; transform: scale(1.2); }
+	.work-panel__tags { display: flex; width: 260px; flex-wrap: wrap; justify-content: flex-start; gap: var(--space-2); }
+	.work-panel__cta { display: inline-flex; height: var(--control-md); align-items: center; justify-content: center; gap: var(--space-1); padding-inline: var(--space-6); border: var(--border-width) solid var(--button-border); border-radius: var(--radius-sm); background: var(--button-surface); box-shadow: var(--elevation-button-adaptive); color: var(--button-text); font-family: var(--typography-ui-button-font-family); font-size: 16px; font-weight: 500; opacity: calc(var(--opacity-disabled) / 100); }
+	.work-panel__cta :global(svg) { width: 18px; height: 18px; }
+	@media (max-width: 839px) { .work-panel { top: calc(var(--component-work-bubble-size) + var(--space-2)); max-width: calc(100vw - var(--space-6)); } .work-panel__tags { width: min(260px, calc(100vw - var(--space-6))); } }
+	@media (prefers-reduced-motion: reduce) { .work-navigation__overlay { transition: none; backdrop-filter: none; } }
+</style>
+
+<script>
+	const navigation = document.querySelector<HTMLElement>('.work-navigation');
+	if (navigation) {
+		const bubbles = Array.from(navigation.querySelectorAll<HTMLButtonElement>('.work-bubble'));
+		const panels = Array.from(navigation.querySelectorAll<HTMLElement>('.work-panel'));
+		const overlay = navigation.querySelector<HTMLElement>('.work-navigation__overlay');
+		if (overlay) document.body.appendChild(overlay);
+		let activeId: string | undefined;
+		const getWorkId = (bubble: HTMLButtonElement) => bubble.getAttribute('aria-controls')?.replace('work-panel-', '');
+		const setActive = (id?: string) => {
+			activeId = id;
+			navigation.classList.toggle('is-engaged', Boolean(id));
+			overlay?.classList.toggle('is-visible', Boolean(id));
+			bubbles.forEach((bubble) => {
+				const active = getWorkId(bubble) === id;
+				bubble.classList.toggle('is-active', active);
+				bubble.setAttribute('aria-expanded', String(active));
+			});
+			panels.forEach((panel) => { panel.hidden = panel.id !== `work-panel-${id}`; });
+		};
+		const setHovered = (id?: string) => {
+			navigation.classList.toggle('is-hovering', Boolean(id));
+			if (!activeId) bubbles.forEach((bubble) => bubble.classList.toggle('is-active', getWorkId(bubble) === id));
+			navigation.classList.toggle('is-engaged', Boolean(id || activeId));
+		};
+		bubbles.forEach((bubble) => {
+			bubble.addEventListener('click', () => { const id = getWorkId(bubble); setActive(activeId === id ? undefined : id); });
+			bubble.addEventListener('pointerenter', () => setHovered(getWorkId(bubble)));
+			bubble.addEventListener('focus', () => setHovered(getWorkId(bubble)));
+		});
+		navigation.addEventListener('pointerleave', () => setHovered());
+		navigation.addEventListener('focusout', (event) => { if (!navigation.contains(event.relatedTarget as Node)) setHovered(); });
+		document.addEventListener('pointerdown', (event) => { if (activeId && !navigation.contains(event.target as Node)) setActive(); });
+		document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && activeId) { const previousId = activeId; setActive(); bubbles.find((bubble) => getWorkId(bubble) === previousId)?.focus(); } });
+		navigation.addEventListener('click', (event) => { if ((event.target as Element).closest('a[href]')) setActive(); });
+		overlay?.addEventListener('click', () => setActive());
+	}
+</script>

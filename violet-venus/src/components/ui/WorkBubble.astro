@@ -1,0 +1,30 @@
+---
+import Logo from './Logo.astro';
+
+export interface Props {
+	id: 'lpa' | 'failfast' | 'pelt8' | 'pr';
+	name: string;
+	logo?: string;
+}
+
+const { id, name, logo } = Astro.props;
+---
+
+<button class:list={['work-bubble', `work-bubble--${id}`]} type="button" aria-controls={`work-panel-${id}`} aria-expanded="false" aria-label={`Explorar experiencia ${name}`}>
+	{logo ? <img src={logo} alt="" /> : <Logo class="work-bubble__brand" />}
+</button>
+
+<style>
+	.work-bubble { display: grid; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: var(--border-width) solid var(--color-base-white); border-radius: var(--radius-full); box-shadow: -4px 0 2.5px rgba(16, 16, 31, 0.25); cursor: pointer; transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+	.work-bubble--lpa { background: #0d35dc; }
+	.work-bubble--failfast { background: #ee8089; }
+	.work-bubble--pelt8 { background: #062e4a; }
+	.work-bubble--pr { background: #100c18; }
+	.work-bubble > img { width: 100%; height: 100%; object-fit: contain; border-radius: 0; }
+	.work-bubble--lpa > img { width: 73.333%; height: auto; transform: translate(4px, 1px); }
+	.work-bubble--failfast > img { width: 44%; height: auto; }
+	.work-bubble--pelt8 > img { width: 65.333%; height: 65.333%; transform: translate(1px, 1px); }
+	.work-bubble__brand { width: 80%; height: 80%; transform: translate(4px, 1px); }
+	.work-bubble:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+	@media (prefers-reduced-motion: reduce) { .work-bubble { transition: none; } }
+</style>

@@ -1,66 +1,50 @@
 ---
-import Logo from './ui/Logo.astro';
+import WorkNavigation from './WorkNavigation.astro';
+import SidebarNavigation from './SidebarNavigation.astro';
+import Button from './ui/Button.astro';
+import Tag from './ui/Tag.astro';
+import { MousePointer2, Hand, MessageCircle, Type, Settings } from '@lucide/astro';
 
-const pathname = Astro.url.pathname;
-const navigation = [
-	{ label: 'Work', href: '/', icon: '/icons/sidebar-work-default.svg', activeIcon: '/icons/sidebar-work-active.svg' },
-	{ label: 'About', href: '/about', icon: '/icons/sidebar-about.svg', activeIcon: '/icons/sidebar-about-active.svg' },
-	{ label: 'CV', href: '/cv', icon: '/icons/sidebar-cv.svg', activeIcon: '/icons/sidebar-cv-active.svg' },
-	{ label: 'Contacto', href: '/contacto', icon: '/icons/sidebar-contact.svg', activeIcon: '/icons/sidebar-contact-active.svg' },
+const selectorItems = [
+	{ label: 'Puntero', Icon: MousePointer2, active: true },
+	{ label: 'Mano', Icon: Hand },
+	{ label: 'Comentario', Icon: MessageCircle },
+	{ label: 'Texto', Icon: Type },
 ];
-
-const isActive = (href: string) => (href === '/' ? pathname === '/' || pathname.startsWith('/blog') : pathname === href);
 ---
 
-<header class="sidebar">
-	<a class="sidebar__brand" href="/" aria-label="Inicio"><Logo class="sidebar__logo" /></a>
-	<div class="sidebar__divider"></div>
-	<nav class="sidebar__navigation" aria-label="Navegación principal">
-		{navigation.map((item) => {
-			const active = isActive(item.href);
-			return (
-				<a class:list={['sidebar__item', { 'sidebar__item--active': active }]} href={item.href} aria-current={active ? 'page' : undefined}>
-					<span class="sidebar__icon"><img src={active ? item.activeIcon : item.icon} alt="" /></span>
-					<span>{item.label}</span>
-				</a>
-			);
-		})}
+
+<header class="header">
+	<Tag category="Neutral" size="md" class="header__identity">PAULA RODAS · DESIGNER · SINCE 2015</Tag>
+	<nav class="header__selector" aria-label="Herramientas de diseño">
+		{selectorItems.map(({ label, Icon, active }) => (
+			<button class:list={['header__selector-item', active && 'header__selector-item--active']} type="button" aria-label={label} aria-pressed={active ? 'true' : 'false'}>
+				<Icon />
+			</button>
+		))}
 	</nav>
-	<div class="sidebar__spacer"></div>
-	<div class="sidebar__divider"></div>
-	<div class="sidebar__social" aria-label="Canales de contacto">
-		<a href="mailto:bypaularodas@gmail.com" aria-label="Enviar correo a Paula Rodas"><img src="/icons/sidebar-email.svg" alt="" /></a>
-		<a href="https://github.com/PRVirkrys" target="_blank" rel="noreferrer" aria-label="Abrir GitHub de Paula Rodas"><img src="/icons/sidebar-github.svg" alt="" /></a>
-		<a href="https://www.linkedin.com/in/paularodas/" target="_blank" rel="noreferrer" aria-label="Abrir LinkedIn de Paula Rodas"><img src="/icons/sidebar-linkedin.svg" alt="" /></a>
+	<div class="header__actions">
+		<WorkNavigation />
+		<Button href="/" size="lg" showLeadingIcon={false}>See all my work</Button>
+		<a class="header__icon-action" href="/contacto" aria-label="Contacto"><Settings /></a>
 	</div>
 </header>
 
+<SidebarNavigation />
+
 <style>
-	.sidebar { box-sizing: border-box; display: flex; position: fixed; inset: 0 auto 0 0; z-index: 10; width: var(--component-sidebar-width); min-height: 100dvh; flex-direction: column; align-items: center; gap: var(--space-6); padding: var(--space-4); background: var(--sidebar-surface); border-right: var(--border-width) solid var(--sidebar-border); }
-	.sidebar__brand { display: grid; width: 60px; height: 60px; place-items: center; }
-	.sidebar__brand:hover { color: inherit; }
-	.sidebar__logo { width: 40px; height: 35px; }
-	.sidebar__divider { width: 48px; height: var(--border-width); background: var(--sidebar-divider); }
-	.sidebar__navigation, .sidebar__social { display: flex; width: 80px; flex-direction: column; gap: var(--space-3); }
-	.sidebar__item { display: flex; width: 80px; height: 80px; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); border-radius: var(--radius-lg); color: var(--sidebar-item-text-default); font-family: var(--typography-ui-link-md-font-family); font-size: 12px; font-weight: 500; line-height: 18px; text-decoration: none; transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard); }
-	.sidebar__icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: var(--radius-md); }
-	.sidebar__icon img { width: 22px; height: 22px; }
-	.sidebar__item:hover { color: var(--sidebar-item-text-default); }
-	.sidebar__item:hover .sidebar__icon { background: var(--color-action-secondary-bg-hover); }
-	.sidebar__item--active { color: var(--sidebar-item-text-active); }
-	.sidebar__item--active .sidebar__icon { background: var(--sidebar-item-icon-surface-active); }
-	.sidebar__item:focus-visible, .sidebar__social a:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: 2px; }
-	.sidebar__spacer { flex: 1; min-height: var(--space-4); }
-	.sidebar__social { align-items: center; }
-	.sidebar__social a, .sidebar__social span { display: grid; width: 80px; height: 40px; place-items: center; border-radius: var(--radius-lg); }
-	.sidebar__social img { width: 20px; height: 20px; }
-	.sidebar__social a:hover { background: var(--color-action-secondary-bg-hover); }
-	@media (max-width: 839px) {
-		.sidebar { inset: auto 0 0 0; width: 100%; min-height: auto; flex-direction: row; justify-content: center; gap: 0; padding: var(--space-2); border-top: var(--border-width) solid var(--sidebar-border); border-right: 0; }
-		.sidebar__brand, .sidebar__divider, .sidebar__spacer, .sidebar__social { display: none; }
-		.sidebar__navigation { width: min(100%, 480px); flex-direction: row; justify-content: space-between; gap: 0; }
-		.sidebar__item { width: 25%; height: 68px; font-size: 11px; }
-		.sidebar__icon { width: 40px; height: 40px; }
-		.sidebar__icon img { width: 20px; height: 20px; }
-	}
+	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-8) var(--gutter-desktop); pointer-events: none; }
+	.header > * { pointer-events: auto; }
+	.header__identity { flex: 0 0 auto; opacity: calc(var(--opacity-disabled) / 100); }
+	.header__selector { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-action-secondary-bg); }
+	.header__selector-item { display: grid; width: var(--control-md); height: var(--control-md); place-items: center; padding: var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-base-white); cursor: pointer; }
+	.header__selector-item--active { background: var(--sidebar-item-text-active); }
+	.header__selector-item :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
+	.header__selector-item:focus-visible, .header__icon-action:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); margin-left: auto; }
+	.header__icon-action { display: grid; width: var(--control-lg); height: var(--control-lg); place-items: center; border-radius: var(--radius-sm); box-shadow: var(--elevation-button-adaptive); color: var(--color-base-white); }
+	.header__icon-action:hover { background: var(--color-action-secondary-bg-hover); }
+	.header__icon-action :global(svg) { width: var(--icon-lg); height: var(--icon-lg); }
+	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header__identity { display: none; } }
+	@media (max-width: 839px) { .header { left: 0; padding: var(--space-3); } .header__selector, .header__actions > :global(.button), .header__icon-action { display: none; } .header__actions { gap: 0; } }
 </style>

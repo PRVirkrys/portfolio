@@ -1,0 +1,37 @@
+---
+import type { Client } from '../../data/work-navigation';
+
+export interface Props extends Client {}
+
+const { name, logo, logos, logoClass, href, surface = 'light' } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class:list={['client-bubble', `client-bubble--${surface}`]} href={href} aria-label={href ? `Ver case study de ${name}` : `${name}: case study próximamente`} aria-disabled={href ? undefined : 'true'}>
+	{logos ? <span class:list={['client-bubble__hedgepilot', logoClass]}>{logos.map((asset) => <img src={asset} alt="" />)}</span> : logo ? <img class={logoClass} src={logo} alt="" /> : <span class="client-bubble__emoji" aria-hidden="true">🪼</span>}
+</Tag>
+
+<style>
+	.client-bubble { display: grid; position: relative; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: var(--border-width) solid var(--color-surface); border-radius: var(--radius-full); box-shadow: 0 -4px 2px rgba(0, 0, 0, 0.25); transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard); }
+	.client-bubble--light { background: #fff; }
+	.client-bubble--cyan { background: #73ebff; }
+	.client-bubble--navy { background: #07152e; }
+	.client-bubble--asset { border: 0; background: transparent; }
+	.client-bubble img { max-width: none; height: auto; border-radius: 0; }
+	.client-bubble__logo--lms { width: 59px; }
+	.client-bubble__logo--base { width: 42px; }
+	.client-bubble__logo--uoc { width: 54px; }
+	.client-bubble__logo--asset { width: 100%; height: 100%; object-fit: cover; }
+	.client-bubble__logo--barca { width: 41px; }
+	.client-bubble__logo--timechef { width: 50px; border-radius: var(--radius-full); }
+	.client-bubble__logo--capmatix { width: 57px; }
+	.client-bubble__logo--hedgepilot { width: 54px; }
+	.client-bubble__hedgepilot { position: relative; width: 54px; height: 10px; }
+	.client-bubble__hedgepilot img { position: absolute; height: auto; }
+	.client-bubble__hedgepilot img:nth-child(1) { bottom: 0; left: 20.31%; width: 48.03%; }
+	.client-bubble__hedgepilot img:nth-child(2) { top: 12.66%; right: 0; width: 29.43%; }
+	.client-bubble__hedgepilot img:nth-child(3) { top: 0; left: 0; width: 16.36%; }
+	.client-bubble__emoji { font-size: 36px; line-height: 48px; }
+	.client-bubble[href]:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+	@media (prefers-reduced-motion: reduce) { .client-bubble { transition: none; } }
+</style>

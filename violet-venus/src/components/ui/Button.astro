@@ -2,12 +2,16 @@
 // Figma: PR Brand (DS) → UI kit → Button (node 15629:62)
 // Primary keeps the Legacy/Button-primary-01 gradient border; hover, pressed,
 // and focus use the reversed gradient orientation (see gradient tokens).
+import { Link2, ArrowRight } from '@lucide/astro';
+
 export interface Props {
 	variant?: 'primary' | 'secondary' | 'ghost';
 	size?: 'md' | 'lg';
 	href?: string;
 	type?: 'button' | 'submit' | 'reset';
 	disabled?: boolean;
+	showLeadingIcon?: boolean;
+	showTrailingIcon?: boolean;
 	class?: string;
 }
 
@@ -17,6 +21,8 @@ const {
 	href,
 	type = 'button',
 	disabled = false,
+	showLeadingIcon = true,
+	showTrailingIcon = true,
 	class: className,
 	...rest
 } = Astro.props;
@@ -38,14 +44,16 @@ const Tag = href ? 'a' : 'button';
 	{...rest}
 >
 	{
+		showLeadingIcon &&
 		<span class="button__icon" aria-hidden="true">
-			{hasLeadingIcon ? <slot name="icon-leading" /> : <img src="/icons/button-link.svg" alt="" />}
+			{hasLeadingIcon ? <slot name="icon-leading" /> : <Link2 />}
 		</span>
 	}
 	<span class="button__label"><slot /></span>
 	{
+		showTrailingIcon &&
 		<span class="button__icon" aria-hidden="true">
-			{hasTrailingIcon ? <slot name="icon-trailing" /> : <img src="/icons/button-trailing.svg" alt="" />}
+			{hasTrailingIcon ? <slot name="icon-trailing" /> : <ArrowRight />}
 		</span>
 	}
 </Tag>

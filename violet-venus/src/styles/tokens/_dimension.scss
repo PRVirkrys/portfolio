@@ -50,6 +50,7 @@ $component-field-height-lg: 56px;
 $component-textarea-height-md: 144px;
 $component-textarea-height-lg: 176px;
 $component-sidebar-width: 112px;
+$component-work-bubble-size: 60px;
 
 $dimension: (
 	'space-0': $space-0,
@@ -92,4 +93,5 @@ $dimension: (
 	'component-textarea-height-md': $component-textarea-height-md,
 	'component-textarea-height-lg': $component-textarea-height-lg,
 	'component-sidebar-width': $component-sidebar-width,
+	'component-work-bubble-size': $component-work-bubble-size,
 );
