@@ -1,14 +1,18 @@
 ---
+import { MonitorCloud, PanelsTopLeft, Workflow, Component, CodeXml, Monitor } from '@lucide/astro';
 import type { Client } from '../../data/work-navigation';
 
 export interface Props extends Client {}
 
-const { name, logo, logos, logoClass, href, surface = 'light' } = Astro.props;
+const ICONS: Record<string, any> = { MonitorCloud, PanelsTopLeft, Workflow, Component, CodeXml, Monitor };
+
+const { name, logo, logos, logoClass, icon, href, surface = 'light' } = Astro.props;
 const Tag = href ? 'a' : 'span';
+const Icon = icon ? ICONS[icon] : undefined;
 ---
 
-<Tag class:list={['client-bubble', `client-bubble--${surface}`]} href={href} aria-label={href ? `Ver case study de ${name}` : `${name}: case study próximamente`} aria-disabled={href ? undefined : 'true'}>
-	{logos ? <span class:list={['client-bubble__hedgepilot', logoClass]}>{logos.map((asset) => <img src={asset} alt="" />)}</span> : logo ? <img class={logoClass} src={logo} alt="" /> : <span class="client-bubble__emoji" aria-hidden="true">🪼</span>}
+<Tag class:list={['client-bubble', `client-bubble--${surface}`]} href={href} aria-label={href ? `Ver case study de ${name}` : name} aria-disabled={href ? undefined : 'true'}>
+	{Icon ? <Icon /> : logos ? <span class:list={['client-bubble__hedgepilot', logoClass]}>{logos.map((asset) => <img src={asset} alt="" />)}</span> : logo ? <img class={logoClass} src={logo} alt="" /> : <span class="client-bubble__emoji" aria-hidden="true">🪼</span>}
 </Tag>
 
 <style>
@@ -16,9 +20,12 @@ const Tag = href ? 'a' : 'span';
 	.client-bubble--light { background: #fff; }
 	.client-bubble--cyan { background: #73ebff; }
 	.client-bubble--navy { background: #07152e; }
+	.client-bubble--teal { background: #45c9b2; border-color: #062e4a; }
+	.client-bubble--deep { background: #062e4a; border-color: #062e4a; }
 	.client-bubble--asset { border: 0; background: transparent; }
+	.client-bubble :global(svg) { width: 31.5px; height: 31.5px; color: var(--color-base-white); }
 	.client-bubble img { max-width: none; height: auto; border-radius: 0; }
-	.client-bubble__logo--lms { width: 59px; }
+	.client-bubble__logo--lms { width:45px; }
 	.client-bubble__logo--base { width: 42px; }
 	.client-bubble__logo--uoc { width: 54px; }
 	.client-bubble__logo--asset { width: 100%; height: 100%; object-fit: cover; }

@@ -35,7 +35,7 @@ const selectorItems = [
 <style>
 	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-8) var(--gutter-desktop); pointer-events: none; }
 	.header > * { pointer-events: auto; }
-	.header__identity { flex: 0 0 auto; opacity: calc(var(--opacity-disabled) / 100); }
+	.header > :global(.header__identity) { flex: 0 0 auto; opacity: 75%; }
 	.header__selector { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-action-secondary-bg); }
 	.header__selector-item { display: grid; width: var(--control-md); height: var(--control-md); place-items: center; padding: var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-base-white); cursor: pointer; }
 	.header__selector-item--active { background: var(--sidebar-item-text-active); }

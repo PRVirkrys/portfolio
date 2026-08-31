@@ -20,7 +20,7 @@ const { category = 'Research', size = 'sm', class: className } = Astro.props;
 	.tag[data-category='UI Design'] { --tag-color: #f06faf; }
 	.tag[data-category='Engineering'] { --tag-color: #3ed598; }
 	.tag[data-category='Design Systems'] { --tag-color: #ffcd2b; }
-	.tag[data-category='Neutral'] { --tag-color: var(--color-surface); background: transparent; }
+	.tag[data-category='Neutral'] { --tag-color: var(--color-base-white); background: transparent; }
 	.tag[data-size='md'] { height: 36px; padding-inline: var(--space-4); font-size: 14px; line-height: 20px; }
 	.tag:hover { background-color: color-mix(in srgb, var(--tag-color) 12.2%, rgba(255, 255, 255, 0.07)); }
 	@media (prefers-reduced-motion: reduce) { .tag { transition: none; } }

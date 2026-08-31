@@ -4,11 +4,13 @@ export type TagCategory = 'Research' | 'Strategy' | 'UX Design' | 'UI Design' | 
 
 export type Client = {
 	name: string;
-	logo: string;
+	label?: string;
+	logo?: string;
 	logos?: string[];
 	logoClass?: string;
+	icon?: string;
 	href?: string;
-	surface?: 'light' | 'cyan' | 'navy' | 'asset';
+	surface?: 'light' | 'cyan' | 'navy' | 'asset' | 'teal' | 'deep';
 };
 
 export type Work = {
@@ -16,7 +18,6 @@ export type Work = {
 	name: string;
 	logo?: string;
 	clients?: Client[];
-	tags?: { label: string; category: TagCategory }[];
 	ctaLabel: string;
 	ctaHref?: string;
 };
@@ -37,7 +38,7 @@ export const works: Work[] = [
 		name: 'FailFast',
 		logo: iconUrl('work-failfast.svg'),
 		clients: [
-			{ name: 'LMS', logo: iconUrl('client-lms.png'), logoClass: 'client-bubble__logo--lms', href: '/blog/caso-estudio-onboarding/', surface: 'light' },
+			{ name: 'LMS', label: 'La Meva Salut', logo: iconUrl('client-lms.png'), logoClass: 'client-bubble__logo--lms', href: '/blog/caso-estudio-onboarding/', surface: 'light' },
 			{ name: 'Base', logo: iconUrl('client-base.png'), logoClass: 'client-bubble__logo--base', surface: 'light' },
 			{ name: 'UOC', logo: iconUrl('client-uoc.svg'), logoClass: 'client-bubble__logo--uoc', surface: 'cyan' },
 			{ name: 'HSJD', logo: iconUrl('client-hsjd.svg'), logoClass: 'client-bubble__logo--asset', surface: 'asset' },
@@ -50,22 +51,13 @@ export const works: Work[] = [
 		id: 'pelt8',
 		name: 'Pelt8',
 		logo: iconUrl('work-pelt8.svg'),
-		tags: [
-			{ label: 'ESG reporting', category: 'Research' },
-			{ label: 'B2B SaaS', category: 'Strategy' },
-			{ label: 'Information architecture', category: 'UX Design' },
-			{ label: 'Complex flows', category: 'UX Design' },
-			{ label: 'Metrics & reporting', category: 'UX Design' },
-			{ label: 'Product UX/UI', category: 'UI Design' },
-			{ label: 'Data dashboards', category: 'UI Design' },
-			{ label: 'Design system', category: 'Design Systems' },
-			{ label: 'Components & docs', category: 'Design Systems' },
-			{ label: 'Engineering collaboration', category: 'Engineering' },
-			{ label: 'UX & visual QA', category: 'UI Design' },
-			{ label: 'Framer + CMS', category: 'Engineering' },
-			{ label: 'No-code automations', category: 'Engineering' },
-			{ label: 'HTML/CSS emails', category: 'Engineering' },
-			{ label: 'Brand identity', category: 'Strategy' },
+		clients: [
+			{ name: 'ESG B2B SaaS', icon: 'MonitorCloud', surface: 'teal' },
+			{ name: 'Product UX/UI', icon: 'PanelsTopLeft', surface: 'deep' },
+			{ name: 'Complex data flows', icon: 'Workflow', surface: 'teal' },
+			{ name: 'Design System', icon: 'Component', surface: 'deep' },
+			{ name: 'Engineering collaboration', icon: 'CodeXml', surface: 'teal' },
+			{ name: 'Brand & Website', icon: 'Monitor', surface: 'deep' },
 		],
 		ctaLabel: 'See case study',
 	},

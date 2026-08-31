@@ -1,7 +1,6 @@
 ---
 import { ArrowRight } from '@lucide/astro';
 import { works } from '../data/work-navigation';
-import Button from './ui/Button.astro';
 import ClientBubble from './ui/ClientBubble.astro';
 import Tag from './ui/Tag.astro';
 import WorkBubble from './ui/WorkBubble.astro';
@@ -15,9 +14,15 @@ import WorkBubble from './ui/WorkBubble.astro';
 		</div>
 		{works.map((work) => (
 			<section class="work-panel" id={`work-panel-${work.id}`} aria-label={`Experiencia ${work.name}`} hidden>
-				{work.clients && <div class="work-panel__clients">{work.clients.map((client) => <ClientBubble {...client} />)}</div>}
-				{work.tags && <div class="work-panel__tags">{work.tags.map((tag) => <Tag category={tag.category}>{tag.label}</Tag>)}</div>}
-				{work.ctaHref ? <Button href={work.ctaHref} variant="secondary" size="md" showLeadingIcon={false}>{work.ctaLabel}</Button> : <span class="work-panel__cta" aria-disabled="true">{work.ctaLabel}<ArrowRight /></span>}
+				{work.clients && <div class="work-panel__clients">{work.clients.map((client) => (
+					<div class="work-panel__client">
+						<ClientBubble {...client} />
+						<Tag category="Neutral" size="md" class="work-panel__label-tag">{client.label ?? client.name}</Tag>
+					</div>
+				))}</div>}
+				{work.ctaHref
+					? <a class="work-panel__cta" href={work.ctaHref} aria-label={work.ctaLabel}><ArrowRight /><Tag category="Neutral" size="md" class="work-panel__label-tag">See all</Tag></a>
+					: <span class="work-panel__cta" aria-disabled="true" aria-label={work.ctaLabel}><ArrowRight /><Tag category="Neutral" size="md" class="work-panel__label-tag">See all</Tag></span>}
 			</section>
 		))}
 	</nav>
@@ -26,26 +31,33 @@ import WorkBubble from './ui/WorkBubble.astro';
 <style>
 	.work-navigation { position: relative; z-index: 1; pointer-events: none; }
 	.work-navigation__control { position: relative; pointer-events: auto; }
-	.work-navigation__overlay { position: fixed; inset: 0; z-index: 45; pointer-events: none; background: var(--color-overlay-black-40); opacity: 0; transition: opacity var(--duration-medium) var(--ease-standard); }
+	.work-navigation__overlay { position: fixed; inset: 0; z-index: 45; pointer-events: none; background: linear-gradient(to top, rgba(16, 16, 31, 0.2), rgba(69, 69, 133, 0.2)); opacity: 0; transition: opacity var(--duration-medium) var(--ease-standard); }
 	.work-navigation__overlay.is-visible { opacity: 1; pointer-events: auto; }
 	:global(.header:has(.work-panel:not([hidden]))) { z-index: 50; }
-	@supports (backdrop-filter: blur(3px)) { .work-navigation__overlay.is-visible { backdrop-filter: blur(3px); } }
+	@supports (backdrop-filter: blur(5.5px)) { .work-navigation__overlay.is-visible { backdrop-filter: blur(5.5px); } }
 	.work-navigation__bubbles { display: flex; align-items: center; }
 	.work-navigation__bubbles :global(.work-bubble) { margin-right: calc(var(--space-4) * -1 - 1px); }
 	.work-navigation__bubbles :global(.work-bubble:last-child) { margin-right: 0; }
-	.work-navigation.is-hovering .work-navigation__bubbles :global(.work-bubble:not(.is-active)) { opacity: calc(var(--opacity-disabled) / 100); }
-	.work-navigation__bubbles :global(.work-bubble.is-active) { z-index: 1; transform: scale(1.2); }
-	.work-panel { position: absolute; top: calc(var(--component-work-bubble-size) + var(--space-3)); right: 0; max-height: calc(100dvh - var(--component-work-bubble-size) - var(--space-12)); overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-6); padding: var(--space-8); background: var(--color-neutral-950); box-shadow: 0 16px 8px rgba(0, 0, 0, 0.25); }
+	.work-navigation:is(.is-hovering, .is-engaged) .work-navigation__bubbles :global(.work-bubble:not(.is-active)) { opacity: calc(var(--opacity-disabled) / 100); }
+	.work-navigation__bubbles :global(.work-bubble.is-active) { z-index: 3; transform: scale(1.2); }
+	.work-navigation__bubbles :global(.work-bubble.is-active + .work-bubble) { z-index: 4; }
+	.work-panel { --wb-step: calc(var(--component-work-bubble-size) - var(--space-4) - 1px); position: absolute; top: calc(var(--space-2) * -1); z-index: 2; width: auto; min-width: calc(var(--component-work-bubble-size) + var(--space-2) * 2); overflow: visible; display: flex; flex-direction: column; align-items: center; gap: var(--space-6); padding: var(--space-2); padding-top: calc(var(--component-work-bubble-size) + var(--space-6) + var(--space-2)); background: var(--color-neutral-950); border-radius: var(--radius-full); }
 	.work-panel[hidden] { display: none; }
-	.work-panel__clients { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
-	.work-panel__clients :global(.client-bubble) { transform-origin: left center; }
+	#work-panel-lpa { left: calc(0 * var(--wb-step) - var(--space-2)); }
+	#work-panel-failfast { left: calc(1 * var(--wb-step) - var(--space-2)); }
+	#work-panel-pelt8 { left: calc(2 * var(--wb-step) - var(--space-2)); }
+	#work-panel-pr { left: calc(3 * var(--wb-step) - var(--space-2)); }
+	.work-panel__clients { display: flex; flex-direction: column; align-items: center; gap: var(--space-6); overflow: visible; }
 	.work-panel__clients:hover :global(.client-bubble) { opacity: calc(var(--opacity-disabled) / 100); }
 	.work-panel__clients :global(.client-bubble:hover) { z-index: 1; opacity: 1; transform: scale(1.2); }
-	.work-panel__tags { display: flex; width: 260px; flex-wrap: wrap; justify-content: flex-start; gap: var(--space-2); }
-	.work-panel__cta { display: inline-flex; height: var(--control-md); align-items: center; justify-content: center; gap: var(--space-1); padding-inline: var(--space-6); border: var(--border-width) solid var(--button-border); border-radius: var(--radius-sm); background: var(--button-surface); box-shadow: var(--elevation-button-adaptive); color: var(--button-text); font-family: var(--typography-ui-button-font-family); font-size: 16px; font-weight: 500; opacity: calc(var(--opacity-disabled) / 100); }
-	.work-panel__cta :global(svg) { width: 18px; height: 18px; }
-	@media (max-width: 839px) { .work-panel { top: calc(var(--component-work-bubble-size) + var(--space-2)); max-width: calc(100vw - var(--space-6)); } .work-panel__tags { width: min(260px, calc(100vw - var(--space-6))); } }
-	@media (prefers-reduced-motion: reduce) { .work-navigation__overlay { transition: none; backdrop-filter: none; } }
+	.work-panel__client { position: relative; display: flex; }
+	:is(.work-panel__client, .work-panel__cta) :global(.work-panel__label-tag) { --tag-color: var(--color-base-white); position: absolute; top: 50%; left: calc(100% + var(--space-3)); transform: translateY(-50%); opacity: 0; pointer-events: none; text-transform: uppercase; letter-spacing: 1.4px; white-space: nowrap; transition: opacity var(--duration-fast) var(--ease-standard); }
+	:is(.work-panel__client, .work-panel__cta):hover :global(.work-panel__label-tag), :is(.work-panel__client, .work-panel__cta):focus-within :global(.work-panel__label-tag) { opacity: 1; }
+	.work-panel__cta { display: flex; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); flex: 0 0 auto; align-items: center; justify-content: center; border: var(--border-width) solid var(--color-base-white); border-radius: var(--radius-full); background: var(--color-neutral-950); box-shadow: 0 -4px 2px rgba(0, 0, 0, 0.25); color: var(--color-base-white); }
+	.work-panel__cta { position: relative; }
+	.work-panel__cta :global(svg) { width: var(--icon-lg); height: var(--icon-lg); transition: transform var(--duration-fast) var(--ease-standard); }
+	.work-panel__cta:hover :global(svg), .work-panel__cta:focus-visible :global(svg) { transform: translateX(25%); }
+	@media (prefers-reduced-motion: reduce) { .work-navigation__overlay { transition: none; backdrop-filter: none; } .work-panel__cta :global(svg) { transition: none; } .work-panel__cta:hover :global(svg) { transform: none; } }
 </style>
 
 <script>
