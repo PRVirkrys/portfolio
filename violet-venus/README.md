@@ -1,63 +1,70 @@
-# Astro Starter Kit: Blog
+# Violet Venus
 
-```sh
-npm create astro@latest -- --template blog
-```
+Portfolio personal construido con Astro. El proyecto reune una presentacion profesional, CV, informacion de contacto, casos de estudio y un blog, con una base de componentes reutilizables y estilos propios.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Tecnologias
 
-Features:
+- [Astro](https://astro.build/) como framework principal.
+- TypeScript, HTML y Sass para la interfaz y los estilos.
+- Tailwind CSS para utilidades de estilo.
+- React para los componentes que necesiten interactividad.
+- MDX y Content Collections para el blog.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Estructura
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+src/
+├── assets/       Imagenes, logos e iconos del portfolio
+├── components/   Cabecera, pie, navegacion y componentes de interfaz
+├── content/      Entradas del blog y casos de estudio
+├── data/         Datos reutilizables, como la navegacion de proyectos
+├── layouts/      Plantillas compartidas para contenido editorial
+├── pages/        Rutas del sitio
+└── styles/       Estilos globales y tokens de diseno
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Las rutas principales viven en `src/pages/`:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- `/` Inicio.
+- `/about` Perfil profesional.
+- `/cv` Curriculum vitae.
+- `/contacto` Contacto.
+- `/blog` Blog y casos de estudio.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+## Desarrollo local
 
-Any static assets, like images, can be placed in the `public/` directory.
+Requiere Node.js 22.12 o superior. La version usada en el proyecto es Node 22.23.2.
 
-## 🧞 Commands
+```bash
+npm install
+npm run dev
+```
 
-All commands are run from the root of the project, from a terminal:
+El sitio estara disponible en `http://localhost:4321`.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Comandos
 
-## 👀 Want to learn more?
+| Comando | Descripcion |
+| --- | --- |
+| `npm run dev` | Inicia el entorno de desarrollo. |
+| `npm run build` | Genera la version de produccion en `dist/`. |
+| `npm run preview` | Sirve localmente la version generada. |
+| `npm run astro -- --help` | Muestra la ayuda de Astro. |
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Contenido y personalizacion
 
-## Credit
+- Actualiza la informacion general del sitio en `src/consts.ts`.
+- Edita las paginas del portfolio en `src/pages/`.
+- Anade o modifica articulos en `src/content/blog/`.
+- Ajusta la identidad visual mediante los tokens de `src/styles/tokens/`.
+- Guarda imagenes y recursos visuales en `src/assets/`.
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+## Despliegue
+
+Antes de publicar, define la URL final del sitio en `astro.config.mjs` y ejecuta:
+
+```bash
+npm run build
+```
+
+Astro generara los archivos estaticos listos para desplegar desde `dist/`.
