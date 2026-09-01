@@ -138,6 +138,23 @@ $sidebar-item-icon-surface-active--dark: rgba(157, 118, 253, 0.1);
 $logo-safety-surface: p.$color-neutral-950;
 $logo-safety-surface--dark: p.$color-neutral-950;
 
+// Home hero (Figma: op2, node 15993:35251). The scrim mirrors Figma's own
+// technique rather than copying its dark-only values: a near-bg gradient
+// blended over the dot pattern to fade it out near the text. Dark uses its
+// exact Figma colors — both stops are now color-neutral-950 (rgb(16,16,31)),
+// opaque then at 50% — with mix-blend-mode darken; light inverts both the
+// colors (near-white) and the blend mode (lighten) — darken would just
+// muddy a light background instead of softening it. Figma only specifies
+// the dark version; light is our own mirrored equivalent, not a pulled value.
+$hero-dot-color: p.$color-brand-purple-500;
+$hero-dot-color--dark: #b07ddf;
+$hero-scrim-start: rgb(244, 244, 245);
+$hero-scrim-start--dark: p.$color-neutral-950;
+$hero-scrim-mid: rgba(244, 244, 245, 0.5);
+$hero-scrim-mid--dark: rgba(p.$color-neutral-950, 0.5);
+$hero-scrim-blend: lighten;
+$hero-scrim-blend--dark: darken;
+
 // Field tokens reference other Semantic tokens above rather than Primitive directly.
 $field-surface: $color-surface;
 $field-surface--dark: $color-surface--dark;
@@ -241,6 +258,10 @@ $semantic-light: (
 	'sidebar-item-text-active': $sidebar-item-text-active,
 	'sidebar-item-icon-surface-active': $sidebar-item-icon-surface-active,
 	'logo-safety-surface': $logo-safety-surface,
+	'hero-dot-color': $hero-dot-color,
+	'hero-scrim-start': $hero-scrim-start,
+	'hero-scrim-mid': $hero-scrim-mid,
+	'hero-scrim-blend': $hero-scrim-blend,
 	'field-surface': $field-surface,
 	'field-text': $field-text,
 	'field-placeholder': $field-placeholder,
@@ -319,6 +340,10 @@ $semantic-dark: (
 	'sidebar-item-text-active': $sidebar-item-text-active--dark,
 	'sidebar-item-icon-surface-active': $sidebar-item-icon-surface-active--dark,
 	'logo-safety-surface': $logo-safety-surface--dark,
+	'hero-dot-color': $hero-dot-color--dark,
+	'hero-scrim-start': $hero-scrim-start--dark,
+	'hero-scrim-mid': $hero-scrim-mid--dark,
+	'hero-scrim-blend': $hero-scrim-blend--dark,
 	'field-surface': $field-surface--dark,
 	'field-text': $field-text--dark,
 	'field-placeholder': $field-placeholder--dark,
