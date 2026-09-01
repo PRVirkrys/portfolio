@@ -114,7 +114,7 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	.text-link::after {
 		content: '';
 		display: block;
-		height: 1px;
+		height: calc(1px * var(--ui-scale));
 		background-image: var(--gradient-link-underline);
 		background-repeat: repeat-x;
 		background-size: 200% 100%;
@@ -127,7 +127,7 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	.text-link:hover::after,
 	.text-link:focus-visible::after,
 	.text-link:active::after {
-		height: 2px;
+		height: calc(2px * var(--ui-scale));
 	}
 
 	/* Only hover starts the slide — focus-visible and :active leave
@@ -144,7 +144,7 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	}
 
 	.text-link[aria-disabled='true']::after {
-		height: 1px;
+		height: calc(1px * var(--ui-scale));
 		background-image: none;
 		background-color: var(--link-text);
 		animation: none;

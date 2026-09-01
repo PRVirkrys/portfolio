@@ -14,14 +14,14 @@ const { category = 'Research', size = 'sm', class: className } = Astro.props;
 <span class:list={['tag', className]} data-category={category} data-size={size}><slot /></span>
 
 <style>
-	.tag { --tag-color: #45bfe1; display: inline-flex; height: 28px; align-items: center; justify-content: center; padding-inline: var(--space-3); border: var(--border-width) solid var(--tag-color); border-radius: var(--radius-full); background: color-mix(in srgb, var(--tag-color) 12.2%, transparent); box-shadow: 0 var(--space-1) var(--space-2) rgba(0, 0, 0, 0.12); color: var(--tag-color); font-family: var(--typography-ui-link-md-font-family); font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap; transition: background-color var(--duration-fast) var(--ease-standard); }
+	.tag { --tag-color: #45bfe1; display: inline-flex; height: calc(28px * var(--ui-scale)); align-items: center; justify-content: center; padding-inline: var(--space-3); border: var(--border-width) solid var(--tag-color); border-radius: var(--radius-full); background: color-mix(in srgb, var(--tag-color) 12.2%, transparent); box-shadow: 0 var(--space-1) var(--space-2) rgba(0, 0, 0, 0.12); color: var(--tag-color); font-family: var(--typography-ui-link-md-font-family); font-size: calc(12px * var(--ui-scale)); font-weight: 500; line-height: calc(16px * var(--ui-scale)); white-space: nowrap; transition: background-color var(--duration-fast) var(--ease-standard); }
 	.tag[data-category='Strategy'] { --tag-color: #5b8cff; }
 	.tag[data-category='UX Design'] { --tag-color: #9d76fd; }
 	.tag[data-category='UI Design'] { --tag-color: #f06faf; }
 	.tag[data-category='Engineering'] { --tag-color: #3ed598; }
 	.tag[data-category='Design Systems'] { --tag-color: #ffcd2b; }
 	.tag[data-category='Neutral'] { --tag-color: var(--color-base-white); background: transparent; }
-	.tag[data-size='md'] { height: 36px; padding-inline: var(--space-4); font-size: 14px; line-height: 20px; }
+	.tag[data-size='md'] { height: calc(36px * var(--ui-scale)); padding-inline: var(--space-4); font-size: calc(14px * var(--ui-scale)); line-height: calc(20px * var(--ui-scale)); }
 	.tag:hover { background-color: color-mix(in srgb, var(--tag-color) 12.2%, rgba(255, 255, 255, 0.07)); }
 	@media (prefers-reduced-motion: reduce) { .tag { transition: none; } }
 </style>

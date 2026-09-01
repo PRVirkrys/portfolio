@@ -8,26 +8,40 @@
 @use 'effect' as e;
 @use 'typography' as t;
 @use 'motion' as m;
+@use 'scale' as sc;
 
-@mixin custom-properties($map) {
+@mixin custom-properties($map, $scaled: false) {
 	@each $name, $value in $map {
-		--#{$name}: #{$value};
+		@if $scaled {
+			--#{$name}: #{sc.scale-px($value)};
+		} @else {
+			--#{$name}: #{$value};
+		}
 	}
 }
 
 // Typography tokens are nested maps (one map of properties per style name),
-// so they need their own loop to emit --typography-{name}-{property}.
+// so they need their own loop to emit --typography-{name}-{property}. Each
+// property is run through scale-px too — it only touches the px-valued ones
+// (font-size, some line-heights/letter-spacings); unitless ratios and
+// keywords pass through untouched.
 @mixin typography-custom-properties($map) {
 	@each $name, $props in $map {
 		@each $prop, $value in $props {
-			--typography-#{$name}-#{$prop}: #{$value};
+			--typography-#{$name}-#{$prop}: #{sc.scale-px($value)};
 		}
 	}
 }
 
 :root {
+	// Exposes the same multiplier scale-px() uses at compile time, as a real
+	// CSS custom property. Component <style> blocks are plain CSS (no Sass),
+	// so a one-off size that isn't worth promoting to a shared dimension
+	// token scales itself with calc(Npx * var(--ui-scale)) instead of
+	// duplicating the 0.9 constant by hand.
+	--ui-scale: #{sc.$ui-scale};
 	@include custom-properties(p.$primitive);
-	@include custom-properties(d.$dimension);
+	@include custom-properties(d.$dimension, $scaled: true);
 	@include custom-properties(s.$semantic-light);
 	@include custom-properties(g.$gradient);
 	@include custom-properties(e.$effect);

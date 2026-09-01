@@ -1,0 +1,21 @@
+// Global UI density scale.
+//
+// The Figma-sourced values in dimension.scss and typography.scss stay
+// untouched (they must keep matching Figma 1:1). This single multiplier is
+// applied at the point those tokens are emitted as CSS custom properties
+// (see tokens.scss), so the whole system reads ~10% smaller without hand
+// editing every value or leaning on a breakpoint-gated `zoom` hack.
+@use 'sass:meta';
+@use 'sass:math';
+
+$ui-scale: 0.8;
+
+// Scales a px value by $ui-scale; passes through anything else unchanged
+// (unitless ratios like line-height, keywords like `normal`, bare 0, etc.)
+// so it's safe to apply blindly across a whole token map.
+@function scale-px($value) {
+	@if meta.type-of($value) == 'number' and math.unit($value) == 'px' {
+		@return $value * $ui-scale;
+	}
+	@return $value;
+}
