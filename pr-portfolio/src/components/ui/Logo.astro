@@ -26,7 +26,7 @@ const framed = theme === 'light';
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 48px;
+		width: calc(48px * var(--ui-scale));
 		aspect-ratio: 89 / 77;
 	}
 
@@ -39,6 +39,6 @@ const framed = theme === 'light';
 		background-color: var(--logo-safety-surface);
 		border-radius: var(--radius-lg);
 		padding: var(--space-2);
-		width: calc(48px + var(--space-2) * 2);
+		width: calc(48px * var(--ui-scale) + var(--space-2) * 2);
 	}
 </style>

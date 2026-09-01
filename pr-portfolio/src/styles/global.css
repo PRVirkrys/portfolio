@@ -128,10 +128,10 @@ table {
 img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 }
 code {
-	padding: 2px 5px;
+	padding: calc(2px * var(--ui-scale)) calc(5px * var(--ui-scale));
 	background-color: var(--color-bg-subtle);
 	border-radius: var(--radius-sm);
 }
@@ -144,7 +144,7 @@ pre > code {
 }
 blockquote {
 	border-left: var(--focus-width) solid var(--color-focus);
-	padding: 0 0 0 20px;
+	padding: 0 0 0 calc(20px * var(--ui-scale));
 	margin: 0;
 	font-size: 1.333em;
 }
@@ -162,10 +162,6 @@ hr {
 }
 
 @media (min-width: 840px) {
-	html {
-		zoom: 0.8;
-	}
-
 	body {
 		padding-left: var(--component-sidebar-width);
 	}

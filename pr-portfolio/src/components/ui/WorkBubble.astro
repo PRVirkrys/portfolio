@@ -15,7 +15,7 @@ const { id, name, logo } = Astro.props;
 </button>
 
 <style>
-	.work-bubble { display: grid; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: 2px solid var(--color-neutral-950); border-radius: var(--radius-full); box-shadow: -4px 0 2.5px rgba(16, 16, 31, 0.25); cursor: pointer; transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+	.work-bubble { display: grid; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: calc(2px * var(--ui-scale)) solid var(--color-neutral-950); border-radius: var(--radius-full); box-shadow: calc(-4px * var(--ui-scale)) 0 calc(2.5px * var(--ui-scale)) rgba(16, 16, 31, 0.25); cursor: pointer; transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
 	.work-bubble--lpa { background: #0d35dc; }
 	.work-bubble--failfast { background: #ee8089; }
 	.work-bubble--pelt8 { background: #062e4a; }
@@ -23,7 +23,7 @@ const { id, name, logo } = Astro.props;
 	.work-bubble > img { width: 100%; height: 100%; object-fit: contain; border-radius: 0; }
 	.work-bubble--lpa > img { width: 73.333%; height: auto; }
 	.work-bubble--failfast > img { width: 44%; height: auto; }
-	.work-bubble--pelt8 > img { width: 65.333%; height: 65.333%; transform: translate(1px, 1px); }
+	.work-bubble--pelt8 > img { width: 65.333%; height: 65.333%; transform: translate(calc(1px * var(--ui-scale)), calc(1px * var(--ui-scale))); }
 	.work-bubble > :global(.work-bubble__brand) { width: 65%; height: auto; }
 	.work-bubble:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
 	@media (prefers-reduced-motion: reduce) { .work-bubble { transition: none; } }

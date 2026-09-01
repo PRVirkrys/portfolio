@@ -27,20 +27,20 @@ import { iconUrl } from '../lib/icons';
 		align-items: center;
 		justify-content: flex-end;
 		gap: var(--space-6);
-		padding: 10px var(--gutter-desktop);
+		padding: calc(10px * var(--ui-scale)) var(--gutter-desktop);
 		background: #100f1d;
 		border-top: var(--border-width) solid var(--color-border);
 		color: rgba(255, 255, 255, 0.9);
 		font-family: var(--font-sans);
-		font-size: 12px;
+		font-size: calc(12px * var(--ui-scale));
 		font-weight: 400;
-		letter-spacing: 1px;
+		letter-spacing: calc(1px * var(--ui-scale));
 		text-align: center;
 	}
 	.footer__item { display: flex; align-items: center; gap: var(--space-3); white-space: nowrap; }
-	.footer__flag { display: block; width: 32px; height: 32px; }
-	.footer__sep { font-size: 24px; line-height: 1.75; }
-	.footer__dog { font-size: 23px; line-height: 1; }
+	.footer__flag { display: block; width: calc(32px * var(--ui-scale)); height: calc(32px * var(--ui-scale)); }
+	.footer__sep { font-size: calc(24px * var(--ui-scale)); line-height: 1.75; }
+	.footer__dog { font-size: calc(23px * var(--ui-scale)); line-height: 1; }
 	@media (max-width: 839px) {
 		.footer { justify-content: center; gap: var(--space-3); padding-inline: var(--gutter-mobile); }
 		.footer__sep { display: none; }
