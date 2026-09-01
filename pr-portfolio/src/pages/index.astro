@@ -1,7 +1,10 @@
 ---
+// Figma: PR Brand (DS) → op2 (node 15993:35251) → content (node 15993:39285)
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import Tag from '../components/ui/Tag.astro';
+import TextLink from '../components/ui/TextLink.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 ---
 
@@ -12,38 +15,119 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+		<main class="hero">
+			<div class="hero__content">
+				<div class="hero__tags">
+					<Tag category="Research" size="sm">Research</Tag>
+					<Tag category="UX Design" size="sm">UX Design</Tag>
+					<Tag category="UI Design" size="sm">UI Design</Tag>
+					<Tag category="Design Systems" size="sm">Design Systems</Tag>
+				</div>
+				<h1 class="hero__heading">
+					I design and build products that make <span class="hero__accent hero__accent--purple">complex ideas</span> actually <span
+						class="hero__accent hero__accent--green">usable.</span
+					>
+				</h1>
+				<p class="hero__lead">I work at the intersection of product, design systems and code to ship experiences that scale.</p>
+				<!-- TODO: point at a real work/projects destination once one exists -->
+				<TextLink href="/" size="lg">Explore related work</TextLink>
+			</div>
+			<div class="hero__visual" aria-hidden="true"><!-- reserved for a future animation --></div>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	/* .hero sets its own padding-top per breakpoint (rather than inheriting
+	   global.css's `main` rule) because as a class selector it would silently
+	   win that cascade fight anyway — see the header-height comment below. */
+	/* Dot-grid backdrop (Figma "Dots" background, node 15993:35252, board
+	   component "Dot master" 15751:13557: a 2px circle in #B07DDF repeated on
+	   a 36px grid) reproduced as a CSS radial-gradient instead of an exported
+	   image — vector-crisp at any zoom/DPI, zero asset weight, and both the
+	   dot size and spacing scale with --ui-scale like every other token here,
+	   so it stays consistent with the rest of the UI density without ever
+	   needing a re-export from Figma. */
+	.hero {
+		box-sizing: border-box;
+		display: flex;
+		width: 100%;
+		max-width: none;
+		flex: 1 0 auto;
+		align-items: center;
+		margin-inline: 0;
+		padding-inline: var(--gutter-mobile);
+		padding-top: var(--component-header-height-mobile);
+		padding-bottom: var(--section-mobile);
+		background-image: radial-gradient(circle, #b07ddf calc(1px * var(--ui-scale)), transparent calc(1px * var(--ui-scale)));
+		background-size: calc(36px * var(--ui-scale)) calc(36px * var(--ui-scale));
+	}
+	.hero__content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-8);
+		max-width: 42rem;
+	}
+	/* .hero__content is a column flex container with the default
+	   align-items: stretch, so without this the TextLink (an inline-flex
+	   component meant to hug its own label width) gets stretched to the
+	   column's full width like the block-level heading/lead siblings. */
+	.hero__content > :global(.text-link) {
+		align-self: flex-start;
+	}
+	.hero__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: calc(10px * var(--ui-scale));
+	}
+	.hero__heading {
+		margin: 0;
+		color: var(--color-text);
+		font-family: var(--typography-display-l-desktop-font-family);
+		font-weight: 400;
+		font-size: calc(64px * var(--ui-scale));
+		line-height: 1.2;
+		letter-spacing: calc(-0.5px * var(--ui-scale));
+	}
+	.hero__accent--purple {
+		color: #9d76fd;
+	}
+	.hero__accent--green {
+		color: var(--color-brand-green-500);
+	}
+	.hero__lead {
+		margin: 0;
+		max-width: 58ch;
+		color: rgba(255, 255, 255, 0.9);
+		font-family: var(--font-sans);
+		font-weight: 400;
+		font-size: calc(24px * var(--ui-scale));
+		line-height: 1.75;
+		letter-spacing: calc(1px * var(--ui-scale));
+	}
+	.hero__visual {
+		display: none;
+	}
+	/* Matches Header.astro's own mobile/desktop breakpoint exactly (839/840):
+	   the header switches to its fixed-height solid bar there, so hero's
+	   top-clearance has to switch at the same point or content would sit
+	   under the header in between. No explicit min-height needed — .hero
+	   already has flex: 1 0 auto inside the column-flex <body>, so once
+	   padding-top reserves the header's height it naturally fills the rest
+	   of the viewport between header and footer. */
+	@media (min-width: 840px) {
+		.hero {
+			padding-top: var(--component-header-height-desktop);
+			padding-inline: var(--gutter-desktop);
+		}
+	}
+	@media (min-width: 1024px) {
+		.hero__visual {
+			display: block;
+			flex: 1 1 auto;
+			align-self: stretch;
+			min-width: 0;
+		}
+	}
+</style>

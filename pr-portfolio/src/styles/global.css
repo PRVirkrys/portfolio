@@ -165,6 +165,12 @@ hr {
 	body {
 		padding-left: var(--component-sidebar-width);
 	}
+	/* Header is position:fixed, so it doesn't push content down on its own —
+	   this reserves exactly its height so main content always starts below
+	   it instead of sliding underneath. */
+	main {
+		padding-top: var(--component-header-height-desktop);
+	}
 }
 
 .sr-only {
