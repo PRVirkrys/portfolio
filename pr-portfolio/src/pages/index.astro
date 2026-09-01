@@ -16,6 +16,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main class="hero">
+			<div class="hero__scrim" aria-hidden="true"></div>
 			<div class="hero__content">
 				<div class="hero__tags">
 					<Tag category="Research" size="sm">Research</Tag>
@@ -43,14 +44,16 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	   global.css's `main` rule) because as a class selector it would silently
 	   win that cascade fight anyway — see the header-height comment below. */
 	/* Dot-grid backdrop (Figma "Dots" background, node 15993:35252, board
-	   component "Dot master" 15751:13557: a 2px circle in #B07DDF repeated on
-	   a 36px grid) reproduced as a CSS radial-gradient instead of an exported
-	   image — vector-crisp at any zoom/DPI, zero asset weight, and both the
-	   dot size and spacing scale with --ui-scale like every other token here,
-	   so it stays consistent with the rest of the UI density without ever
-	   needing a re-export from Figma. */
+	   component "Dot master" 15751:13557: a 2px circle repeated on a 36px
+	   grid) reproduced as a CSS radial-gradient instead of an exported image
+	   — vector-crisp at any zoom/DPI, zero asset weight, and both the dot
+	   size and spacing scale with --ui-scale like every other token here, so
+	   it stays consistent with the rest of the UI density without ever
+	   needing a re-export from Figma. Color is --hero-dot-color (semantic,
+	   theme-aware — see _semantic.scss). */
 	.hero {
 		box-sizing: border-box;
+		position: relative;
 		display: flex;
 		width: 100%;
 		max-width: none;
@@ -60,10 +63,32 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 		padding-inline: var(--gutter-mobile);
 		padding-top: var(--component-header-height-mobile);
 		padding-bottom: var(--section-mobile);
-		background-image: radial-gradient(circle, #b07ddf calc(1px * var(--ui-scale)), transparent calc(1px * var(--ui-scale)));
+		background-image: radial-gradient(circle, var(--hero-dot-color) calc(1px * var(--ui-scale)), transparent calc(1px * var(--ui-scale)));
 		background-size: calc(36px * var(--ui-scale)) calc(36px * var(--ui-scale));
 	}
+	/* Figma's own trick for keeping the dots from fighting the text (node
+	   15993:39285: a near-bg linear-gradient blended over the pattern with
+	   mix-blend-mode) — near-opaque over the text column, fading out toward
+	   the empty visual column. Figma only specifies this for dark mode
+	   (near-black + "darken"); light mode mirrors it with the inverted pair
+	   (near-white + "lighten", both via --hero-scrim-* tokens) since darken
+	   would just muddy a light background instead of softening it. First in
+	   the DOM, before .hero__content, so it paints behind the real content
+	   with no z-index needed. */
+	.hero__scrim {
+		position: absolute;
+		inset: 0;
+		background-image: linear-gradient(89deg, var(--hero-scrim-start) 30%, var(--hero-scrim-mid) 93%, transparent 100%);
+		mix-blend-mode: var(--hero-scrim-blend);
+		pointer-events: none;
+	}
 	.hero__content {
+		/* position: relative (with no z-index) is enough to lift this above
+		   .hero__scrim: positioned elements always paint above static ones in
+		   the same stacking context regardless of DOM order, so without this
+		   the scrim — despite coming first in the markup — would render over
+		   the text instead of behind it. */
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-8);
@@ -99,7 +124,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	.hero__lead {
 		margin: 0;
 		max-width: 58ch;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--color-text-secondary);
 		font-family: var(--font-sans);
 		font-weight: 400;
 		font-size: calc(24px * var(--ui-scale));
