@@ -42,8 +42,16 @@ $focus-width: 2px;
 // opacity: calc(var(--opacity-disabled) / 100).
 $opacity-disabled: 30;
 
-$component-header-height-desktop: 88px;
-$component-header-height-mobile: 72px;
+// 131px in the Figma "op2" home reference; the value below (132px) is derived
+// from our own header content (space-8 padding top/bottom + the tallest
+// child, the tool selector at control-md + space-3 padding) so it's an exact
+// fit with no clipping. Shared with SidebarNavigation's brand block so the
+// two independently-built bars land on the same line — see both components.
+$component-header-height-desktop: 132px;
+// space-3 padding top/bottom + the work-bubble row (--component-work-bubble-size,
+// the tallest thing left in the collapsed mobile header) = 84px, plus a
+// little breathing room so hairline shadows/borders never touch content.
+$component-header-height-mobile: 96px;
 $component-header-menu-height: 420px;
 $component-field-height-md: 48px;
 $component-field-height-lg: 56px;

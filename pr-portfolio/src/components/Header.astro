@@ -33,7 +33,11 @@ const selectorItems = [
 <SidebarNavigation />
 
 <style>
-	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-8) var(--gutter-desktop); pointer-events: none; }
+	/* Height is explicit (not intrinsic) so it can be shared with
+	   SidebarNavigation's brand block — see --component-header-height-desktop.
+	   That keeps the sidebar's brand divider and this bar's bottom border on
+	   the same line regardless of either side's content. */
+	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); background: var(--sidebar-surface); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
 	.header > * { pointer-events: auto; }
 	.header > :global(.header__identity) { flex: 0 0 auto; opacity: 75%; }
 	.header__selector { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-action-secondary-bg); }
@@ -41,10 +45,10 @@ const selectorItems = [
 	.header__selector-item--active { background: var(--sidebar-item-text-active); }
 	.header__selector-item :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
 	.header__selector-item:focus-visible, .header__icon-action:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
-	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); margin-left: auto; }
+	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); }
 	.header__icon-action { display: grid; width: var(--control-lg); height: var(--control-lg); place-items: center; border-radius: var(--radius-sm); box-shadow: var(--elevation-button-adaptive); color: var(--color-base-white); }
 	.header__icon-action:hover { background: var(--color-action-secondary-bg-hover); }
 	.header__icon-action :global(svg) { width: var(--icon-lg); height: var(--icon-lg); }
-	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header__identity { display: none; } }
-	@media (max-width: 839px) { .header { left: 0; padding: var(--space-3); } .header__selector, .header__actions > :global(.button), .header__icon-action { display: none; } .header__actions { gap: 0; } }
+	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header > :global(.header__identity) { display: none; } }
+	@media (max-width: 839px) { .header { left: 0; height: auto; padding: var(--space-3); } .header__selector, .header__actions > :global(.button), .header__icon-action { display: none; } .header__actions { gap: 0; } }
 </style>
