@@ -1,0 +1,29 @@
+---
+// Wrapper for the 3-col learnings grid in a case study.
+// Each child should be a <CaseCallout size="lg"> (same component the
+// section's inline callouts use, just with the larger icon variant).
+---
+
+<div class="cs-learnings-grid">
+	<slot />
+</div>
+
+<style>
+	.cs-learnings-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: calc(16px * var(--ui-scale));
+		width: 100%;
+		margin-top: calc(16px * var(--ui-scale));
+	}
+	@media (max-width: 1280px) and (min-width: 641px) {
+		.cs-learnings-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (max-width: 640px) {
+		.cs-learnings-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

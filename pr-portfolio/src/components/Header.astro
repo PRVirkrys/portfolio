@@ -5,6 +5,15 @@ import Button from './ui/Button.astro';
 import Tag from './ui/Tag.astro';
 import { MousePointer2, Hand, MessageCircle, Type, Settings } from '@lucide/astro';
 
+export interface Props {
+	/** Home is the only page with its own hero background right under the
+	 * fixed header, so it's the only one that wants the header transparent
+	 * over it. Every other page gets a solid header matching the body bg. */
+	transparent?: boolean;
+}
+
+const { transparent = false } = Astro.props;
+
 const selectorItems = [
 	{ label: 'Puntero', Icon: MousePointer2, active: true },
 	{ label: 'Mano', Icon: Hand },
@@ -14,7 +23,7 @@ const selectorItems = [
 ---
 
 
-<header class="header">
+<header class="header" data-transparent={transparent || undefined}>
 	<Tag category="Neutral" size="md" class="header__identity">PAULA RODAS · DEV DESIGNER · SINCE 2015</Tag>
 	<nav class="header__selector" aria-label="Herramientas de diseño">
 		{selectorItems.map(({ label, Icon, active }) => (
@@ -37,7 +46,8 @@ const selectorItems = [
 	   SidebarNavigation's brand block — see --component-header-height-desktop.
 	   That keeps the sidebar's brand divider and this bar's bottom border on
 	   the same line regardless of either side's content. */
-	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); /*background: var(--sidebar-surface);*/ border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
+	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
+	.header[data-transparent] { background: transparent; }
 	.header > * { pointer-events: auto; }
 	.header > :global(.header__identity) { flex: 0 0 auto; opacity: 75%; }
 	.header__selector { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-action-secondary-bg); }

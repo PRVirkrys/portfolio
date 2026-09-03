@@ -1,0 +1,205 @@
+---
+import Tag from '../ui/Tag.astro';
+import type { TagCategory } from '../../data/work-navigation';
+
+export interface Props {
+	variant?: 'default' | 'subtle';
+	layout?: 'side' | 'stacked' | 'text-only';
+	tag?: string;
+	tagCategory?: TagCategory;
+	heading?: string;
+	wide?: boolean;
+	/** Assets width in 'stacked' layout (Figma node 16071:69248 — "Assets
+	 * container" can span the full section or match the copy column).
+	 * 'auto' (default) keeps the existing rule: a single image is contained
+	 * to the copy width, multiple images span the full width. Set explicitly
+	 * to override that guess either way. Ignored by 'side' and 'text-only'. */
+	imageWidth?: 'auto' | 'contained' | 'full';
+}
+
+const {
+	variant = 'default',
+	layout = 'stacked',
+	tag,
+	tagCategory = 'Neutral',
+	heading,
+	wide = false,
+	imageWidth = 'auto',
+} = Astro.props;
+
+const hasImage = Astro.slots.has('image');
+---
+
+<section
+	class="cs-section"
+	data-variant={variant}
+	data-layout={layout}
+	data-wide={wide || undefined}
+>
+	{hasImage && (
+		<div class="cs-section__assets" data-image-width={imageWidth}>
+			<slot name="image" />
+		</div>
+	)}
+	<div class="cs-section__copy">
+		{(tag || heading) && (
+			<div class="cs-section__header">
+				{tag && <Tag category={tagCategory}>{tag}</Tag>}
+				{heading && <h2 class="cs-section__heading">{heading}</h2>}
+			</div>
+		)}
+		<slot />
+	</div>
+</section>
+
+<style>
+	.cs-section {
+		padding-block: calc(112px * var(--ui-scale));
+		padding-inline: calc(64px * var(--ui-scale));
+	}
+	.cs-section[data-variant='subtle'] {
+		background-color: var(--color-bg-subtle);
+	}
+
+	/* ── Stacked: assets on top, copy centred below ── */
+	.cs-section[data-layout='stacked'] {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: calc(64px * var(--ui-scale));
+	}
+	.cs-section[data-layout='stacked'] .cs-section__assets {
+		display: flex;
+		gap: calc(24px * var(--ui-scale));
+		width: 100%;
+	}
+	/* 'auto': a single image doesn't span the full row — it matches the copy
+	   column width below it. Explicit 'contained'/'full' below always win
+	   over this guess. */
+	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='auto']:has(> :only-child) {
+		width: min(calc(732px * var(--ui-scale)), 100%);
+		margin-inline: auto;
+	}
+	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='contained'] {
+		width: min(calc(732px * var(--ui-scale)), 100%);
+		margin-inline: auto;
+	}
+	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='full'] {
+		width: 100%;
+	}
+	.cs-section[data-layout='stacked'] .cs-section__copy {
+		width: min(calc(732px * var(--ui-scale)), 100%);
+	}
+	.cs-section[data-layout='stacked'][data-wide] .cs-section__copy {
+		width: 100%;
+	}
+
+	/* ── Side: image left, copy right ── */
+	.cs-section[data-layout='side'] {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: center;
+		gap: calc(64px * var(--ui-scale));
+	}
+	.cs-section[data-layout='side'] .cs-section__assets {
+		flex: 1;
+		min-width: 0;
+		align-self: stretch;
+		display: flex;
+		flex-direction: column;
+	}
+	.cs-section[data-layout='side'] .cs-section__copy {
+		flex: 0 0 min(calc(732px * var(--ui-scale)), 50%);
+	}
+
+	/* ── Text only: just copy, centred ── */
+	.cs-section[data-layout='text-only'] {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.cs-section[data-layout='text-only'] .cs-section__copy {
+		width: min(calc(732px * var(--ui-scale)), 100%);
+	}
+	.cs-section[data-layout='text-only'][data-wide] .cs-section__copy {
+		width: 100%;
+	}
+
+	/* ── Copy content ── */
+	.cs-section__header {
+		display: flex;
+		flex-direction: column;
+		/* Without this, column-flex's default align-items: stretch forces the
+		   tag (a flex item here) to the container's full width instead of
+		   hugging its label. */
+		align-items: flex-start;
+		gap: calc(16px * var(--ui-scale));
+		margin-bottom: calc(16px * var(--ui-scale));
+	}
+	.cs-section__heading {
+		font-family: var(--font-heading);
+		font-size: calc(36px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.3;
+		letter-spacing: -0.25px;
+		color: var(--color-text);
+		margin: 0;
+	}
+
+	/* Slot typography — applied via :global() since MDX renders into slots */
+	.cs-section__copy :global(p) {
+		font-family: var(--font-sans);
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 400;
+		line-height: 2;
+		letter-spacing: calc(1px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		margin-block: 0 calc(16px * var(--ui-scale));
+	}
+	.cs-section__copy :global(p:last-child) {
+		margin-bottom: 0;
+	}
+	.cs-section__copy :global(ul),
+	.cs-section__copy :global(ol) {
+		padding-left: calc(24px * var(--ui-scale));
+		margin-block: 0 calc(16px * var(--ui-scale));
+		/* Tailwind's preflight resets list-style to none globally — restore
+		   real markers for the markdown-rendered lists in the MDX body. */
+		list-style: revert;
+	}
+	.cs-section__copy :global(li) {
+		font-family: var(--font-sans);
+		font-size: calc(16px * var(--ui-scale));
+		line-height: 2;
+		letter-spacing: calc(1px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		margin-bottom: calc(4px * var(--ui-scale));
+	}
+	.cs-section__copy :global(strong),
+	.cs-section__copy :global(b) {
+		font-weight: 700;
+		color: var(--color-text);
+	}
+
+	/* ── Responsive ── */
+	@media (max-width: 960px) {
+		.cs-section {
+			padding-block: calc(64px * var(--ui-scale));
+			padding-inline: var(--gutter-mobile);
+		}
+		.cs-section[data-layout='side'] {
+			flex-direction: column;
+		}
+		.cs-section[data-layout='side'] .cs-section__copy {
+			flex: unset;
+			width: 100%;
+		}
+		.cs-section[data-layout='stacked'] .cs-section__assets {
+			flex-direction: column;
+		}
+		.cs-section__heading {
+			font-size: calc(28px * var(--ui-scale));
+		}
+	}
+</style>
