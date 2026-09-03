@@ -1,0 +1,97 @@
+---
+import { Workflow } from '@lucide/astro';
+
+export interface Props {
+	title: string;
+	body: string;
+	variant?: 'dark' | 'subtle';
+	/** 'sm' (default) is the inline callout icon (18px); 'lg' is the
+	 * Learnings-grid card icon (32px) — same component, Figma's own icon-size
+	 * variation (node 16071:69306) rather than a separate component. */
+	size?: 'sm' | 'lg';
+}
+
+const { title, body, variant = 'dark', size = 'sm' } = Astro.props;
+const hasIcon = Astro.slots.has('icon');
+---
+
+<div class="cs-callout" data-variant={variant} data-size={size}>
+	<div class="cs-callout__header">
+		<span class="cs-callout__icon">
+			{hasIcon ? <slot name="icon" /> : <Workflow />}
+		</span>
+		<span class="cs-callout__title">{title}</span>
+	</div>
+	<p class="cs-callout__body">{body}</p>
+</div>
+
+<style>
+	.cs-callout {
+		border: var(--border-width) solid var(--color-border);
+		padding: calc(24px * var(--ui-scale));
+		display: flex;
+		flex-direction: column;
+		gap: calc(8px * var(--ui-scale));
+		/* Breathing room from the surrounding copy — the paragraph before it
+		   already carries its own bottom margin, but nothing follows the
+		   callout, so without this the next line sits flush against it. */
+		margin-block: calc(24px * var(--ui-scale));
+	}
+	/* Grid item in the Learnings section — its position comes from the grid,
+	   not document flow, so it keeps no margin of its own. */
+	.cs-callout[data-size='lg'] {
+		margin-block: 0;
+	}
+	.cs-callout[data-variant='dark'] {
+		background: var(--color-bg);
+	}
+	.cs-callout[data-variant='subtle'] {
+		background: var(--color-bg-subtle);
+	}
+	.cs-callout__header {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding-bottom: calc(8px * var(--ui-scale));
+		border-bottom: var(--border-width) solid var(--color-border);
+	}
+	.cs-callout__icon {
+		display: flex;
+		flex-shrink: 0;
+	}
+	.cs-callout__icon :global(svg) {
+		width: calc(18px * var(--ui-scale));
+		height: calc(18px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+	}
+	.cs-callout__title {
+		flex: 1;
+		min-width: 0;
+		font-family: var(--font-heading);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.75;
+		letter-spacing: calc(4px * var(--ui-scale));
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+	}
+	.cs-callout__body {
+		font-family: var(--font-sans);
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 400;
+		line-height: 1.75;
+		letter-spacing: calc(1px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		margin: 0;
+	}
+
+	/* ── Size: lg — Learnings-grid cards (Figma node 16071:69306) ── */
+	.cs-callout[data-size='lg'] .cs-callout__header {
+		align-items: flex-start;
+		gap: calc(16px * var(--ui-scale));
+	}
+	.cs-callout[data-size='lg'] .cs-callout__icon :global(svg) {
+		width: calc(24px * var(--ui-scale));
+		height: calc(24px * var(--ui-scale));
+	}
+</style>

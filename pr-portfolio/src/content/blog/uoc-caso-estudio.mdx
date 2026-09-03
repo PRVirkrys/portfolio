@@ -1,0 +1,260 @@
+---
+title: "UOC · Universitat Oberta de Catalunya"
+description: "¿Cómo ayudar a elegir entre cientos de opciones académicas sin perderse en el catálogo? Este caso explica cómo la arquitectura de información, la navegación y la priorización de contenido convirtieron la exploración en una experiencia de decisión."
+pubDate: "Jan 15 2023"
+heroImage: "../../assets/case-studies/uoc/HERO.png"
+type: case-study
+tags:
+  - label: RESEARCH SYNTHESIS
+    category: Research
+  - label: INFORMATION ARCHITECTURE
+    category: Strategy
+  - label: NAVIGATION
+    category: Strategy
+breadcrumbs:
+  - label: work
+    href: /
+  - label: failfast
+  - label: uoc
+client: "Fail Fast · Universitat Oberta de Catalunya (UOC)"
+industry: "Educación superior online"
+role: "UX Designer"
+location: "Barcelona, España"
+date: "2021–2023"
+liveUrl:
+  label: "Oferta Formativa UOC"
+  href: "https://www.uoc.edu/es/estudios.html"
+collaboration: "Research · UI Design · Cliente · Desarrollo"
+nextCase:
+  title: "HSJD · Hospital Sant Joan de Déu"
+  slug: "hsjd-caso-estudio"
+---
+
+import CaseSection from "../../components/case/CaseSection.astro";
+import CasePlaceholder from "../../components/case/CasePlaceholder.astro";
+import CaseCallout from "../../components/case/CaseCallout.astro";
+import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import {
+  Move,
+  Navigation,
+  BarChart,
+  PieChart,
+  UserCheck,
+  CheckCircle,
+  CornerRightUp,
+} from "@lucide/astro";
+
+<CaseSection
+  variant="default"
+  layout="side"
+  tag="OVERVIEW"
+  tagCategory="Neutral"
+  heading="Overview"
+>
+  <CasePlaceholder slot="image" height={491} />
+  La Universitat Oberta de Catalunya (UOC) es una universidad online con una
+  oferta académica extensa y diversa. Durante mi etapa en Fail Fast, trabajé
+  como UX Designer en el rediseño de su Oferta Formativa, replanteando cómo se
+  organiza, explora y evalúa en la web: desde el primer contacto con el catálogo
+  hasta la solicitud de información o la matrícula.
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="THE CHALLENGE" tagCategory="Strategy" heading="El reto: de catálogo fragmentado a experiencia de decisión">
+  <div style={{ display: 'contents' }} slot="image">
+    <CasePlaceholder height={420} />
+    <CasePlaceholder height={420} />
+  </div>
+
+Rediseñar la Oferta Formativa suponía dar coherencia a un ecosistema extenso de titulaciones, contenidos y puntos de entrada. El desafío era atender tanto a quienes querían explorar posibilidades como a quienes llegaban con un objetivo concreto, sin perder claridad en ningún punto del recorrido.
+
+- El menú exponía muchas opciones a la vez y resultaba difícil de escanear.
+- La nomenclatura de algunas categorías no siempre coincidía con el modelo mental de los usuarios.
+- Durante la auditoría de navegación, identifiqué que un mismo objetivo — encontrar un programa — podía seguir hasta cinco lógicas distintas según el tipo de oferta.
+- Las páginas de listado, la búsqueda y las fichas de programa necesitaban hacer visible la información decisiva.
+- Las personas que comparaban alternativas no contaban con una herramienta específica para hacerlo.
+
+El objetivo fue construir una experiencia coherente desde el primer contacto con el catálogo hasta la solicitud de información o la matrícula.
+
+  <CaseCallout
+    title="Recorrido de decisión propuesto"
+    body="Entender la oferta → encontrar opciones → evaluar un programa → comparar alternativas → actuar"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="RESEARCH SYNTHESIS" tagCategory="Research" heading="De research a principios de diseño">
+  <CasePlaceholder slot="image" height={420} />
+
+El equipo de research había trabajado previamente con estudiantes actuales, personas candidatas y stakeholders. Recibí los hallazgos a través de presentaciones, documentos, boards de Miro y hojas de cálculo, y los traduje en decisiones de producto.
+
+**Los resultados mostraban dos necesidades complementarias:**
+
+- **Claridad para orientarse:** la diferencia entre navegar por titulación y por área no siempre resultaba evidente; algunas etiquetas y agrupaciones generaban dudas.
+- **Información para decidir:** precio, plan de estudios, calendario, requisitos de acceso, créditos y carga lectiva debían aparecer con una jerarquía clara. Los testimonios adquirían relevancia cerca del momento de decisión.
+
+Convertí estos hallazgos en prioridades de contenido y principios de experiencia.
+
+  <CaseCallout
+    title="Ruta de síntesis"
+    body="Hallazgos → prioridades → reglas de navegación → estructura de páginas → wireframes"
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="NAVIGATION" tagCategory="Strategy" heading="1. Orientar: un mega menú para explorar o ir al grano">
+  <div style={{ display: 'contents' }} slot="image">
+    <CasePlaceholder height={420} />
+    <CasePlaceholder height={420} />
+  </div>
+
+La auditoría del menú reveló dos problemas conectados: muchas opciones visibles al mismo tiempo y hasta cinco lógicas distintas para llegar a un programa según su tipología.
+
+A partir de la auditoría y los insights, propuse un mega menú de hasta tres niveles para organizar la exploración sin ocultar la diversidad de la oferta. La estructura debía servir tanto a quien quería descubrir opciones por tipo de programa o área de estudio como a quien llegaba buscando una titulación concreta.
+
+En lugar de imponer la misma profundidad a todos los recorridos, definí una regla común y variantes explícitas: primer nivel para los tipos de oferta, segundo nivel para áreas cuando aportaban contexto y un tercer nivel para llegar a programas o listados relevantes.
+
+Los casos de menú de dos y tres niveles permitieron comprobar que el sistema respondía a las variaciones reales del catálogo sin perder previsibilidad.
+
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" imageWidth="full" tag="DISCOVERY FLOW" tagCategory="Strategy" heading="2. Encontrar: contexto antes de buscar, filtros para acotar">
+  <CasePlaceholder slot="image" height={420} />
+
+Una navegación coherente era solo el primer paso. La experiencia también necesitaba ayudar a reducir un catálogo amplio a opciones manejables, sin obligar a las personas a empezar a filtrar antes de entender qué estaban explorando.
+
+Los insights de usuarios guiaron decisiones concretas en la página de entrada a cada área y en las páginas de listado:
+
+- Hacer visible que la propuesta es online: los titulares y la introducción incorporaron el carácter online desde una primera lectura.
+- Explicar el modelo asíncrono antes de generar dudas: se añadió un acceso visible a "Modelo de estudio UOC".
+- Dar más protagonismo al precio: "Precios y descuentos" se hizo accesible desde el inicio.
+- Mantener una vía de acción clara: el acceso a solicitud de información se integró como apoyo durante la exploración.
+
+Con estas preguntas iniciales resueltas, trabajé en la estructura de las páginas de listado, la búsqueda y el filtrado para que las personas pudieran explorar, acotar y avanzar con un camino claro desde un listado hasta la ficha de un programa.
+
+El objetivo era sustituir la exploración dispersa por una progresión visible: primero entender la oferta y sus condiciones; después encontrar un conjunto relevante de opciones.
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="UX WIREFRAMES" tagCategory="UX Design" heading="3. Evaluar: una ficha de programa más navegable" imageWidth="full" >
+  <div style={{ display: 'contents' }} slot="image">
+    <CasePlaceholder height={420} />
+    <CasePlaceholder height={420} />
+    <CasePlaceholder height={420} />
+  </div>
+
+La ficha de programa era el principal punto de evaluación y concentraba información académica extensa. El reto era hacerla más clara, escaneable y navegable sin simplificar en exceso una decisión compleja.
+
+A partir de los hallazgos de research, organicé la ficha en tres capas:
+
+1. **Resumen para decidir:** título, descripción, precio, créditos, fechas, modalidad, plazas disponibles y CTAs de información o matrícula agrupados al inicio.
+2. **Navegación local por temas:** una navegación interna permitía saltar entre presentación, plan de estudios, matriculación, salidas profesionales, calidad y experiencias.
+3. **Contenido progresivo:** los módulos se ordenaron según las preguntas que aparecen durante la evaluación, sin perder acceso a información detallada.
+
+Empecé en baja fidelidad, validando estructura y jerarquía con el cliente antes de la fase visual.
+
+  <CaseCallout
+    title="Principio de diseño"
+    body="La información decisiva primero → navegación para profundizar → CTAs visibles para avanzar"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="DECISION SUPPORT" tagCategory="Strategy" heading="4. Comparar y avanzar: apoyo a la decisión">
+  <CasePlaceholder slot="image" height={420} />
+
+Cuando varias opciones pueden encajar, encontrar una ficha no es suficiente. Por eso incorporé la comparación de programas como una herramienta específica dentro de la experiencia.
+
+El comparador permitió reunir alternativas relevantes y contrastar información antes de pasar a la solicitud de información o a la matrícula. Su incorporación conectó la exploración de listados con la decisión final, evitando que la comparación dependiera de abrir varias fichas y recordar sus diferencias.
+
+El comparador fue propuesto, diseñado e implementado como parte de la nueva experiencia.
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="text-only" tag="UX REVIEW" tagCategory="UX Design" heading="Del UX a la implementación">
+  Tras validar la arquitectura, los patrones de navegación, las páginas de listado, la búsqueda, la ficha y el comparador, el equipo de UI aplicó el lenguaje visual. Mi trabajo continuó con revisiones UX para asegurar que las decisiones de jerarquía, contenido y navegación se mantuvieran en la interfaz final.
+
+<CaseCallout
+  title="Flujo de colaboración"
+  body="Research existente → síntesis UX → arquitectura → patrones y wireframes → UI → UX review → implementación"
+  variant="dark"
+/>
+
+_Nota de atribución: La investigación inicial fue responsabilidad del equipo de research y la aplicación visual correspondió al equipo de UI. Mi contribución se centró en la síntesis aplicada, arquitectura de información, navegación, priorización, páginas de listado, búsqueda, wireframes y revisión UX._
+
+</CaseSection>
+
+<CaseSection variant="default" layout="side" tag="RESULT" tagCategory="Neutral" heading="Resultado">
+  <CasePlaceholder slot="image" height={480} />
+
+A fecha de esta revisión, la Oferta Formativa rediseñada continúa publicada y los patrones definidos siguen presentes en la web pública de la UOC.
+
+- El catálogo se estructura por tipo de programa y área de estudio.
+- Las páginas de listado ofrecen búsqueda y filtrado.
+- Las fichas organizan información académica extensa en secciones navegables.
+- La solicitud de información conserva una presencia clara.
+- El comparador de programas se incorporó a la experiencia.
+
+El resultado fue una transformación estructural llevada a producción, construida de forma colaborativa entre research, UX, UI, cliente y desarrollo.
+
+</CaseSection>
+
+<CaseSection
+  variant="subtle"
+  layout="text-only"
+  tag="LEARNINGS"
+  tagCategory="Research"
+  heading="Aprendizajes"
+  wide
+>
+  <LearningsGrid>
+    <CaseCallout
+      size="lg"
+      title="Un sistema coherente no exige recorridos idénticos"
+      body="La coherencia surgió de definir reglas claras para decidir cuándo un recorrido necesitaba uno, dos o tres niveles, y cuándo podía llevar directamente a un programa."
+    >
+      <Move slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La navegación, la búsqueda y el contenido forman una misma experiencia"
+      body="Ordenar el menú no basta si las páginas de listado, los filtros y las fichas no ayudan a avanzar hacia una decisión."
+    >
+      <Navigation slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Los comparadores convierten exploración en decisión"
+      body="Cuando la oferta es amplia, una herramienta para contrastar alternativas reduce carga de memoria y da continuidad al recorrido."
+    >
+      <BarChart slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Los insights y el benchmark convierten referencias en criterios de diseño"
+      body="La investigación aportó una lectura clara de las necesidades de las personas usuarias; el benchmark de referentes ayudó a reconocer patrones consolidados y detectar oportunidades."
+    >
+      <PieChart slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Priorizar también implica conciliar perspectivas"
+      body="Los rankings de personas usuarias y stakeholders no coincidían en todos los puntos. Organizar la información para responder a ambos permitió construir una propuesta útil y viable."
+    >
+      <UserCheck slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La implementación también es evidencia"
+      body="La aprobación, el lanzamiento y la permanencia de los patrones en producción muestran que la solución fue viable para la organización."
+    >
+      <CheckCircle slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Arco de cierre"
+      body="Catálogo fragmentado → reglas compartidas → exploración guiada → evaluación informada → decisión apoyada"
+    >
+      <CornerRightUp slot="icon" />
+    </CaseCallout>
+  </LearningsGrid>
+</CaseSection>

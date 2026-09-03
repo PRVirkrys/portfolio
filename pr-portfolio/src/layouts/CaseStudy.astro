@@ -1,0 +1,361 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Tag from '../components/ui/Tag.astro';
+import NextCase from '../components/case/NextCase.astro';
+import { ExternalLink } from '@lucide/astro';
+import type { TagCategory } from '../data/work-navigation';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const {
+	title,
+	description,
+	heroImage,
+	tags,
+	breadcrumbs,
+	client,
+	industry,
+	role,
+	location,
+	date,
+	liveUrl,
+	collaboration,
+	nextCase,
+} = Astro.props;
+
+// Figma's metadata table (node 16071:69160) orders "Sitio en vivo" before
+// "Colaboración" — Colaboración is the last row, so it's the one that loses
+// its border-bottom, not the live-link row. Rendered separately below so
+// that order holds regardless of which optional fields are present.
+const metaRows = [
+	{ label: 'Contexto / cliente', value: client },
+	{ label: 'Industria', value: industry },
+	{ label: 'Mi rol', value: role },
+	{ label: 'Ubicación', value: location },
+	{ label: 'Fecha', value: date },
+].filter((row): row is { label: string; value: string } => Boolean(row.value));
+---
+
+<html lang="es" class="dark">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+	<body>
+		<Header />
+		<div class="cs-page">
+
+			{breadcrumbs && breadcrumbs.length > 0 && (
+				<nav class="cs-hero__breadcrumbs" aria-label="Breadcrumb">
+					{breadcrumbs.map((crumb, i) => (
+						<>
+							{i > 0 && <span class="cs-crumb__sep" aria-hidden="true">/</span>}
+							{crumb.href
+								? <a class="cs-crumb" href={crumb.href}>{crumb.label}</a>
+								: <span class:list={['cs-crumb', { 'cs-crumb--active': i === breadcrumbs.length - 1 }]}>{crumb.label}</span>
+							}
+						</>
+					))}
+				</nav>
+			)}
+
+			<!-- Hero -------------------------------------------------- -->
+			<!-- Figma node 16071:69150 uses a centered 1288×707 image with the
+			     content panel pulled upward so it overlaps the lower portion of
+			     the image instead of starting strictly below it. -->
+			<div class="cs-hero">
+				{heroImage && (
+					<div class="cs-hero__image-wrap">
+						<div class="cs-hero__image-frame">
+							<Image
+								src={heroImage}
+								alt=""
+								class="cs-hero__image"
+							/>
+						</div>
+					</div>
+				)}
+
+				<div class="cs-hero__content">
+					<div class="cs-hero__text">
+						{tags && tags.length > 0 && (
+							<div class="cs-hero__tags">
+								{tags.map(t => (
+									<Tag category={t.category as TagCategory}>{t.label}</Tag>
+								))}
+							</div>
+						)}
+						<h1 class="cs-hero__title">{title}</h1>
+						<p class="cs-hero__desc">{description}</p>
+					</div>
+
+					{(metaRows.length > 0 || liveUrl || collaboration) && (
+						<div class="cs-hero__meta">
+							{metaRows.map(row => (
+								<div class="cs-meta-row">
+									<span class="cs-meta-row__label">{row.label}</span>
+									<span class="cs-meta-row__value">{row.value}</span>
+								</div>
+							))}
+							{liveUrl && (
+								<div class="cs-meta-row">
+									<span class="cs-meta-row__label">Sitio en vivo</span>
+									<a
+										class="cs-meta-row__link"
+										href={liveUrl.href}
+										target="_blank"
+										rel="noreferrer"
+									>
+										{liveUrl.label}
+										<ExternalLink class="cs-meta-row__ext-icon" />
+									</a>
+								</div>
+							)}
+							{collaboration && (
+								<div class="cs-meta-row">
+									<span class="cs-meta-row__label">Colaboración</span>
+									<span class="cs-meta-row__value">{collaboration}</span>
+								</div>
+							)}
+						</div>
+					)}
+				</div>
+			</div>
+
+			<!-- Article body ------------------------------------------ -->
+			<article class="cs-article">
+				<slot />
+			</article>
+
+			{nextCase && <NextCase title={nextCase.title} slug={nextCase.slug} />}
+		</div>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	/* Page wrapper — sidebar offset comes from body padding in global.css */
+	.cs-page {
+		padding-top: var(--component-header-height-desktop);
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
+	/* ── Breadcrumbs ──────────────────────────────────────────────────── */
+	/* Normal flow now (not an overlay), so it just sits in the page's own
+	   stacking — no absolute positioning, no header-height math to double
+	   count. */
+	.cs-hero__breadcrumbs {
+		display: flex;
+		align-items: center;
+		gap: calc(12px * var(--ui-scale));
+		padding: calc(32px * var(--ui-scale)) calc(64px * var(--ui-scale)) 0;
+		font-family: var(--font-sans);
+		font-size: calc(14px * var(--ui-scale));
+		font-weight: 500;
+		letter-spacing: calc(7px * var(--ui-scale));
+		text-transform: uppercase;
+	}
+	.cs-crumb {
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		text-decoration: none;
+	}
+	.cs-crumb--active {
+		color: #9d76fd; /* --sidebar-item-text-active dark */
+	}
+	.cs-crumb__sep {
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+	}
+
+	/* ── Hero ─────────────────────────────────────────────────────────── */
+	/* Figma node 16071:69150 centers a 1288×707 hero image inside a 1616px
+	   frame, then lifts the content panel upward so it overlaps the bottom
+	   270px of the image. */
+	.cs-hero {
+		display: flex;
+		flex-direction: column;
+	}
+	.cs-hero__image-wrap {
+		display: flex;
+		justify-content: center;
+		padding: calc(32px * var(--ui-scale)) calc(64px * var(--ui-scale));
+		padding-bottom: 0;
+	}
+	.cs-hero__image-frame {
+		width: min(calc(1288px * var(--ui-scale)), 100%);
+		aspect-ratio: 1288 / 707;
+		overflow: hidden;
+		border-radius: var(--radius-md);
+	}
+	.cs-hero__image {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		object-position: center;
+		border-radius: 0;
+	}
+
+	/* ── Hero content ─────────────────────────────────────────────────── */
+	.cs-hero__content {
+		display: flex;
+		align-items: center;
+		gap: calc(24px * var(--ui-scale));
+		padding: calc(64px * var(--ui-scale));
+		margin-top: calc(-270px * var(--ui-scale));
+		background: var(--color-bg);
+		border-top: var(--border-width) solid var(--color-border);
+		position: relative;
+		z-index: 1;
+	}
+	.cs-hero__text {
+		display: flex;
+		flex-direction: column;
+		gap: calc(25px * var(--ui-scale));
+		flex: 0 0 min(calc(732px * var(--ui-scale)), 48%);
+		overflow: hidden;
+	}
+	.cs-hero__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: calc(10px * var(--ui-scale));
+	}
+	.cs-hero__title {
+		font-family: var(--font-heading);
+		font-size: calc(64px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.2;
+		letter-spacing: -0.5px;
+		color: var(--color-text);
+		margin: 0;
+	}
+	.cs-hero__desc {
+		font-family: var(--font-sans);
+		font-size: calc(20px * var(--ui-scale));
+		font-weight: 400;
+		line-height: 1.75;
+		letter-spacing: calc(1px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		margin: 0;
+	}
+
+	/* ── Meta table ───────────────────────────────────────────────────── */
+	/* Figma's "metadata table" (node 16071:69160) pads the row stack away
+	   from the card's own border (24px sides / 32px top+bottom) instead of
+	   running rows edge-to-edge — the last row still has no border-bottom
+	   (see :last-child below), so that padding is what closes it off instead
+	   of a line. */
+	.cs-hero__meta {
+		flex: 1;
+		min-width: 0;
+		background: var(--color-bg-subtle); /* #1a1a33 dark / #e8e8eb light */
+		border: var(--border-width) solid var(--color-border);
+		padding: calc(32px * var(--ui-scale)) calc(24px * var(--ui-scale));
+		display: flex;
+		flex-direction: column;
+	}
+	.cs-meta-row {
+		display: flex;
+		align-items: center;
+		gap: calc(12px * var(--ui-scale));
+		padding: calc(24px * var(--ui-scale));
+		border-bottom: var(--border-width) solid var(--color-border);
+	}
+	.cs-meta-row:last-child {
+		border-bottom: none;
+	}
+	.cs-meta-row__label {
+		flex: 0 0 calc(190px * var(--ui-scale));
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 800;
+		line-height: 1.75;
+		letter-spacing: calc(6px * var(--ui-scale));
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--color-text) 80%, transparent);
+	}
+	.cs-meta-row__value {
+		flex: 1;
+		font-family: var(--font-sans);
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 600;
+		line-height: 1.75;
+		letter-spacing: calc(1px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+	}
+	.cs-meta-row__link {
+		display: inline-flex;
+		align-items: center;
+		gap: calc(8px * var(--ui-scale));
+		font-family: var(--font-sans);
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 600;
+		letter-spacing: calc(1px * var(--ui-scale));
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		text-decoration: underline;
+	}
+	.cs-meta-row__link:hover {
+		color: var(--color-action-ghost-text);
+	}
+	.cs-meta-row__ext-icon {
+		width: calc(18px * var(--ui-scale));
+		height: calc(18px * var(--ui-scale));
+		flex-shrink: 0;
+	}
+
+	/* ── Article ──────────────────────────────────────────────────────── */
+	.cs-article {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	/* ── Responsive ───────────────────────────────────────────────────── */
+	@media (max-width: 1100px) {
+		.cs-hero__content {
+			flex-direction: column;
+			margin-top: calc(-180px * var(--ui-scale));
+		}
+		.cs-hero__text {
+			flex: unset;
+			width: 100%;
+		}
+		.cs-hero__meta {
+			width: 100%;
+		}
+		.cs-hero__title {
+			font-size: calc(44px * var(--ui-scale));
+		}
+	}
+	@media (max-width: 840px) {
+		.cs-page {
+			padding-top: var(--component-header-height-mobile);
+		}
+		.cs-hero__image-wrap {
+			padding: var(--gutter-mobile);
+			padding-bottom: calc(48px * var(--ui-scale));
+		}
+		.cs-hero__content {
+			margin-top: calc(-72px * var(--ui-scale));
+			padding: var(--gutter-mobile);
+		}
+		.cs-hero__title {
+			font-size: calc(32px * var(--ui-scale));
+		}
+		.cs-hero__desc {
+			font-size: calc(16px * var(--ui-scale));
+		}
+		.cs-hero__breadcrumbs {
+			padding: var(--gutter-mobile) var(--gutter-mobile) 0;
+			font-size: calc(11px * var(--ui-scale));
+		}
+		.cs-meta-row__label {
+			flex: 0 0 120px;
+			font-size: calc(10px * var(--ui-scale));
+		}
+	}
+</style>

@@ -1,0 +1,83 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import Button from '../ui/Button.astro';
+
+export interface Props {
+	title: string;
+	slug: string;
+}
+
+const { title, slug } = Astro.props;
+---
+
+<div class="cs-next">
+	<div class="cs-next__prev">
+		<p class="cs-next__label">next case study</p>
+		<a class="cs-next__link" href={`/blog/${slug}`}>
+			<span class="cs-next__title">{title}</span>
+			<ArrowRight class="cs-next__arrow" />
+		</a>
+	</div>
+	<Button href="/" variant="secondary" size="lg" showLeadingIcon={false}>View all proyects</Button>
+</div>
+
+<style>
+	.cs-next {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: calc(32px * var(--ui-scale));
+		padding-block: calc(112px * var(--ui-scale));
+		padding-inline: calc(64px * var(--ui-scale));
+		border-block: var(--border-width) solid var(--color-border);
+	}
+	.cs-next__prev {
+		display: flex;
+		flex-direction: column;
+		gap: calc(15px * var(--ui-scale));
+	}
+	.cs-next__label {
+		font-family: var(--font-heading);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.75;
+		letter-spacing: calc(4px * var(--ui-scale));
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		margin: 0;
+	}
+	.cs-next__link {
+		display: flex;
+		align-items: center;
+		gap: calc(12px * var(--ui-scale));
+		text-decoration: none;
+		color: var(--color-text);
+		transition: color var(--duration-fast) var(--ease-standard);
+	}
+	.cs-next__link:hover {
+		color: var(--color-action-ghost-text);
+	}
+	.cs-next__title {
+		font-family: var(--font-heading);
+		font-size: calc(32px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.2;
+		letter-spacing: -0.5px;
+	}
+	.cs-next__arrow {
+		width: calc(48px * var(--ui-scale));
+		height: calc(48px * var(--ui-scale));
+		flex-shrink: 0;
+	}
+	@media (max-width: 840px) {
+		.cs-next {
+			flex-direction: column;
+			align-items: flex-start;
+			padding-inline: var(--gutter-mobile);
+			padding-block: calc(64px * var(--ui-scale));
+		}
+		.cs-next__title {
+			font-size: calc(24px * var(--ui-scale));
+		}
+	}
+</style>

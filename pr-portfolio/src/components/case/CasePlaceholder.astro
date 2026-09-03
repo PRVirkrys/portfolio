@@ -1,0 +1,22 @@
+---
+// Temporary image placeholder for case study sections.
+// Replace with <Image> or real content once assets are ready.
+export interface Props {
+	height?: number; // px (before ui-scale)
+}
+
+const { height = 420 } = Astro.props;
+---
+
+<div class="cs-placeholder" style={`--ph-height: ${height}px`}></div>
+
+<style>
+	.cs-placeholder {
+		flex: 1;
+		min-width: 0;
+		min-height: calc(var(--ph-height, 420px) * var(--ui-scale));
+		background: var(--color-surface-raised);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-md);
+	}
+</style>
