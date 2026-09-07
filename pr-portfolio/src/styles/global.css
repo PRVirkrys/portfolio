@@ -69,6 +69,12 @@ main {
 	margin-inline: auto;
 	flex: 1 0 auto;
 	padding: var(--section-mobile) var(--gutter-mobile);
+	/* Header is position:fixed, so below its own 839/840 breakpoint (see
+	   Header.astro) it's the mobile bar height, not the desktop one — reserve
+	   that here so content doesn't start under it, same clearance index.astro's
+	   own .hero applies for the home page. The min-width:840 rule below swaps
+	   this for the desktop header height. */
+	padding-top: var(--component-header-height-mobile);
 }
 h1,
 h2,
@@ -162,7 +168,8 @@ hr {
 		font-size: var(--typography-body-m-font-size);
 	}
 	main {
-		padding: var(--space-8) var(--gutter-mobile);
+		padding-bottom: var(--space-8);
+		padding-inline: var(--gutter-mobile);
 	}
 }
 
