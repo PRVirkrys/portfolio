@@ -1,16 +1,17 @@
 ---
 import Logo from './ui/Logo.astro';
-import { BriefcaseBusiness, CircleUserRound, FileUser, Send, Mail } from '@lucide/astro';
+import { House, BriefcaseBusiness, CircleUserRound, FileUser, Send, Mail } from '@lucide/astro';
 import { iconUrl } from '../lib/icons';
 
 const pathname = Astro.url.pathname;
 const navigation = [
-	{ label: 'Work', href: '/', Icon: BriefcaseBusiness },
+	{ label: 'Home', href: '/', Icon: House },
+	{ label: 'Work', href: '/work', Icon: BriefcaseBusiness },
 	{ label: 'About', href: '/about', Icon: CircleUserRound },
 	{ label: 'CV', href: '/cv', Icon: FileUser },
 	{ label: 'Contacto', href: '/contacto', Icon: Send },
 ];
-const isActive = (href: string) => (href === '/' ? pathname === '/' || pathname.startsWith('/blog') : pathname === href);
+const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
 ---
 
 <aside class="sidebar">
@@ -63,5 +64,5 @@ const isActive = (href: string) => (href === '/' ? pathname === '/' || pathname.
 	   invert them in light theme instead of baking a second dark asset. */
 	:global(html:not(.dark)) .sidebar__social img { filter: invert(1); }
 	.sidebar__social a:hover { background: var(--color-action-secondary-bg-hover); }
-	@media (max-width: 839px) { .sidebar { inset: auto 0 0 0; width: 100%; min-height: auto; flex-direction: row; justify-content: center; gap: 0; padding: var(--space-2); border-top: var(--border-width) solid var(--sidebar-border); border-right: 0; } .sidebar__brand-block, .sidebar__divider, .sidebar__spacer, .sidebar__social { display: none; } .sidebar__navigation { width: min(100%, calc(480px * var(--ui-scale))); flex-direction: row; justify-content: space-between; gap: 0; } .sidebar__item { width: 25%; height: calc(68px * var(--ui-scale)); font-size: calc(11px * var(--ui-scale)); } .sidebar__icon { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); } .sidebar__icon :global(svg) { width: calc(20px * var(--ui-scale)); height: calc(20px * var(--ui-scale)); } }
+	@media (max-width: 839px) { .sidebar { inset: auto 0 0 0; width: 100%; min-height: auto; flex-direction: row; justify-content: center; gap: 0; padding: var(--space-2); border-top: var(--border-width) solid var(--sidebar-border); border-right: 0; } .sidebar__brand-block, .sidebar__divider, .sidebar__spacer, .sidebar__social { display: none; } .sidebar__navigation { width: min(100%, calc(600px * var(--ui-scale))); flex-direction: row; justify-content: space-between; gap: 0; } .sidebar__item { width: 20%; height: calc(68px * var(--ui-scale)); font-size: calc(11px * var(--ui-scale)); } .sidebar__icon { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); } .sidebar__icon :global(svg) { width: calc(20px * var(--ui-scale)); height: calc(20px * var(--ui-scale)); } }
 </style>
