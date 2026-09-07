@@ -36,33 +36,41 @@ const hasImage = Astro.slots.has('image');
 	data-layout={layout}
 	data-wide={wide || undefined}
 >
-	{hasImage && (
-		<div class="cs-section__assets" data-image-width={imageWidth}>
-			<slot name="image" />
-		</div>
-	)}
-	<div class="cs-section__copy">
-		{(tag || heading) && (
-			<div class="cs-section__header">
-				{tag && <Tag category={tagCategory}>{tag}</Tag>}
-				{heading && <h2 class="cs-section__heading">{heading}</h2>}
+	<div class="cs-section__inner">
+		{hasImage && (
+			<div class="cs-section__assets" data-image-width={imageWidth}>
+				<slot name="image" />
 			</div>
 		)}
-		<slot />
+		<div class="cs-section__copy">
+			{(tag || heading) && (
+				<div class="cs-section__header">
+					{tag && <Tag category={tagCategory}>{tag}</Tag>}
+					{heading && <h2 class="cs-section__heading">{heading}</h2>}
+				</div>
+			)}
+			<slot />
+		</div>
 	</div>
 </section>
 
 <style>
 	.cs-section {
 		padding-block: calc(112px * var(--ui-scale));
-		padding-inline: calc(64px * var(--ui-scale));
 	}
 	.cs-section[data-variant='subtle'] {
 		background-color: var(--color-bg-subtle);
 	}
+	.cs-section__inner {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: calc(1440px * var(--ui-scale));
+		margin-inline: auto;
+		padding-inline: calc(64px * var(--ui-scale));
+	}
 
 	/* ── Stacked: assets on top, copy centred below ── */
-	.cs-section[data-layout='stacked'] {
+	.cs-section[data-layout='stacked'] .cs-section__inner {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -85,17 +93,18 @@ const hasImage = Astro.slots.has('image');
 		margin-inline: auto;
 	}
 	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='full'] {
-		width: 100%;
+		width: min(calc(1280px * var(--ui-scale)), 100%);
+		margin-inline: auto;
 	}
 	.cs-section[data-layout='stacked'] .cs-section__copy {
 		width: min(calc(732px * var(--ui-scale)), 100%);
 	}
 	.cs-section[data-layout='stacked'][data-wide] .cs-section__copy {
-		width: 100%;
+		width: min(calc(1120px * var(--ui-scale)), 100%);
 	}
 
 	/* ── Side: image left, copy right ── */
-	.cs-section[data-layout='side'] {
+	.cs-section[data-layout='side'] .cs-section__inner {
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
@@ -114,7 +123,7 @@ const hasImage = Astro.slots.has('image');
 	}
 
 	/* ── Text only: just copy, centred ── */
-	.cs-section[data-layout='text-only'] {
+	.cs-section[data-layout='text-only'] .cs-section__inner {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -123,7 +132,7 @@ const hasImage = Astro.slots.has('image');
 		width: min(calc(732px * var(--ui-scale)), 100%);
 	}
 	.cs-section[data-layout='text-only'][data-wide] .cs-section__copy {
-		width: 100%;
+		width: min(calc(1120px * var(--ui-scale)), 100%);
 	}
 
 	/* ── Copy content ── */
@@ -186,9 +195,11 @@ const hasImage = Astro.slots.has('image');
 	@media (max-width: 960px) {
 		.cs-section {
 			padding-block: calc(64px * var(--ui-scale));
+		}
+		.cs-section__inner {
 			padding-inline: var(--gutter-mobile);
 		}
-		.cs-section[data-layout='side'] {
+		.cs-section[data-layout='side'] .cs-section__inner {
 			flex-direction: column;
 		}
 		.cs-section[data-layout='side'] .cs-section__copy {
