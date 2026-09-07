@@ -1,0 +1,161 @@
+---
+// Figma: PR Brand (DS) → ThemeToggle (node 15705:1179), used inside the
+// header's "Language menu" panel (node 16067:68076). Functional: flips
+// `.dark` on <html> and persists the choice — see BaseHead.astro's blocking
+// init script for how the saved value is applied before first paint.
+import { Sun, Moon } from '@lucide/astro';
+
+export interface Props {
+	label?: string;
+	showLabel?: boolean;
+}
+
+const { label = 'Tema oscuro', showLabel = true } = Astro.props;
+---
+
+<div class="theme-toggle">
+	<button type="button" class="theme-toggle__control" role="switch" aria-checked="true" aria-label="Cambiar a tema claro">
+		<span class="theme-toggle__track">
+			<!-- Figma (node 15705:1179): the icon for whichever mode is NOT
+			     active sits fixed in the track; the active mode's icon rides
+			     inside the thumb. Both icons exist in both spots and crossfade
+			     so the thumb never has to slide over — and hide — one of them. -->
+			<Sun class="theme-toggle__static theme-toggle__static--sun" aria-hidden="true" />
+			<Moon class="theme-toggle__static theme-toggle__static--moon" aria-hidden="true" />
+			<span class="theme-toggle__thumb" aria-hidden="true">
+				<Sun class="theme-toggle__icon theme-toggle__icon--sun" />
+				<Moon class="theme-toggle__icon theme-toggle__icon--moon" />
+			</span>
+		</span>
+	</button>
+	{showLabel && <span class="theme-toggle__label">{label}</span>}
+</div>
+
+<style>
+	.theme-toggle {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		height: calc(44px * var(--ui-scale));
+	}
+	.theme-toggle__control {
+		display: block;
+		flex-shrink: 0;
+		padding: calc(6px * var(--ui-scale)) 0;
+		border: 0;
+		background: transparent;
+		cursor: pointer;
+	}
+	.theme-toggle__track {
+		position: relative;
+		display: block;
+		width: calc(52px * var(--ui-scale));
+		height: calc(32px * var(--ui-scale));
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-full);
+		background: var(--color-surface-raised);
+	}
+	/* Static icons fixed to the track ends — each is the "off" side's icon,
+	   visible only while the thumb sits on the OTHER side. */
+	.theme-toggle__static {
+		position: absolute;
+		top: 50%;
+		width: calc(14px * var(--ui-scale));
+		height: calc(14px * var(--ui-scale));
+		transform: translateY(-50%);
+		color: var(--color-text-muted);
+		opacity: 1;
+		transition: opacity var(--duration-fast) var(--ease-standard);
+	}
+	.theme-toggle__static--sun {
+		left: calc(7px * var(--ui-scale));
+	}
+	.theme-toggle__static--moon {
+		right: calc(7px * var(--ui-scale));
+	}
+	/* checked = dark: thumb (with the moon) is on the right, so the static
+	   moon underneath it hides, leaving the static sun visible on the left. */
+	.theme-toggle__control[aria-checked='true'] .theme-toggle__static--moon {
+		opacity: 0;
+	}
+	.theme-toggle__control:not([aria-checked='true']) .theme-toggle__static--sun {
+		opacity: 0;
+	}
+
+	.theme-toggle__thumb {
+		position: absolute;
+		top: calc(3px * var(--ui-scale));
+		left: calc(3px * var(--ui-scale));
+		width: calc(24px * var(--ui-scale));
+		height: calc(24px * var(--ui-scale));
+		display: grid;
+		place-items: center;
+		border-radius: var(--radius-full);
+		background: var(--color-base-white);
+		box-shadow: var(--elevation-button-adaptive);
+		transition: transform var(--duration-fast) var(--ease-standard);
+	}
+	/* Dark is the "on" position — thumb slides to the right. */
+	.theme-toggle__control[aria-checked='true'] .theme-toggle__thumb {
+		transform: translateX(calc(20px * var(--ui-scale)));
+	}
+	/* Icon riding inside the thumb crossfades to match whichever side it's
+	   currently parked on. */
+	.theme-toggle__icon {
+		grid-area: 1 / 1;
+		width: calc(14px * var(--ui-scale));
+		height: calc(14px * var(--ui-scale));
+		color: var(--color-text-inverse);
+		opacity: 0;
+		transition: opacity var(--duration-fast) var(--ease-standard);
+	}
+	.theme-toggle__control:not([aria-checked='true']) .theme-toggle__icon--sun {
+		opacity: 1;
+	}
+	.theme-toggle__control[aria-checked='true'] .theme-toggle__icon--moon {
+		opacity: 1;
+	}
+	.theme-toggle__control:focus-visible {
+		outline: var(--focus-width) solid var(--color-focus);
+		outline-offset: var(--space-1);
+		border-radius: var(--radius-full);
+	}
+	.theme-toggle__label {
+		font-family: var(--font-sans);
+		font-size: calc(14px * var(--ui-scale));
+		font-weight: 600;
+		line-height: calc(20px * var(--ui-scale));
+		color: var(--color-text);
+		white-space: nowrap;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.theme-toggle__thumb,
+		.theme-toggle__icon,
+		.theme-toggle__static {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	function initThemeToggle(control: HTMLElement) {
+		const sync = () => {
+			const isDark = document.documentElement.classList.contains('dark');
+			control.setAttribute('aria-checked', String(isDark));
+			control.setAttribute('aria-label', isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+		};
+		sync();
+		control.addEventListener('click', () => {
+			const isDark = document.documentElement.classList.toggle('dark');
+			try {
+				localStorage.setItem('theme', isDark ? 'dark' : 'light');
+			} catch {
+				// Storage can be unavailable (private mode, disabled) — the
+				// toggle still works for the current page view either way.
+			}
+			sync();
+		});
+	}
+
+	document.querySelectorAll<HTMLElement>('.theme-toggle__control').forEach(initThemeToggle);
+</script>

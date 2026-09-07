@@ -13,8 +13,18 @@ export interface Props {
 }
 
 const { theme = 'dark', class: className } = Astro.props;
-const markSvg = theme === 'light-op2' ? logoLightOp2 : logoOriginal;
+const rawSvg = theme === 'light-op2' ? logoLightOp2 : logoOriginal;
 const framed = theme === 'light';
+
+// The source SVG's gradient defs use bare ids (e.g. id="paint0_linear_..."),
+// which collide once <Logo> renders more than once on a page (sidebar +
+// mobile header both do now) — the browser resolves every url(#id) to the
+// FIRST such id in the DOM, so the second instance's paths sample the first
+// instance's gradient in the wrong coordinate space and render as
+// near-invisible fragments. Suffixing every id/reference with a per-instance
+// token keeps each inlined copy self-contained.
+const uid = Math.random().toString(36).slice(2, 9);
+const markSvg = rawSvg.replace(/(id="|url\(#)([\w.-]+)/g, (_match, prefix, id) => `${prefix}${id}-${uid}`);
 ---
 
 <span class:list={['logo', framed && 'logo--framed', className]} aria-hidden="true">

@@ -52,6 +52,11 @@ body {
 	background: var(--color-bg);
 	word-wrap: break-word;
 	overflow-wrap: break-word;
+	/* Defensive: whatever narrow-viewport content still runs wide (a fixed
+	   px value that wasn't given a mobile override, a long unbroken word,
+	   etc.) shows up as page-level horizontal scroll otherwise — which
+	   throws off the effective right edge of every position:fixed element
+	   (Header included) instead of just clipping the one offending element. */
 	color: var(--color-text);
 	font-size: var(--typography-body-l-font-size);
 	font-weight: var(--typography-body-l-font-weight);

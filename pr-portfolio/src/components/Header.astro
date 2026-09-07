@@ -1,9 +1,15 @@
 ---
 import WorkNavigation from './WorkNavigation.astro';
 import SidebarNavigation from './SidebarNavigation.astro';
+import HeaderSettingsMenu from './HeaderSettingsMenu.astro';
 import Button from './ui/Button.astro';
 import Tag from './ui/Tag.astro';
-import { MousePointer2, Hand, MessageCircle, Type, Settings } from '@lucide/astro';
+import Logo from './ui/Logo.astro';
+import ThemeToggle from './ui/ThemeToggle.astro';
+import LanguageToggle from './ui/LanguageToggle.astro';
+import Footer from './Footer.astro';
+import { iconUrl } from '../lib/icons';
+import { MousePointer2, Hand, MessageCircle, Type, Menu, X, Mail } from '@lucide/astro';
 
 export interface Props {
 	/** Home is the only page with its own hero background right under the
@@ -24,7 +30,7 @@ const selectorItems = [
 
 
 <header class="header" data-transparent={transparent || undefined}>
-	<Tag category="Neutral" size="md" class="header__identity">PAULA RODAS · DEV DESIGNER · SINCE 2015</Tag>
+	<Tag category="Neutral" size="md" class="header__identity">PAULA RODAS · DEV DESIGNER</Tag>
 	<nav class="header__selector" aria-label="Herramientas de diseño">
 		{selectorItems.map(({ label, Icon, active }) => (
 			<button class:list={['header__selector-item', active && 'header__selector-item--active']} type="button" aria-label={label} aria-pressed={active ? 'true' : 'false'}>
@@ -35,7 +41,49 @@ const selectorItems = [
 	<div class="header__actions">
 		<WorkNavigation />
 		<Button href="/" size="lg" showLeadingIcon={false}>See all my work</Button>
-		<a class="header__icon-action" href="/contacto" aria-label="Contacto"><Settings /></a>
+		<HeaderSettingsMenu />
+	</div>
+
+	<!-- Mobile (≤839px) — Figma node 16067:57688. Replaces the desktop row
+	     above entirely at that width. SidebarNavigation's bottom tab bar is
+	     its own component, untouched, and stays visible under this bar while
+	     the menu panel below is closed; opening the panel (16077:69757)
+	     covers it full-height, since the panel's own Footer takes its place. -->
+	<a class="header__mobile-brand" href="/" aria-label="Inicio"><Logo class="header__mobile-logo" /></a>
+	<button
+		type="button"
+		class="header__mobile-trigger"
+		aria-haspopup="true"
+		aria-expanded="false"
+		aria-controls="header-mobile-panel"
+		aria-label="Abrir menú"
+	>
+		<Menu class="header__mobile-trigger-icon header__mobile-trigger-icon--open" />
+		<X class="header__mobile-trigger-icon header__mobile-trigger-icon--close" />
+	</button>
+
+	<div class="header__mobile-overlay" aria-hidden="true"></div>
+	<div class="header__mobile-panel" id="header-mobile-panel" role="menu" hidden>
+		<Button class="header__mobile-cta" href="/" size="lg" showLeadingIcon={false}>Explore my work</Button>
+		<div class="header__mobile-links">
+			<a class="header__mobile-link" href="mailto:bypaularodas@gmail.com">
+				<Mail />
+				Email
+			</a>
+			<a class="header__mobile-link" href="https://github.com/PRVirkrys" target="_blank" rel="noreferrer">
+				<img src={iconUrl('github.svg')} alt="" width="18" height="18" />
+				GitHub
+			</a>
+			<a class="header__mobile-link" href="https://www.linkedin.com/in/paularodas/" target="_blank" rel="noreferrer">
+				<img src={iconUrl('linkedin.svg')} alt="" width="18" height="18" />
+				LinkedIn
+			</a>
+		</div>
+		<div class="header__mobile-prefs">
+			<ThemeToggle />
+			<LanguageToggle />
+		</div>
+		<Footer />
 	</div>
 </header>
 
@@ -48,17 +96,228 @@ const selectorItems = [
 	   the same line regardless of either side's content. */
 	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
 	.header[data-transparent] { background: transparent; }
+	/* The mobile menu panel is a child of .header, which is itself a
+	   stacking context — its z-index can't out-rank SidebarNavigation
+	   (z-index 40) from inside there, so bump .header's own z-index instead
+	   while the panel is open. Same technique WorkNavigation uses for its
+	   own dropdown (see `.header:has(.work-panel...)` there). */
+	.header:has(.header__mobile-panel:not([hidden])) { z-index: 50; }
 	.header > * { pointer-events: auto; }
 	.header > :global(.header__identity) { flex: 0 0 auto; opacity: 75%; }
+	/* Tag's Neutral variant is white-on-permanently-dark (correct for the
+	   floating dark panels it's normally used in, e.g. WorkNavigation) — this
+	   header sits on the theme-aware page bg instead, so it needs the same
+	   swap-with-theme icon/text color the rest of the header uses. The
+	   [data-category] attribute matches Tag's own selector specificity so
+	   this actually wins the cascade instead of losing to it silently. */
+	.header > :global(.header__identity[data-category='Neutral']) { --tag-color: var(--header-icon); }
 	.header__selector { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-action-secondary-bg); }
-	.header__selector-item { display: grid; width: var(--control-md); height: var(--control-md); place-items: center; padding: var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-base-white); cursor: pointer; }
-	.header__selector-item--active { background: var(--sidebar-item-text-active); }
+	.header__selector-item { display: grid; width: var(--control-md); height: var(--control-md); place-items: center; padding: var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--header-icon); cursor: pointer; }
+	/* Active pill is a solid purple regardless of theme, so its icon stays
+	   white rather than following --header-icon (which would go near-black
+	   in light mode and lose contrast against it). */
+	.header__selector-item--active { background: var(--sidebar-item-text-active); color: var(--color-base-white); }
 	.header__selector-item :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
-	.header__selector-item:focus-visible, .header__icon-action:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+	.header__selector-item:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
 	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); }
-	.header__icon-action { display: grid; width: var(--control-lg); height: var(--control-lg); place-items: center; border-radius: var(--radius-sm); box-shadow: var(--elevation-button-adaptive); color: var(--color-base-white); }
-	.header__icon-action:hover { background: var(--color-action-secondary-bg-hover); }
-	.header__icon-action :global(svg) { width: var(--icon-lg); height: var(--icon-lg); }
 	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header > :global(.header__identity) { display: none; } }
-	@media (max-width: 839px) { .header { left: 0; height: auto; padding: var(--space-3); } .header__selector, .header__actions > :global(.button), .header__icon-action { display: none; } .header__actions { gap: 0; } }
+
+	/* ── Mobile (≤839px) — Figma node 16067:57688 / 16077:69757 ──────────── */
+	.header__mobile-brand,
+	.header__mobile-trigger,
+	.header__mobile-overlay,
+	.header__mobile-panel {
+		display: none;
+	}
+	@media (max-width: 839px) {
+		.header {
+			left: 0;
+			/* Explicit (not auto) so the panel below can anchor to `top: 100%`
+			   and size its own height against a known bar height. */
+			height: var(--component-header-height-mobile);
+			padding: calc(24px * var(--ui-scale));
+		}
+		.header > :global(.header__identity),
+		.header__selector,
+		.header__actions {
+			display: none;
+		}
+		.header__mobile-brand {
+			display: grid;
+			place-items: center;
+		}
+		.header__mobile-logo {
+			width: calc(35px * var(--ui-scale));
+		}
+		.header__mobile-trigger {
+			display: grid;
+			position: relative;
+			width: calc(52px * var(--ui-scale));
+			height: calc(52px * var(--ui-scale));
+			place-items: center;
+			border: 0;
+			border-radius: var(--radius-full);
+			background: transparent;
+			box-shadow: var(--elevation-button-adaptive);
+			color: var(--header-icon);
+			cursor: pointer;
+		}
+		.header__mobile-trigger:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
+		.header__mobile-trigger:focus-visible {
+			outline: var(--focus-width) solid var(--color-focus);
+			outline-offset: var(--space-1);
+		}
+		.header__mobile-trigger-icon {
+			grid-area: 1 / 1;
+			width: var(--icon-lg);
+			height: var(--icon-lg);
+		}
+		.header__mobile-trigger-icon--close {
+			display: none;
+		}
+		.header__mobile-trigger[aria-expanded='true'] .header__mobile-trigger-icon--open {
+			display: none;
+		}
+		.header__mobile-trigger[aria-expanded='true'] .header__mobile-trigger-icon--close {
+			display: block;
+		}
+
+		.header__mobile-overlay {
+			position: fixed;
+			inset: 0;
+			z-index: 32;
+			background: linear-gradient(to top, rgba(16, 16, 31, 0.2), rgba(69, 69, 133, 0.2));
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity var(--duration-medium) var(--ease-standard);
+		}
+		.header__mobile-overlay.is-visible {
+			opacity: 1;
+			pointer-events: auto;
+		}
+		@supports (backdrop-filter: blur(5.5px)) {
+			.header__mobile-overlay.is-visible {
+				backdrop-filter: blur(5.5px);
+			}
+		}
+
+		/* Figma node 16077:69757 — the panel takes the full remaining viewport
+		   height (not just its content's height) and its own Footer (bottom of
+		   the frame there) sits pinned to the bottom via margin-top: auto. It
+		   must render above SidebarNavigation's bottom tab bar (z-index 40),
+		   since fully open it replaces that bar rather than leaving it
+		   exposed — but .header is itself a stacking context (position:fixed
+		   + z-index), so no z-index in here can out-rank the sidebar's on its
+		   own; see the `.header:has(...)` rule below, same technique
+		   WorkNavigation already uses for its own dropdown. */
+		.header__mobile-panel {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			z-index: 33;
+			flex-direction: column;
+			gap: calc(16px * var(--ui-scale));
+			height: calc(100dvh - var(--component-header-height-mobile));
+			padding: calc(32px * var(--ui-scale));
+			background: var(--color-bg);
+			border-top: var(--border-width) solid var(--color-border);
+			box-shadow: var(--elevation-floating);
+			overflow-y: auto;
+		}
+		.header__mobile-panel:not([hidden]) {
+			display: flex;
+		}
+		/* Same style as the desktop "See all my work" Button — just stretched
+		   to the panel's full content width and, being the last item pushed by
+		   its own siblings, pinned to the bottom edge full-bleed (cancelling
+		   the panel's own padding) to match the Figma Footer frame. */
+		.header__mobile-panel :global(.header__mobile-cta) {
+			width: 100%;
+		}
+		.header__mobile-panel :global(.footer) {
+			margin: auto calc(-32px * var(--ui-scale)) calc(-32px * var(--ui-scale));
+		}
+
+		.header__mobile-links,
+		.header__mobile-prefs {
+			display: flex;
+			flex-direction: column;
+			gap: calc(16px * var(--ui-scale));
+			width: 100%;
+			padding-block: calc(12px * var(--ui-scale));
+			border-top: var(--border-width) solid var(--color-border);
+		}
+		.header__mobile-link {
+			display: inline-flex;
+			align-items: center;
+			gap: var(--space-3);
+			height: calc(44px * var(--ui-scale));
+			padding-inline: calc(24px * var(--ui-scale));
+			border-radius: var(--radius-sm);
+			color: var(--button-text);
+			font-family: var(--font-heading);
+			font-size: calc(16px * var(--ui-scale));
+			font-weight: 500;
+			text-decoration: none;
+		}
+		.header__mobile-link:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
+		.header__mobile-link :global(svg),
+		.header__mobile-link img {
+			width: calc(18px * var(--ui-scale));
+			height: calc(18px * var(--ui-scale));
+		}
+		/* Same reasoning as SidebarNavigation's social icons: these two are
+		   flat-white .svg files loaded via <img>, so `color` can't reach them. */
+		:global(html:not(.dark)) .header__mobile-link img {
+			filter: invert(1);
+		}
+	}
 </style>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.header').forEach((header) => {
+		const trigger = header.querySelector<HTMLButtonElement>('.header__mobile-trigger');
+		const panel = header.querySelector<HTMLElement>('.header__mobile-panel');
+		const overlay = header.querySelector<HTMLElement>('.header__mobile-overlay');
+		if (!trigger || !panel || !overlay) return;
+
+		const close = () => {
+			panel.hidden = true;
+			overlay.classList.remove('is-visible');
+			trigger.setAttribute('aria-expanded', 'false');
+		};
+		const open = () => {
+			panel.hidden = false;
+			overlay.classList.add('is-visible');
+			trigger.setAttribute('aria-expanded', 'true');
+		};
+
+		trigger.addEventListener('click', () => {
+			if (panel.hidden) open();
+			else close();
+		});
+		overlay.addEventListener('click', close);
+		panel.addEventListener('click', (event) => {
+			if ((event.target as Element).closest('a[href]')) close();
+		});
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && !panel.hidden) {
+				close();
+				trigger.focus();
+			}
+		});
+		// Resizing past the mobile breakpoint with the panel open would
+		// otherwise leave it stuck open (and hidden by CSS, but still
+		// tab-focusable) when the layout switches back to desktop.
+		const query = window.matchMedia('(max-width: 839px)');
+		const handleChange = () => {
+			if (!query.matches) close();
+		};
+		query.addEventListener('change', handleChange);
+	});
+</script>

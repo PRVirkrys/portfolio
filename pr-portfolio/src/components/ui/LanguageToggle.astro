@@ -1,0 +1,87 @@
+---
+// Figma: PR Brand (DS) → LanguageToggle (node 16070:2167), used inside the
+// header's "Language menu" panel (node 16067:68076).
+// Intentionally inert for now — real i18n is a separate, much larger piece
+// of work (see conversation). This renders the "Language=ES" default state
+// and does nothing on click so it doesn't look broken while that's pending.
+export interface Props {
+	label?: string;
+	showLabel?: boolean;
+}
+
+const { label = 'Español', showLabel = true } = Astro.props;
+---
+
+<div class="language-toggle">
+	<button type="button" class="language-toggle__control" disabled aria-disabled="true" title="Próximamente">
+		<span class="language-toggle__track">
+			<span class="language-toggle__option language-toggle__option--en">EN</span>
+			<span class="language-toggle__option language-toggle__option--es">ES</span>
+			<span class="language-toggle__thumb" aria-hidden="true"></span>
+		</span>
+	</button>
+	{showLabel && <span class="language-toggle__label">{label}</span>}
+</div>
+
+<style>
+	.language-toggle {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		height: calc(44px * var(--ui-scale));
+	}
+	.language-toggle__control {
+		display: block;
+		flex-shrink: 0;
+		padding: calc(6px * var(--ui-scale)) 0;
+		border: 0;
+		background: transparent;
+		/* Visually inert, not just non-interactive: no pointer/hover affordance. */
+		cursor: default;
+	}
+	.language-toggle__track {
+		position: relative;
+		display: block;
+		width: calc(52px * var(--ui-scale));
+		height: calc(32px * var(--ui-scale));
+		border: var(--border-width) solid #2bbafe;
+		border-radius: var(--radius-full);
+		background: var(--color-surface-raised);
+	}
+	.language-toggle__option {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		font-family: var(--font-sans);
+		font-size: calc(9px * var(--ui-scale));
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.language-toggle__option--en {
+		left: calc(9px * var(--ui-scale));
+		color: var(--color-text-muted);
+	}
+	.language-toggle__option--es {
+		right: calc(8px * var(--ui-scale));
+		color: var(--color-text-inverse);
+	}
+	.language-toggle__thumb {
+		position: absolute;
+		top: calc(3px * var(--ui-scale));
+		/* ES is the only state today, so the thumb is parked over it. */
+		left: calc(23px * var(--ui-scale));
+		width: calc(24px * var(--ui-scale));
+		height: calc(24px * var(--ui-scale));
+		border-radius: var(--radius-full);
+		background: var(--color-base-white);
+		box-shadow: var(--elevation-button-adaptive);
+	}
+	.language-toggle__label {
+		font-family: var(--font-sans);
+		font-size: calc(14px * var(--ui-scale));
+		font-weight: 600;
+		line-height: calc(20px * var(--ui-scale));
+		color: var(--color-text);
+		white-space: nowrap;
+	}
+</style>

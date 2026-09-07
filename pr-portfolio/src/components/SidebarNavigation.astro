@@ -56,8 +56,12 @@ const isActive = (href: string) => (href === '/' ? pathname === '/' || pathname.
 	.sidebar__item:focus-visible, .sidebar__social a:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
 	.sidebar__spacer { flex: 1; min-height: var(--space-4); }
 	.sidebar__social { align-items: center; }
-	.sidebar__social a { display: grid; width: calc(80px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); place-items: center; border-radius: var(--radius-lg); color: var(--color-base-white); }
+	.sidebar__social a { display: grid; width: calc(80px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); place-items: center; border-radius: var(--radius-lg); color: var(--header-icon); }
 	.sidebar__social :global(svg), .sidebar__social img { width: calc(20px * var(--ui-scale)); height: calc(20px * var(--ui-scale)); }
+	/* The GitHub/LinkedIn marks are flat-white .svg files loaded via <img>,
+	   so they can't pick up `color` like the Mail icon (inline SVG) does —
+	   invert them in light theme instead of baking a second dark asset. */
+	:global(html:not(.dark)) .sidebar__social img { filter: invert(1); }
 	.sidebar__social a:hover { background: var(--color-action-secondary-bg-hover); }
 	@media (max-width: 839px) { .sidebar { inset: auto 0 0 0; width: 100%; min-height: auto; flex-direction: row; justify-content: center; gap: 0; padding: var(--space-2); border-top: var(--border-width) solid var(--sidebar-border); border-right: 0; } .sidebar__brand-block, .sidebar__divider, .sidebar__spacer, .sidebar__social { display: none; } .sidebar__navigation { width: min(100%, calc(480px * var(--ui-scale))); flex-direction: row; justify-content: space-between; gap: 0; } .sidebar__item { width: 25%; height: calc(68px * var(--ui-scale)); font-size: calc(11px * var(--ui-scale)); } .sidebar__icon { width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); } .sidebar__icon :global(svg) { width: calc(20px * var(--ui-scale)); height: calc(20px * var(--ui-scale)); } }
 </style>
