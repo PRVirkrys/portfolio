@@ -65,7 +65,7 @@ export const works: Work[] = [
         label: "La Meva Salut",
         logo: iconUrl("client-lms.png"),
         logoClass: "client-bubble__logo--lms",
-        href: "/blog/caso-estudio-onboarding/",
+        href: "/work/caso-estudio-onboarding/",
         surface: "light",
       },
       {
