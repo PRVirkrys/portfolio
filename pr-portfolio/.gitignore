@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # local implementation guide (not for version control)
 portfolio-brand-ui-implementation-guide.md
+
+# working specs/storyboards (scratch docs, not for version control)
+docs/superpowers/specs/
