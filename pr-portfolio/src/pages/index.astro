@@ -134,6 +134,20 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	.hero__visual {
 		display: none;
 	}
+	/* .hero__heading/.hero__lead otherwise stay at their desktop size (64px/
+	   24px) all the way down to phone widths with no downscaling at all —
+	   long words (e.g. "complex", "actually") then render wider than the
+	   viewport itself, forcing real horizontal overflow on the whole page
+	   (not just clipped text), which throws off every position:fixed
+	   element's effective right edge, including Header's. */
+	@media (max-width: 839px) {
+		.hero__heading {
+			font-size: calc(40px * var(--ui-scale));
+		}
+		.hero__lead {
+			font-size: calc(18px * var(--ui-scale));
+		}
+	}
 	/* Matches Header.astro's own mobile/desktop breakpoint exactly (839/840):
 	   the header switches to its fixed-height solid bar there, so hero's
 	   top-clearance has to switch at the same point or content would sit

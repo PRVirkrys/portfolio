@@ -18,6 +18,20 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, image = FallbackImage } = Astro.props;
 ---
 
+<!-- Every page's <html> hardcodes class="dark" as the SSR default. This runs
+     synchronously before first paint to correct it from a saved preference
+     (HeaderSettingsMenu → ThemeToggle writes it), so switching to light never
+     flashes dark first. -->
+<script is:inline>
+	(function () {
+		try {
+			if (localStorage.getItem('theme') === 'light') {
+				document.documentElement.classList.remove('dark');
+			}
+		} catch {}
+	})();
+</script>
+
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />

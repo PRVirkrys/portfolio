@@ -1,0 +1,116 @@
+---
+// Figma: PR Brand (DS) → "Language menu" (node 16067:68076) — the panel that
+// drops from the header's gear icon. That icon used to be a plain link to
+// /contacto; it's reachable from the sidebar nav too, so repurposing it here
+// doesn't strand that page.
+import { Settings } from '@lucide/astro';
+import ThemeToggle from './ui/ThemeToggle.astro';
+import LanguageToggle from './ui/LanguageToggle.astro';
+---
+
+<div class="settings-menu">
+	<button
+		type="button"
+		class="settings-menu__trigger"
+		aria-haspopup="true"
+		aria-expanded="false"
+		aria-controls="settings-menu-panel"
+		aria-label="Preferencias"
+	>
+		<Settings />
+	</button>
+	<div class="settings-menu__panel" id="settings-menu-panel" role="menu" hidden>
+		<ThemeToggle />
+		<LanguageToggle />
+	</div>
+</div>
+
+<style>
+	.settings-menu {
+		position: relative;
+	}
+	.settings-menu__trigger {
+		display: grid;
+		width: var(--control-lg);
+		height: var(--control-lg);
+		place-items: center;
+		padding: 0;
+		border: 0;
+		border-radius: var(--radius-sm);
+		background: transparent;
+		box-shadow: var(--elevation-button-adaptive);
+		color: var(--header-icon);
+		font: inherit;
+		cursor: pointer;
+	}
+	.settings-menu__trigger:hover {
+		background: var(--color-action-secondary-bg-hover);
+	}
+	.settings-menu__trigger:focus-visible {
+		outline: var(--focus-width) solid var(--color-focus);
+		outline-offset: var(--space-1);
+	}
+	.settings-menu__trigger :global(svg) {
+		width: var(--icon-lg);
+		height: var(--icon-lg);
+	}
+
+	.settings-menu__panel {
+		position: absolute;
+		top: calc(100% + var(--space-2));
+		right: 0;
+		z-index: 40;
+		display: flex;
+		flex-direction: column;
+		gap: calc(16px * var(--ui-scale));
+		padding: calc(12px * var(--ui-scale)) calc(16px * var(--ui-scale));
+		/* --color-bg, not --color-surface-raised: the toggles' own tracks
+		   already use --color-surface-raised and need to read as a lighter
+		   raised layer sitting on top of this panel, in both themes. */
+		background: var(--color-bg);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: calc(16px * var(--ui-scale));
+		box-shadow: var(--elevation-floating);
+	}
+	.settings-menu__panel[hidden] {
+		display: none;
+	}
+
+	@media (max-width: 839px) {
+		.settings-menu {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.settings-menu').forEach((menu) => {
+		const trigger = menu.querySelector<HTMLButtonElement>('.settings-menu__trigger');
+		const panel = menu.querySelector<HTMLElement>('.settings-menu__panel');
+		if (!trigger || !panel) return;
+
+		const close = () => {
+			panel.hidden = true;
+			trigger.setAttribute('aria-expanded', 'false');
+		};
+		const open = () => {
+			panel.hidden = false;
+			trigger.setAttribute('aria-expanded', 'true');
+		};
+
+		trigger.addEventListener('click', (event) => {
+			event.stopPropagation();
+			if (panel.hidden) open();
+			else close();
+		});
+		document.addEventListener('click', (event) => {
+			if (!panel.hidden && !menu.contains(event.target as Node)) close();
+		});
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && !panel.hidden) {
+				close();
+				trigger.focus();
+			}
+		});
+	});
+</script>
