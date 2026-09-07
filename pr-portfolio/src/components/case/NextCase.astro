@@ -11,25 +11,33 @@ const { title, slug } = Astro.props;
 ---
 
 <div class="cs-next">
-	<div class="cs-next__prev">
-		<p class="cs-next__label">next case study</p>
-		<a class="cs-next__link" href={`/blog/${slug}`}>
-			<span class="cs-next__title">{title}</span>
-			<ArrowRight class="cs-next__arrow" />
-		</a>
+	<div class="cs-next__inner">
+		<div class="cs-next__prev">
+			<p class="cs-next__label">next case study</p>
+			<a class="cs-next__link" href={`/blog/${slug}`}>
+				<span class="cs-next__title">{title}</span>
+				<ArrowRight class="cs-next__arrow" />
+			</a>
+		</div>
+		<Button href="/" variant="secondary" size="lg" showLeadingIcon={false}>View all proyects</Button>
 	</div>
-	<Button href="/" variant="secondary" size="lg" showLeadingIcon={false}>View all proyects</Button>
 </div>
 
 <style>
 	.cs-next {
+		border-block: var(--border-width) solid var(--color-border);
+	}
+	.cs-next__inner {
+		box-sizing: border-box;
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
 		gap: calc(32px * var(--ui-scale));
+		width: 100%;
+		max-width: calc(1440px * var(--ui-scale));
+		margin-inline: auto;
 		padding-block: calc(112px * var(--ui-scale));
 		padding-inline: calc(64px * var(--ui-scale));
-		border-block: var(--border-width) solid var(--color-border);
 	}
 	.cs-next__prev {
 		display: flex;
@@ -70,7 +78,7 @@ const { title, slug } = Astro.props;
 		flex-shrink: 0;
 	}
 	@media (max-width: 840px) {
-		.cs-next {
+		.cs-next__inner {
 			flex-direction: column;
 			align-items: flex-start;
 			padding-inline: var(--gutter-mobile);

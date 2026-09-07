@@ -80,48 +80,45 @@ const metaRows = [
 				)}
 
 				<div class="cs-hero__content">
-					<div class="cs-hero__text">
-						{tags && tags.length > 0 && (
-							<div class="cs-hero__tags">
-								{tags.map(t => (
-									<Tag category={t.category as TagCategory}>{t.label}</Tag>
+					<div class="cs-hero__content-inner">
+						<div class="cs-hero__text">
+							{tags && tags.length > 0 && (
+								<div class="cs-hero__tags">
+									{tags.map(t => (
+										<Tag category={t.category as TagCategory}>{t.label}</Tag>
+									))}
+								</div>
+							)}
+							<h1 class="cs-hero__title">{title}</h1>
+							<p class="cs-hero__desc">{description}</p>
+						</div>
+
+						{(metaRows.length > 0 || liveUrl || collaboration) && (
+							<div class="cs-hero__meta">
+								{metaRows.map(row => (
+									<div class="cs-meta-row">
+										<span class="cs-meta-row__label">{row.label}</span>
+										<span class="cs-meta-row__value">{row.value}</span>
+									</div>
 								))}
+								{liveUrl && (
+									<div class="cs-meta-row">
+										<span class="cs-meta-row__label">Sitio en vivo</span>
+										<a class="cs-meta-row__link" href={liveUrl.href} target="_blank" rel="noreferrer">
+											{liveUrl.label}
+											<ExternalLink class="cs-meta-row__ext-icon" />
+										</a>
+									</div>
+								)}
+								{collaboration && (
+									<div class="cs-meta-row">
+										<span class="cs-meta-row__label">Colaboración</span>
+										<span class="cs-meta-row__value">{collaboration}</span>
+									</div>
+								)}
 							</div>
 						)}
-						<h1 class="cs-hero__title">{title}</h1>
-						<p class="cs-hero__desc">{description}</p>
 					</div>
-
-					{(metaRows.length > 0 || liveUrl || collaboration) && (
-						<div class="cs-hero__meta">
-							{metaRows.map(row => (
-								<div class="cs-meta-row">
-									<span class="cs-meta-row__label">{row.label}</span>
-									<span class="cs-meta-row__value">{row.value}</span>
-								</div>
-							))}
-							{liveUrl && (
-								<div class="cs-meta-row">
-									<span class="cs-meta-row__label">Sitio en vivo</span>
-									<a
-										class="cs-meta-row__link"
-										href={liveUrl.href}
-										target="_blank"
-										rel="noreferrer"
-									>
-										{liveUrl.label}
-										<ExternalLink class="cs-meta-row__ext-icon" />
-									</a>
-								</div>
-							)}
-							{collaboration && (
-								<div class="cs-meta-row">
-									<span class="cs-meta-row__label">Colaboración</span>
-									<span class="cs-meta-row__value">{collaboration}</span>
-								</div>
-							)}
-						</div>
-					)}
 				</div>
 			</div>
 
@@ -139,6 +136,7 @@ const metaRows = [
 <style>
 	/* Page wrapper — sidebar offset comes from body padding in global.css */
 	.cs-page {
+		width: 100%;
 		padding-top: var(--component-header-height-desktop);
 		display: flex;
 		flex-direction: column;
@@ -202,15 +200,21 @@ const metaRows = [
 
 	/* ── Hero content ─────────────────────────────────────────────────── */
 	.cs-hero__content {
-		display: flex;
-		align-items: center;
-		gap: calc(24px * var(--ui-scale));
-		padding: calc(64px * var(--ui-scale));
 		margin-top: calc(-270px * var(--ui-scale));
 		background: var(--color-bg);
 		border-top: var(--border-width) solid var(--color-border);
 		position: relative;
 		z-index: 1;
+	}
+	.cs-hero__content-inner {
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		gap: calc(24px * var(--ui-scale));
+		width: 100%;
+		max-width: calc(1440px * var(--ui-scale));
+		margin-inline: auto;
+		padding: calc(64px * var(--ui-scale));
 	}
 	.cs-hero__text {
 		display: flex;
@@ -316,10 +320,10 @@ const metaRows = [
 
 	/* ── Responsive ───────────────────────────────────────────────────── */
 	@media (max-width: 1100px) {
-		.cs-hero__content {
+		.cs-hero__content-inner {
 			flex-direction: column;
-			margin-top: calc(-180px * var(--ui-scale));
 		}
+		.cs-hero__content { margin-top: calc(-180px * var(--ui-scale)); }
 		.cs-hero__text {
 			flex: unset;
 			width: 100%;
@@ -341,6 +345,8 @@ const metaRows = [
 		}
 		.cs-hero__content {
 			margin-top: calc(-72px * var(--ui-scale));
+		}
+		.cs-hero__content-inner {
 			padding: var(--gutter-mobile);
 		}
 		.cs-hero__title {
