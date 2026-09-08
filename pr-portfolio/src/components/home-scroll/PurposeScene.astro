@@ -1,0 +1,8 @@
+---
+import type { HomeCopy } from './home-copy';
+interface Props { copy: HomeCopy }
+const { copy } = Astro.props;
+---
+<section class="home-scene home-purpose" data-scene-panel="purpose" aria-labelledby="purpose-title">
+  <h2 id="purpose-title" class="home-purpose__title" data-motion="purpose-title">{copy.purpose.title}</h2>
+</section>

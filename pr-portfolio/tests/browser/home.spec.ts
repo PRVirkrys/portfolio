@@ -29,16 +29,21 @@ test('intro hands over to reversible scroll, preserving the chapter on reload', 
   await scrollTo(.06);
   await expect(root).toHaveAttribute('data-scene', 'greeting');
   expect((await charWidths()).every(width => width === 0)).toBe(true);
-  await scrollTo(.30);
+  await scrollTo(.28);
+  await expect(root).toHaveAttribute('data-scene', 'greeting');
   expect((await charWidths()).every(width => width > 0)).toBe(true);
   await expect(page.locator('[data-motion="greeting-name"] [data-typing-cursor]')).toHaveCSS('display', 'inline-block');
   await scrollTo(0);
   expect((await charWidths()).every(width => width === 0)).toBe(true);
   expect(await headerOpacity()).toBeLessThan(.9);
+  await scrollTo(.44);
+  await expect(root).toHaveAttribute('data-scene', 'purpose');
+  expect((await charWidths()).every(width => width > 0)).toBe(true);
+  await expect(page.locator('[data-scene-panel="board"]')).toHaveAttribute('inert', '');
   await scrollTo(.82);
   await expect(root).toHaveAttribute('data-scene', 'board');
   const first = await page.locator('[data-node="research"]').boundingBox();
-  await scrollTo(.46);
+  await scrollTo(.64);
   await expect(root).toHaveAttribute('data-scene', 'premise');
   await expect(page.locator('[data-scene-panel="board"]')).toHaveAttribute('inert', '');
   await scrollTo(.82);
@@ -53,6 +58,33 @@ test('intro hands over to reversible scroll, preserving the chapter on reload', 
   await expect(root).toHaveAttribute('data-scene', 'greeting');
   await expect(page.locator('[data-scene-panel="greeting"]')).not.toHaveAttribute('inert', '');
   expect(errors).toEqual([]);
+});
+
+test('the approved intro is frozen: 3px white line, logo reveal, typed name and its cursor', async ({ page }) => {
+  await page.goto('/');
+  const root = page.locator('[data-home-scroll]');
+  await expect(root).toHaveAttribute('data-ready', 'true');
+  await expect(root).toHaveAttribute('data-mode', 'cinematic');
+  const line = page.locator('.home-intro__line');
+  await expect(line).toHaveCount(1);
+  const lineStyle = await line.evaluate(el => {
+    const s = getComputedStyle(el);
+    return { width: s.width, height: parseFloat(s.height), bg: s.backgroundColor };
+  });
+  expect(lineStyle.width).toBe('3px');
+  expect(lineStyle.height).toBeGreaterThan(140); // ~1.5x the hero logo height
+  expect(lineStyle.bg).toBe('rgb(255, 255, 255)');
+  await expect(root).toHaveAttribute('data-intro', 'done', { timeout: 8000 });
+  await expect(root).toHaveAttribute('data-scene', 'greeting');
+  await expect(page.locator('.hero-logo')).toBeVisible();
+  await expect(page.locator('.header').first()).toHaveCSS('opacity', '1');
+  const nameChars = page.locator('[data-motion="greeting-name"] .greeting-char');
+  const typed = () => nameChars.evaluateAll(cs => cs.every(c => c.getBoundingClientRect().width > 0));
+  expect(await typed()).toBe(false);
+  await page.evaluate(() => window.scrollTo(0, .28 * (document.documentElement.scrollHeight - innerHeight)));
+  await page.waitForTimeout(350);
+  expect(await typed()).toBe(true);
+  await expect(page.locator('[data-motion="greeting-name"] [data-typing-cursor]')).toHaveCSS('display', 'inline-block');
 });
 
 test('phone layout retains all text, uses its phone indicator and never scrolls sideways', async ({ page }) => {

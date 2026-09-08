@@ -1,5 +1,6 @@
 ---
 import AnimatedHeroLogo from './AnimatedHeroLogo.astro';
+import PurposeScene from './PurposeScene.astro';
 import BoardScene from './BoardScene.astro';
 import ScrollIndicator from './ScrollIndicator.astro';
 import Tag from '../ui/Tag.astro';
@@ -38,6 +39,7 @@ const chars = (value: string) => Array.from(value);
         </h1>
       </div>
     </section>
+    <PurposeScene copy={copy} />
     <section class="home-scene home-premise" data-scene-panel="premise" aria-labelledby="premise-title">
       <div class="home-copy" data-motion="premise-copy">
         <div class="home-tags"><Tag size="sm" category="Strategy">{copy.premise.tag}</Tag></div>

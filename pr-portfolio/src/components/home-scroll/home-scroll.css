@@ -63,6 +63,16 @@
   vertical-align: middle;
   margin-left: 8px;
 }
+.home-purpose {
+  text-align: center;
+}
+.home-purpose__title {
+  margin: 0;
+  max-width: 15em;
+  font: 400 clamp(40px, 5.2vw, 68px) / 1.22 var(--font-heading);
+  letter-spacing: -0.5px;
+  color: var(--color-text);
+}
 .home-premise .home-copy {
   max-width: 870px;
 }
