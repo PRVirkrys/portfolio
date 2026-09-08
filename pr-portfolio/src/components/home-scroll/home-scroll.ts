@@ -18,7 +18,7 @@ const SAVED = "paula-home-position-v1";
 // timeline units; the main story keeps its own 0..1 span after it.
 const INTRO = 0.14;
 const TOTAL = 1 + INTRO;
-const MAIN_SCREENS = 7;
+const MAIN_SCREENS = 8;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -221,6 +221,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const greetingText = q(".greeting-line");
       const greetingChars = q(".greeting-char") as HTMLElement[];
       const typingCursors = q("[data-typing-cursor]") as HTMLElement[];
+      const purpose = q('[data-scene-panel="purpose"]');
       const premise = q('[data-scene-panel="premise"]');
       const board = q('[data-scene-panel="board"]');
       const characterWidths = greetingChars.map(
@@ -262,56 +263,67 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         main.set(typingCursors[index + 1], { display: "inline-block" }, at);
       });
       if (cinematic) {
-        main.to(greeting, { opacity: 0, duration: 0.1 }, leaveAt);
+        // 0 → 1 · greeting to purpose. The name has finished typing and held;
+        // now the cursor goes and the whole greeting + logo composition lifts
+        // away as one, uncovering the purpose statement rising from below.
+        main.set(typingCursors, { display: "none" }, leaveAt);
         main.to(
-          q('[data-motion="logo-left"]'),
-          { x: -300, y: -50, duration: 0.18 },
-          leaveAt + 0.02,
+          greeting,
+          { autoAlpha: 0, y: -64, duration: 0.08 },
+          leaveAt,
         );
-        main.to(
-          q('[data-motion="logo-upper"]'),
-          { x: 80, y: -240, duration: 0.18 },
-          leaveAt + 0.02,
+        main.fromTo(
+          purpose,
+          { autoAlpha: 0, y: 40 },
+          { autoAlpha: 1, y: 0, duration: 0.09 },
+          leaveAt + 0.05,
         );
+        // 1 → 2 · purpose to premise.
         main.to(
-          q('[data-motion="logo-lower"]'),
-          { x: 330, y: 230, duration: 0.18 },
-          leaveAt + 0.02,
+          purpose,
+          { autoAlpha: 0, y: -34, duration: 0.08 },
+          leaveAt + 0.25,
         );
         main.fromTo(
           premise,
           { autoAlpha: 0, y: 40 },
           { autoAlpha: 1, y: 0, duration: 0.09 },
-          leaveAt + 0.08,
+          leaveAt + 0.3,
         );
+        // 2 → 3 · premise to board.
         main.to(
           premise,
-          { autoAlpha: 0, x: -60, duration: 0.1 },
-          leaveAt + 0.33,
+          { autoAlpha: 0, x: -60, duration: 0.09 },
+          leaveAt + 0.5,
         );
         main.fromTo(
           board,
           { autoAlpha: 0, y: 30 },
           { autoAlpha: 1, y: 0, duration: 0.09 },
-          leaveAt + 0.38,
+          leaveAt + 0.55,
         );
-        animateBoard(root, main, leaveAt + 0.44, 0.98);
-        bounds = [0, leaveAt + 0.1, 0.62, 1];
+        animateBoard(root, main, leaveAt + 0.6, 0.99);
+        bounds = [0, leaveAt + 0.03, leaveAt + 0.27, leaveAt + 0.52, 1];
       } else {
         const distance = Math.max(1, root.offsetHeight - innerHeight);
         const startOf = (n: HTMLElement) =>
           n.getBoundingClientRect().top + scrollY - root.offsetTop;
-        const premiseStart = clamp(
+        const purposeStart = clamp(
           (startOf(panels[1]) - innerHeight * 0.5) / distance,
-          0.1,
-          0.5,
+          0.08,
+          0.4,
+        );
+        const premiseStart = clamp(
+          (startOf(panels[2]) - innerHeight * 0.5) / distance,
+          purposeStart + 0.08,
+          0.6,
         );
         const boardStart = clamp(
-          (startOf(panels[2]) - innerHeight * 0.5) / distance,
-          premiseStart + 0.1,
-          0.8,
+          (startOf(panels[3]) - innerHeight * 0.5) / distance,
+          premiseStart + 0.08,
+          0.85,
         );
-        bounds = [0, premiseStart, boardStart, 1];
+        bounds = [0, purposeStart, premiseStart, boardStart, 1];
         const map = root.querySelector<HTMLElement>(
           '[data-motion="board-map"]',
         )!;
@@ -396,7 +408,9 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       tl.add(introTl, 0);
       tl.add(main, INTRO);
       const B = (p: number) => (INTRO + p) / TOTAL;
-      bounds = [B(0), B(bounds[1]), B(bounds[2]), 1] as Bounds;
+      bounds = bounds.map((value, index) =>
+        index === bounds.length - 1 ? 1 : B(value),
+      );
 
       const update = (self: ScrollTrigger) => {
         const state = snapshotAt(self.progress, bounds);
