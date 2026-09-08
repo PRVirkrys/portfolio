@@ -1,6 +1,7 @@
 ---
 import { ArrowRight } from '@lucide/astro';
 import Button from '../ui/Button.astro';
+import { withBase } from '../../lib/url';
 
 export interface Props {
 	title: string;
@@ -14,12 +15,12 @@ const { title, slug } = Astro.props;
 	<div class="cs-next__inner">
 		<div class="cs-next__prev">
 			<p class="cs-next__label">next case study</p>
-			<a class="cs-next__link" href={`/work/${slug}`}>
+			<a class="cs-next__link" href={withBase(`/work/${slug}`)}>
 				<span class="cs-next__title">{title}</span>
 				<ArrowRight class="cs-next__arrow" />
 			</a>
 		</div>
-		<Button href="/" variant="secondary" size="lg" showLeadingIcon={false}>View all proyects</Button>
+		<Button href={withBase('/')} variant="secondary" size="lg" showLeadingIcon={false}>View all proyects</Button>
 	</div>
 </div>
 
