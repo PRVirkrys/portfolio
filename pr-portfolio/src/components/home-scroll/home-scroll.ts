@@ -321,6 +321,29 @@ function animateAI(
   tl.to(cursor, { x: 0, y: 0, duration: span * 0.2 }, start + span * 0.8);
 }
 
+// Almost-empty stage: the three statements arrive in turn, then the CTA.
+function animateManifesto(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const q = gsap.utils.selector(root);
+  const span = end - start;
+  tl.fromTo(
+    q('[data-motion="manifesto-line"]'),
+    { autoAlpha: 0, y: 26 },
+    { autoAlpha: 1, y: 0, duration: span * 0.16, stagger: span * 0.22 },
+    start + span * 0.06,
+  );
+  tl.fromTo(
+    q('[data-scene-panel="manifesto"] .text-link'),
+    { autoAlpha: 0, y: 12 },
+    { autoAlpha: 1, y: 0, duration: span * 0.12 },
+    start + span * 0.82,
+  );
+}
+
 async function initialize(root: HTMLElement, restore?: Snapshot) {
   const signal = new AbortController();
   let context: gsap.Context | undefined;
@@ -402,6 +425,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const figma = q('[data-scene-panel="figma"]');
       const code = q('[data-scene-panel="code"]');
       const ai = q('[data-scene-panel="ai"]');
+      const manifesto = q('[data-scene-panel="manifesto"]');
       const characterWidths = greetingChars.map(
         (char) => char.getBoundingClientRect().width,
       );
@@ -518,7 +542,18 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // artefact is generated for Paula to review.
         const AI = enter(ai, 0.3, { y: 36, scale: 0.96 });
         animateAI(root, main, AI.restAt, AI.outAt);
-        at = AI.outAt;
+        main.to(
+          ai,
+          { autoAlpha: 0, y: -24, scale: 0.97, duration: 0.09 },
+          AI.outAt,
+        );
+        at = AI.outAt + 0.05;
+
+        // 6 → 7 · AI to manifesto. The interface noise clears to near-empty
+        // space and the three statements land in turn; the CTA stays after.
+        const MF = enter(manifesto, 0.22, { y: 30 });
+        animateManifesto(root, main, MF.restAt, MF.outAt);
+        at = MF.outAt;
 
         bounds = [
           0,
@@ -528,6 +563,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           FG.inAt,
           CD.inAt,
           AI.inAt,
+          MF.inAt,
           at,
         ];
       } else {
@@ -561,10 +597,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         );
         const aiStart = clamp(
           (startOf(panels[6]) - innerHeight * 0.5) / distance,
-          codeStart + 0.06,
+          codeStart + 0.05,
+          0.9,
+        );
+        const manifestoStart = clamp(
+          (startOf(panels[7]) - innerHeight * 0.5) / distance,
+          aiStart + 0.05,
           0.95,
         );
-        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, aiStart, 1];
+        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, aiStart, manifestoStart, 1];
         const map = root.querySelector<HTMLElement>(
           '[data-motion="board-map"]',
         )!;

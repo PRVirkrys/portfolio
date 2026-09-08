@@ -841,6 +841,36 @@ html:not(.dark) .hero-logo {
   font: 400 14px/1.15 var(--font-heading);
   white-space: nowrap;
 }
+/* Manifesto — deliberately low density: a tag, three statements, a CTA. */
+.home-manifesto__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 960px;
+  text-align: center;
+}
+.home-manifesto__lead {
+  margin: 0;
+  font: 400 clamp(28px, 3.4vw, 44px) / 1.25 var(--font-heading);
+  letter-spacing: -0.5px;
+  color: var(--color-text);
+}
+.home-manifesto__accent {
+  margin: 0;
+  font: 500 clamp(30px, 3.8vw, 48px) / 1.2 var(--font-heading);
+  letter-spacing: -0.5px;
+  color: var(--home-greeting-purple);
+}
+.home-manifesto__coda {
+  margin: 4px 0 0;
+  max-width: 42ch;
+  font: 400 clamp(16px, 1.5vw, 19px) / 1.6 var(--font-sans);
+  color: var(--color-text-secondary);
+}
+.home-manifesto .text-link {
+  margin-top: 12px;
+}
 .home-footer {
   position: fixed;
   z-index: 25;
