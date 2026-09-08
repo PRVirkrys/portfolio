@@ -9,6 +9,7 @@ import ThemeToggle from './ui/ThemeToggle.astro';
 import LanguageToggle from './ui/LanguageToggle.astro';
 import Footer from './Footer.astro';
 import { iconUrl } from '../lib/icons';
+import { withBase } from '../lib/url';
 import { MousePointer2, Hand, MessageCircle, Type, Menu, X, Mail } from '@lucide/astro';
 
 export interface Props {
@@ -40,7 +41,7 @@ const selectorItems = [
 	</nav>
 	<div class="header__actions">
 		<WorkNavigation />
-		<Button href="/" size="lg" showLeadingIcon={false}>See all my work</Button>
+		<Button href={withBase('/')} size="lg" showLeadingIcon={false}>See all my work</Button>
 		<HeaderSettingsMenu />
 	</div>
 
@@ -49,7 +50,7 @@ const selectorItems = [
 	     its own component, untouched, and stays visible under this bar while
 	     the menu panel below is closed; opening the panel (16077:69757)
 	     covers it full-height, since the panel's own Footer takes its place. -->
-	<a class="header__mobile-brand" href="/" aria-label="Inicio"><Logo class="header__mobile-logo" /></a>
+	<a class="header__mobile-brand" href={withBase('/')} aria-label="Inicio"><Logo class="header__mobile-logo" /></a>
 	<button
 		type="button"
 		class="header__mobile-trigger"
@@ -64,7 +65,7 @@ const selectorItems = [
 
 	<div class="header__mobile-overlay" aria-hidden="true"></div>
 	<div class="header__mobile-panel" id="header-mobile-panel" role="menu" hidden>
-		<Button class="header__mobile-cta" href="/" size="lg" showLeadingIcon={false}>Explore my work</Button>
+		<Button class="header__mobile-cta" href={withBase('/')} size="lg" showLeadingIcon={false}>Explore my work</Button>
 		<div class="header__mobile-links">
 			<a class="header__mobile-link" href="mailto:bypaularodas@gmail.com">
 				<Mail />
