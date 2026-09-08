@@ -15,6 +15,9 @@ const chars = (value: string) => Array.from(value);
 <a class="home-skip" href="/work">{copy.skip}</a>
 <main class="home-scroll" data-home-scroll data-locale={locale} tabindex="-1">
   <div class="home-stage">
+    <div class="home-intro" data-intro-overlay aria-hidden="true">
+      <span class="home-intro__line" data-intro-line></span>
+    </div>
     <section class="home-scene home-greeting" data-scene-panel="greeting" aria-labelledby="greeting-title">
       <div class="home-greeting__layout">
         <AnimatedHeroLogo />

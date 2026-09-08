@@ -39,23 +39,27 @@ El header, la navegación lateral y el footer son la estructura real del portfol
 
 ## 4. Storyboard
 
+> **Nota (implementación):** la intro (Escenas 0–1) ya no es una línea de tiempo aparte. Es el **primer tramo de la misma línea de tiempo scrubbeada** que el resto (`~14 %` de su duración, delante del saludo), así que el scroll la avanza y la revierte igual que cualquier capítulo. En la **primera visita** se auto-reproduce mediante un auto-scroll de ~2.4 s; cualquier gesto de scroll, tacto o tecla cancela ese auto-scroll y entrega la línea de tiempo al usuario en la posición exacta donde la interrumpió, sin salto. Recargas y revisitas abren directamente en el saludo con la UI ya dentro.
+
 ### Escena 0 — Board vacío
 
-**Inicio:** fondo oscuro con la cuadrícula de puntos.  
-**Duración automática:** aproximadamente 350 ms.
+**Inicio:** fondo oscuro con la cuadrícula de puntos.
 
+- Corresponde al progreso 0 de la línea de tiempo (línea sin dibujar, logo tapado, UI a opacidad 0).
 - No se muestra todavía la interfaz global.
 - El patrón de puntos puede tener una variación mínima de profundidad, sin distraer.
 - El fondo está disponible inmediatamente para evitar flashes durante la carga.
 
 ### Escena 1 — Aparición del logo
 
-**Duración automática:** aproximadamente 850 ms.
+**Tramo:** primer ~14 % de la línea de tiempo (auto-scroll de ~2.4 s en la primera visita).
 
-- El logo aparece centrado desde `scale 0.25`, opacidad 0 y blur suave.
-- Crece hasta su escala final con una desaceleración elegante.
-- Termina completamente nítido.
-- Puede superar la escala final en un máximo de 3 % antes de asentarse; no debe parecer un rebote.
+- Una línea blanca vertical de ~3 px se dibuja de arriba abajo en el centro del viewport (`scaleY` de 0 a 1).
+- La línea se desplaza hacia la izquierda; el logo, con su borde derecho pegado a la línea, se descubre a su paso mediante un `clip-path` que comparte la misma curva de easing, de modo que el borde revelado y la línea permanecen unidos.
+- Al terminar el barrido, la línea se atenúa y colapsa mientras el logo se desliza hasta su posición de reposo junto al saludo.
+- Header, sidebar, footer e indicador de scroll aparecen con opacidad.
+- Todo el tramo es reversible: al hacer scroll hasta arriba del todo, la UI se atenúa, el logo se vuelve a tapar y la línea se repliega.
+- El logo termina completamente nítido, sin rebote.
 
 ### Escena 2 — Saludo
 
@@ -65,9 +69,9 @@ El header, la navegación lateral y el footer son la estructura real del portfol
 - A la derecha se escribe por bloques: `Hi!`, `I'm` y `Paula Rodas`.
 - El ritmo incluye pausas breves entre líneas y no reproduce una mecanografía uniforme carácter por carácter.
 - El cursor parpadea al terminar y después pierde protagonismo.
-- Header, sidebar, footer e indicador de scroll aparecen con opacidad y un desplazamiento corto desde sus bordes.
+- El header, la sidebar, el footer y el indicador de scroll ya han entrado en la Escena 1.
 
-Este es el estado inicial de la línea de tiempo de scroll. Al volver completamente hacia arriba, la experiencia se reconstruye hasta este saludo. El logo solo vuelve a desaparecer sobre el fondo vacío al abrir la home en una pestaña nueva y reproducir de nuevo la introducción automática.
+Este es el punto de reposo tras la intro. Al volver hacia arriba se rebobina el saludo y, si se sigue subiendo hasta el tope, también la Escena 1 (línea, logo y UI). Abrir la home en una pestaña nueva vuelve a auto-reproducir la intro desde el fondo vacío.
 
 ### Escena 3 — Apertura del Board
 
