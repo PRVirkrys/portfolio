@@ -8,6 +8,7 @@ import {
   type Bounds,
   type Snapshot,
 } from "./home-progress";
+import { padMessage, splitFlapStateAt } from "./split-flap";
 
 gsap.registerPlugin(ScrollTrigger);
 const SEEN = "paula-home-intro-v1";
@@ -347,6 +348,11 @@ function animateManifesto(
 // scroll stop with a hinge fold), then "I AM A" becomes "I AM", the panel
 // reads the name, and the logo, line and CTAs settle. Fully reversible — every
 // word is its own layer, none of it depends on swapping text mid-scrub.
+// The closing split-flap. A single progress proxy drives a pure render of the
+// per-character plates (see split-flap.ts) — no autonomous tweens, so stopping
+// mid-flip leaves the plates at that exact angle and scrolling back replays it
+// in reverse. The logo/tag stay through both 8A2 and 8B2; only the body and
+// CTAs are revealed at the end, as ordinary timeline tweens.
 function animateIdentity(
   root: HTMLElement,
   tl: gsap.core.Timeline,
@@ -355,74 +361,145 @@ function animateIdentity(
 ) {
   const q = gsap.utils.selector(root);
   const span = end - start;
-  const words = q('[data-motion="flip-word"]');
-  const hinge = q('[data-motion="flip-hinge"]');
-  const turns = words.length - 1; // seven role→role/name folds
-  const flipZone = span * 0.62;
-  const step = flipZone / turns;
-  const fold = step * 0.62;
+  const flapSpan = span * 0.74;
 
-  tl.set(words[0], { autoAlpha: 1, rotationX: 0 }, start);
-  for (let k = 1; k < words.length; k += 1) {
-    const at = start + span * 0.03 + (k - 1) * step;
-    tl.to(words[k - 1], { autoAlpha: 0, rotationX: -90, duration: fold }, at);
-    tl.fromTo(
-      words[k],
-      { autoAlpha: 0, rotationX: 90 },
-      { autoAlpha: 1, rotationX: 0, duration: fold },
-      at,
-    );
-    // Hinge shadow swells at the fold's midpoint, then settles.
-    tl.fromTo(
-      hinge,
-      { scaleX: 0.6, autoAlpha: 0.12 },
-      { scaleX: 1, autoAlpha: 0.55, duration: fold * 0.5 },
-      at,
-    );
-    tl.to(
-      hinge,
-      { scaleX: 0.6, autoAlpha: 0.12, duration: fold * 0.5 },
-      at + fold * 0.5,
-    );
-    // The last fold also swaps the header prefix.
-    if (k === turns) {
-      tl.to(
-        q('[data-motion="identity-head-a"]'),
-        { autoAlpha: 0, y: -10, duration: fold },
-        at,
-      );
-      tl.fromTo(
-        q('[data-motion="identity-head-b"]'),
-        { autoAlpha: 0, y: 10 },
-        { autoAlpha: 1, y: 0, duration: fold },
-        at,
-      );
+  const rowEl = root.querySelector<HTMLElement>("[data-flap-row]");
+  const headA = root.querySelector<HTMLElement>('[data-motion="identity-head-a"]');
+  const headB = root.querySelector<HTMLElement>('[data-motion="identity-head-b"]');
+  const rolesList = root.querySelector<HTMLElement>('[data-motion="identity-roles"]');
+  const liveEl = rowEl?.querySelector<HTMLElement>("[data-flap-live]") ?? null;
+
+  if (rowEl) {
+    const plates = [...rowEl.querySelectorAll<HTMLElement>("[data-flap]")];
+    const messages: string[] = JSON.parse(rowEl.dataset.flapMessages || "[]");
+    const prefixOpen = rowEl.dataset.flapPrefixOpen || "";
+    const prefixClose = rowEl.dataset.flapPrefixClose || "";
+    const cols = plates.length;
+    const padded = messages.map((m) => padMessage(m, cols));
+    const bounds = padded.map((m) => ({
+      lo: m.search(/\S/),
+      hi: m.length - 1 - [...m].reverse().join("").search(/\S/),
+    }));
+    const M = messages.length;
+    // Reading holds dominate; each change is a quick left-to-right wave.
+    const HOLD = 1.5;
+    const CHANGE = 0.5;
+    const unit = M * HOLD + (M - 1) * CHANGE;
+
+    // Phase table: hold(0), change(0→1), hold(1), … hold(M-1). Positions 0..1.
+    type Phase = { kind: "hold" | "change"; msg: number; a: number; b: number };
+    const phases: Phase[] = [];
+    let acc = 0;
+    for (let m = 0; m < M; m += 1) {
+      phases.push({ kind: "hold", msg: m, a: acc / unit, b: (acc + HOLD) / unit });
+      acc += HOLD;
+      if (m < M - 1) {
+        phases.push({ kind: "change", msg: m, a: acc / unit, b: (acc + CHANGE) / unit });
+        acc += CHANGE;
+      }
     }
+    const lastChange = phases.find((p) => p.kind === "change" && p.msg === M - 2)!;
+
+    const setGlyph = (plate: HTMLElement, sel: string, ch: string) => {
+      const el = plate.querySelector(sel);
+      if (!el) return;
+      const g = ch === " " ? "" : ch;
+      if (el.textContent !== g) el.textContent = g;
+    };
+
+    let lastN = -1;
+    let lastLive = "";
+    const renderRow = (raw: number) => {
+      const t = raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
+      const phase = phases.find((p) => t <= p.b) ?? phases[phases.length - 1];
+
+      // "I AM A" → "I AM" (and the roles list) cross-fade over the final change.
+      let toClose = 0;
+      if (t >= lastChange.b) toClose = 1;
+      else if (t > lastChange.a) toClose = (t - lastChange.a) / (lastChange.b - lastChange.a);
+      if (headA) headA.style.opacity = String(1 - toClose);
+      if (headB) headB.style.opacity = String(toClose);
+      if (rolesList) rolesList.style.opacity = String(1 - toClose);
+
+      const nextMsg = phase.kind === "change" ? phase.msg + 1 : phase.msg;
+      const n = phase.kind === "change"
+        ? Math.max(messages[phase.msg].length, messages[nextMsg].length)
+        : messages[phase.msg].length;
+      if (n !== lastN) {
+        rowEl.style.setProperty("--flap-n", String(n));
+        lastN = n;
+      }
+
+      if (phase.kind === "hold") {
+        const message = messages[phase.msg];
+        if (liveEl && message !== lastLive) {
+          const prefix = phase.msg === M - 1 ? prefixClose : prefixOpen;
+          liveEl.textContent = `${prefix} ${message}`;
+          lastLive = message;
+        }
+      }
+
+      const b0 = phase.kind === "change"
+        ? { lo: Math.min(bounds[phase.msg].lo, bounds[nextMsg].lo), hi: Math.max(bounds[phase.msg].hi, bounds[nextMsg].hi) }
+        : bounds[phase.msg];
+      const tp = phase.kind === "change" ? (t - phase.a) / (phase.b - phase.a) : 0;
+
+      for (let c = 0; c < cols; c += 1) {
+        const plate = plates[c];
+        const a = padded[phase.msg][c];
+        const bch = padded[nextMsg][c];
+        const isChar = a !== " " || bch !== " ";
+        if (!isChar) {
+          const gap = c > b0.lo && c < b0.hi;
+          plate.hidden = !gap;
+          plate.classList.toggle("is-gap", gap);
+          if (gap) {
+            for (const sel of ["[data-flap-top]", "[data-flap-bottom]", "[data-flap-upper]", "[data-flap-lower]"])
+              setGlyph(plate, sel, " ");
+          }
+          continue;
+        }
+        plate.hidden = false;
+        plate.classList.remove("is-gap");
+        const st = splitFlapStateAt(a, bch, tp, c, cols);
+        const frac = st.angle / 180;
+        setGlyph(plate, "[data-flap-top]", st.next);
+        setGlyph(plate, "[data-flap-bottom]", frac < 0.5 ? st.current : st.next);
+        setGlyph(plate, "[data-flap-upper]", st.current);
+        setGlyph(plate, "[data-flap-lower]", st.next);
+        const s = plate.style;
+        s.setProperty("--flap-upper-rot", `${-Math.min(st.angle, 90)}deg`);
+        s.setProperty("--flap-lower-rot", `${180 - Math.max(st.angle, 90)}deg`);
+        s.setProperty("--flap-upper-op", st.angle < 85 ? "1" : st.angle > 95 ? "0" : String((95 - st.angle) / 10));
+        s.setProperty("--flap-lower-op", st.angle > 95 ? "1" : st.angle < 85 ? "0" : String((st.angle - 85) / 10));
+        s.setProperty("--flap-shade", st.shadow.toFixed(3));
+      }
+    };
+
+    renderRow(0);
+    const proxy = { p: 0 };
+    tl.to(
+      proxy,
+      { p: 1, duration: flapSpan, ease: "none", onUpdate: () => renderRow(proxy.p) },
+      start,
+    );
   }
 
-  const reveal = start + span * 0.68;
-  tl.to(
-    q('[data-motion="identity-tag"]'),
-    { autoAlpha: 0, duration: span * 0.06 },
-    reveal - span * 0.02,
-  );
-  tl.fromTo(
-    q('[data-motion="identity-logo"]'),
-    { autoAlpha: 0, x: -32 },
-    { autoAlpha: 1, x: 0, duration: span * 0.12 },
-    reveal,
-  );
+  // The logo and tag are part of both 8A2 and 8B2, so they arrive with the
+  // panel's own fade (enter()) — no separate reveal. Only the body and CTAs
+  // (8B2 only) come in after the flap settles.
+  const reveal = start + flapSpan + span * 0.04;
   tl.fromTo(
     q('[data-motion="identity-text"]'),
     { autoAlpha: 0, y: 16 },
-    { autoAlpha: 1, y: 0, duration: span * 0.1 },
-    reveal + span * 0.08,
+    { autoAlpha: 1, y: 0, duration: span * 0.12 },
+    reveal,
   );
   tl.fromTo(
     q('[data-motion="identity-ctas"]'),
     { autoAlpha: 0, y: 14 },
-    { autoAlpha: 1, y: 0, duration: span * 0.12 },
-    reveal + span * 0.14,
+    { autoAlpha: 1, y: 0, duration: span * 0.14 },
+    reveal + span * 0.08,
   );
 }
 
@@ -651,12 +728,16 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         const MF = enter(manifesto, 0.22, { y: 30 });
         animateManifesto(root, main, MF.restAt, MF.outAt);
         leave(manifesto, { autoAlpha: 0, y: -24, duration: 0.09 }, MF.outAt);
-        at = MF.outAt + 0.05;
+        // Clear the sparse identity scene fully before it renders — the flap row
+        // is see-through between plates.
+        at = MF.outAt + 0.12;
 
         // 7 → 8 · manifesto to identity. The split-flap panel turns through the
         // seven roles, then "I AM A" becomes "I AM", the panel reads PAULA
         // RODAS, and the logo, line and CTAs settle in. This is the close.
-        const ID = enter(identity, 0.56, { y: 36 });
+        // The split-flap needs room for nine readable states; give it the
+        // widest hold of the journey.
+        const ID = enter(identity, 0.82, { y: 36 });
         animateIdentity(root, main, ID.restAt, ID.outAt);
         at = ID.outAt;
 

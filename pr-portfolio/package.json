@@ -10,8 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "node --test tests/home-progress.test.mjs && playwright test",
-    "test:unit": "node --test tests/home-progress.test.mjs",
+    "test": "node --test tests/home-progress.test.mjs tests/split-flap.test.mjs && playwright test",
+    "test:unit": "node --test tests/home-progress.test.mjs tests/split-flap.test.mjs",
     "test:e2e": "playwright test",
     "astro": "astro"
   },

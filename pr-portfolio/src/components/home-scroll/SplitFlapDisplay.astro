@@ -1,0 +1,34 @@
+---
+import SplitFlapCharacter from './SplitFlapCharacter.astro';
+import { padMessage } from './split-flap';
+interface Props {
+  messages: string[];
+  plates: number;
+  prefixOpen: string;
+  prefixClose: string;
+  name: string;
+}
+const { messages, plates, prefixOpen, prefixClose, name } = Astro.props;
+// SSR = the resting final state (8B2): the name, centred, so no-JS / reduced
+// motion shows "I AM PAULA RODAS" assembled. The renderer repaints from here.
+const rest = padMessage(messages[messages.length - 1], plates);
+const first = rest.search(/\S/);
+const last = rest.length - 1 - [...rest].reverse().join('').search(/\S/);
+const cells = [...rest].map((ch, i) => ({
+  ch,
+  empty: ch === ' ' && (i < first || i > last),
+  gap: ch === ' ' && i > first && i < last,
+}));
+---
+<div
+  class="flap-row"
+  data-flap-row
+  data-flap-messages={JSON.stringify(messages)}
+  data-flap-prefix-open={prefixOpen}
+  data-flap-prefix-close={prefixClose}
+  style={`--flap-n:${messages[messages.length - 1].length}`}
+>
+  <span class="sr-only" id="identity-title">{prefixClose} {name}</span>
+  <span class="sr-only" data-flap-live aria-live="polite">{prefixClose} {name}</span>
+  {cells.map((cell) => <SplitFlapCharacter char={cell.ch} empty={cell.empty} gap={cell.gap} />)}
+</div>
