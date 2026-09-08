@@ -1,7 +1,7 @@
 <svg width="20" height="39" viewBox="0 0 20 39" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect class="scroll-hint-ring" x="-3" y="-4" width="26" height="47" rx="6" fill="#FAFAFB" fill-opacity="0.1"/>
-<rect class="scroll-hint-halo" x="-2" y="-2" width="24" height="43" rx="5" fill="#9D76FD" fill-opacity="0.1"/>
-<rect class="scroll-body" x="0.5" y="0.5" width="19" height="38" rx="2.5" stroke="#FAFAFB"/>
-<circle cx="10" cy="10" r="2" fill="#D1D1D6"/>
+<rect class="scroll-hint-ring" x="-3" y="-4" width="26" height="45" rx="4" fill="#FAFAFB" fill-opacity="0.1"/>
+<rect class="scroll-hint-halo" x="-2" y="-2" width="22" height="41" rx="4" fill="#9D76FD" fill-opacity="0.1"/>
+<rect class="scroll-body" x="0.5" y="0.5" width="19" height="38" rx="4.5" fill="#FAFAFB" fill-opacity="0.1" stroke="#FAFAFB"/>
+<circle cx="10" cy="32" r="2" fill="#FAFAFB"/>
 <circle class="scroll-hint-dot" cx="10" cy="10" r="1.5" fill="#FAFAFB"/>
 </svg>

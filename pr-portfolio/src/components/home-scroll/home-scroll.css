@@ -1150,6 +1150,27 @@ html:not(.dark) .hero-logo {
     opacity: 0;
   }
 }
+/* Mobile variant — Figma node 16136:94182. Same 2s loop and ring pulse, but the
+   dot now rises from the resting dot at the base up and out the top as it fades,
+   instead of sinking. Applied only to the phone indicator (see the media block). */
+@keyframes scroll-hint-dot-rise {
+  0% {
+    transform: translateY(22px);
+  }
+  74.3%,
+  100% {
+    transform: translateY(-1.5px);
+  }
+}
+@keyframes scroll-hint-dot-rise-fade {
+  0% {
+    opacity: 1;
+  }
+  74.271%,
+  100% {
+    opacity: 0;
+  }
+}
 .home-scroll:not([data-ready="true"]) .scroll-indicator,
 .home-scroll[data-mode="static"] .scroll-indicator {
   display: none;
@@ -1393,6 +1414,13 @@ html.home-boot
   }
   .scroll-indicator__phone {
     display: block;
+  }
+  /* Mobile dot animation (Figma 16136:94182): rise + fade, replacing the
+     shared sink. The ring pulse is unchanged, so it keeps the shared rule. */
+  .scroll-indicator__phone .scroll-hint-dot {
+    animation:
+      scroll-hint-dot-rise 2s linear infinite,
+      scroll-hint-dot-rise-fade 2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
   .home-skip {
     left: 12px;
