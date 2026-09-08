@@ -38,7 +38,7 @@ test('intro hands over to reversible scroll, preserving the chapter on reload', 
   await scrollTo(.82);
   await expect(root).toHaveAttribute('data-scene', 'board');
   const first = await page.locator('[data-node="research"]').boundingBox();
-  await scrollTo(.42);
+  await scrollTo(.46);
   await expect(root).toHaveAttribute('data-scene', 'premise');
   await expect(page.locator('[data-scene-panel="board"]')).toHaveAttribute('inert', '');
   await scrollTo(.82);

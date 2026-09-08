@@ -18,7 +18,7 @@ const SAVED = "paula-home-position-v1";
 // timeline units; the main story keeps its own 0..1 span after it.
 const INTRO = 0.14;
 const TOTAL = 1 + INTRO;
-const MAIN_SCREENS = 5.6;
+const MAIN_SCREENS = 7;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -154,7 +154,9 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   let bounds: Bounds = desktopBounds;
   let cancelled = false;
   let resizeTimer = 0;
+  let hintTimer = 0;
   let finishIntro = () => {};
+  let refreshHint = () => {};
   const save = () => {
     if (trigger)
       write(SAVED, JSON.stringify(snapshotAt(trigger.progress, bounds)));
@@ -163,8 +165,12 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
     cancelled = true;
     signal.abort();
     clearTimeout(resizeTimer);
+    clearTimeout(hintTimer);
     intro?.kill();
     context?.revert();
+    root
+      .querySelector<HTMLElement>(".scroll-indicator")
+      ?.removeAttribute("data-hint");
     document.documentElement.classList.remove("home-boot");
     root.querySelectorAll<HTMLElement>("[data-scene-panel]").forEach((n) => {
       n.inert = false;
@@ -180,7 +186,9 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   ]);
   if (cancelled || !root.isConnected) return;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-  const cinematic = !reduce.matches && innerWidth >= 1024 && innerHeight >= 760;
+  // Pinned/scrubbed choreography needs enough room for the board scene; below
+  // this it falls back to the stacked "flow" layout.
+  const cinematic = !reduce.matches && innerWidth >= 920 && innerHeight >= 680;
   root.dataset.mode = reduce.matches
     ? "static"
     : cinematic
@@ -220,6 +228,14 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       );
       gsap.set(greetingChars, { width: 0, opacity: 0 });
       gsap.set(typingCursors, { display: "none" });
+      // One set of phase marks so the greeting holds — fully visible, static —
+      // until the whole name is typed. Nothing scrolls or scatters mid-type.
+      const TYPE_AT = 0.025;
+      const TYPE_STEP = 0.006;
+      const typeEnd =
+        TYPE_AT + Math.max(0, greetingChars.length - 1) * TYPE_STEP;
+      const leaveAt = typeEnd + 0.06; // fully-typed dwell, then it may leave
+
       // The typing cursor stays hidden through the intro; it only shows once the
       // logo has finished moving left, i.e. from the start of the main slice.
       main.set(typingCursors[0], { display: "inline-block" }, 0);
@@ -229,10 +245,10 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           width: (index: number) => characterWidths[index],
           opacity: 1,
           duration: 0.001,
-          stagger: 0.0045,
+          stagger: TYPE_STEP,
           ease: "steps(1)",
         },
-        0.015,
+        TYPE_AT,
       );
       const lineEnds = greetingText
         .map((line) => line.querySelectorAll(".greeting-char").length)
@@ -241,41 +257,46 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           [],
         );
       lineEnds.slice(0, -1).forEach((end, index) => {
-        const at = 0.015 + end * 0.0045;
+        const at = TYPE_AT + end * TYPE_STEP;
         main.set(typingCursors[index], { display: "none" }, at);
         main.set(typingCursors[index + 1], { display: "inline-block" }, at);
       });
       if (cinematic) {
-        main.to(greeting, { opacity: 0, duration: 0.12 }, 0.14);
+        main.to(greeting, { opacity: 0, duration: 0.1 }, leaveAt);
         main.to(
           q('[data-motion="logo-left"]'),
-          { x: -300, y: -50, duration: 0.19 },
-          0.14,
+          { x: -300, y: -50, duration: 0.18 },
+          leaveAt + 0.02,
         );
         main.to(
           q('[data-motion="logo-upper"]'),
-          { x: 80, y: -240, duration: 0.19 },
-          0.14,
+          { x: 80, y: -240, duration: 0.18 },
+          leaveAt + 0.02,
         );
         main.to(
           q('[data-motion="logo-lower"]'),
-          { x: 330, y: 230, duration: 0.19 },
-          0.14,
+          { x: 330, y: 230, duration: 0.18 },
+          leaveAt + 0.02,
         );
         main.fromTo(
           premise,
           { autoAlpha: 0, y: 40 },
           { autoAlpha: 1, y: 0, duration: 0.09 },
-          0.2,
+          leaveAt + 0.08,
         );
-        main.to(premise, { autoAlpha: 0, x: -60, duration: 0.1 }, 0.4);
+        main.to(
+          premise,
+          { autoAlpha: 0, x: -60, duration: 0.1 },
+          leaveAt + 0.33,
+        );
         main.fromTo(
           board,
           { autoAlpha: 0, y: 30 },
           { autoAlpha: 1, y: 0, duration: 0.09 },
-          0.45,
+          leaveAt + 0.38,
         );
-        animateBoard(root, main, 0.52, 0.93);
+        animateBoard(root, main, leaveAt + 0.44, 0.98);
+        bounds = [0, leaveAt + 0.1, 0.62, 1];
       } else {
         const distance = Math.max(1, root.offsetHeight - innerHeight);
         const startOf = (n: HTMLElement) =>
@@ -301,11 +322,8 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         );
         animateBoard(root, main, start, 0.96);
       }
-      main.to(
-        q('[data-motion="scroll-indicator"]'),
-        { autoAlpha: 0, duration: 0.04 },
-        0.96,
-      );
+      // The scroll hint is not part of the scrubbed timeline — it has its own
+      // scroll-idle lifecycle (see the hint controller after the trigger).
 
       // Opening slice: the white line is drawn down the viewport centre, then
       // sweeps left. The logo waits with its right edge against the line and is
@@ -319,7 +337,6 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         ...document.querySelectorAll(
           ".home-page > .header, .home-page > .sidebar, .home-footer",
         ),
-        ...q(".scroll-indicator"),
       ];
       const logoRect = logo.getBoundingClientRect();
       const spread = logoRect.width;
@@ -407,6 +424,41 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       update(trigger);
       const introEnd = () =>
         trigger!.start + (INTRO / TOTAL) * (trigger!.end - trigger!.start);
+
+      // Scroll hint lifecycle: it sits centred on the page at the very start,
+      // ducks out the instant the user scrolls, and 3s after they stop it comes
+      // back at its resting spot to say there's still more below. Near the end
+      // of the journey it stays away — there's nothing left to nudge toward.
+      const hintEl = root.querySelector<HTMLElement>(".scroll-indicator");
+      let hintArmed = false;
+      let hasScrolled = false;
+      const showHint = () => {
+        if (!hintEl || !trigger) return;
+        if (trigger.progress >= 0.95) {
+          hintEl.dataset.hint = "away";
+          return;
+        }
+        const atStart = !hasScrolled && trigger.progress <= bounds[1];
+        hintEl.dataset.pos = atStart ? "center" : "bottom";
+        hintEl.dataset.hint = "show";
+      };
+      refreshHint = showHint;
+      const onHintScroll = () => {
+        if (!hintArmed || !hintEl || root.dataset.intro !== "done") return;
+        hasScrolled = true;
+        hintEl.dataset.hint = "away";
+        clearTimeout(hintTimer);
+        hintTimer = window.setTimeout(showHint, 3000);
+      };
+      window.addEventListener("scroll", onHintScroll, {
+        passive: true,
+        signal: signal.signal,
+      });
+      // Ignore the programmatic scroll this init fires while landing the page.
+      window.setTimeout(() => {
+        hintArmed = true;
+      }, 600);
+
       if (needsIntro) {
         // First visit: auto-scroll through the intro slice. Any real scroll,
         // touch or key press kills this tween and hands the timeline straight to
@@ -427,6 +479,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           intro?.kill();
           root.dataset.intro = "done";
           write(SEEN, "1");
+          showHint();
         };
       } else if (!saved) {
         // Reloads and revisits open at the greeting with the UI already in.
@@ -435,6 +488,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           window.scrollTo({ top: target, behavior: "instant" });
           ScrollTrigger.update();
         }
+        showHint();
       }
     }, root);
     document.documentElement.classList.remove("home-boot");
@@ -445,6 +499,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         behavior: "instant",
       });
       ScrollTrigger.update();
+      refreshHint();
     }
     root.dataset.ready = "true";
   } catch (error) {
