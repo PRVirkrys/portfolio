@@ -2,21 +2,22 @@
 import Logo from './ui/Logo.astro';
 import { House, BriefcaseBusiness, CircleUserRound, FileUser, Send, Mail } from '@lucide/astro';
 import { iconUrl } from '../lib/icons';
+import { withBase } from '../lib/url';
 
 const pathname = Astro.url.pathname;
 const navigation = [
-	{ label: 'Home', href: '/', Icon: House },
-	{ label: 'Work', href: '/work', Icon: BriefcaseBusiness },
-	{ label: 'About', href: '/about', Icon: CircleUserRound },
-	{ label: 'CV', href: '/cv', Icon: FileUser },
-	{ label: 'Contacto', href: '/contacto', Icon: Send },
+	{ label: 'Home', href: withBase('/'), Icon: House },
+	{ label: 'Work', href: withBase('/work'), Icon: BriefcaseBusiness },
+	{ label: 'About', href: withBase('/about'), Icon: CircleUserRound },
+	{ label: 'CV', href: withBase('/cv'), Icon: FileUser },
+	{ label: 'Contacto', href: withBase('/contacto'), Icon: Send },
 ];
-const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
+const isActive = (href: string) => (href === withBase('/') ? pathname === withBase('/') : pathname === href || pathname.startsWith(`${href}/`));
 ---
 
 <aside class="sidebar">
 	<div class="sidebar__brand-block">
-		<a class="sidebar__brand" href="/" aria-label="Inicio"><Logo class="sidebar__logo" /></a>
+		<a class="sidebar__brand" href={withBase('/')} aria-label="Inicio"><Logo class="sidebar__logo" /></a>
 	</div>
 	<nav class="sidebar__navigation" aria-label="Navegación principal">
 		{navigation.map(({ label, href, Icon }) => {
