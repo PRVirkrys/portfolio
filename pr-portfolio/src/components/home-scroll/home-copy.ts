@@ -15,6 +15,14 @@ export type HomeCopy = {
       previewTitle: string; previewHeading: string; previewBody: string; previewCta: string;
     };
   };
+  ai: {
+    tags: [string, string, string]; title: string; message: string; support: string; cta: string;
+    window: {
+      file: string; status: string; contextTitle: string; context: { label: string; meta: string }[];
+      prompt: string; reply: string; options: [string, string, string]; chosen: number; inputPlaceholder: string;
+      artifactTitle: string; artifactHeading: string; artifactNote: string;
+    };
+  };
   relatedProjects: string; scroll: string; skip: string;
 };
 // Stable content contract; JSON and language routing can replace this adapter later.
@@ -62,6 +70,31 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         previewBody: 'Diseño y código, unidos.', previewCta: 'Explore',
       },
     },
+    ai: {
+      tags: ['IA', 'COLABORACIÓN', 'EXPERIMENTACIÓN'],
+      title: 'Ampliar lo posible.',
+      message: 'Colaboro con la IA para explorar más caminos, prototipar con rapidez y convertir ideas en algo que podemos evaluar.',
+      support: 'La velocidad tiene sentido cuando conserva el contexto, el criterio y la intención humana.',
+      cta: 'Explore my work',
+      window: {
+        file: 'Exploración · Checkout', status: '4 FUENTES EN CONTEXTO',
+        contextTitle: 'CONTEXTO',
+        context: [
+          { label: 'Entrevistas', meta: '12 notas' },
+          { label: 'Objetivos', meta: 'Q3' },
+          { label: 'Flujo actual', meta: 'v2' },
+          { label: 'Sistema', meta: 'Tokens' },
+        ],
+        prompt: 'Propón tres caminos que respeten las necesidades detectadas.',
+        reply: 'Puedo explorar tres hipótesis:',
+        options: ['01 · Simplificar el inicio', '02 · Guiar por intención', '03 · Mostrar progreso'],
+        chosen: 1,
+        inputPlaceholder: 'Refinar con criterio y contexto…',
+        artifactTitle: 'ARTEFACTO GENERADO · HIPÓTESIS 02',
+        artifactHeading: 'Una dirección para probar, no una respuesta final.',
+        artifactNote: 'Paula revisa · ajusta · decide',
+      },
+    },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
@@ -105,6 +138,31 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         highlightLine: 3,
         previewTitle: 'LIVE PREVIEW', previewHeading: 'Clear product',
         previewBody: 'Design and code, together.', previewCta: 'Explore',
+      },
+    },
+    ai: {
+      tags: ['AI', 'COLLABORATION', 'EXPERIMENTATION'],
+      title: 'Widen what is possible.',
+      message: 'I collaborate with AI to explore more paths, prototype quickly and turn ideas into something we can evaluate.',
+      support: 'Speed makes sense when it keeps the context, the judgement and the human intent.',
+      cta: 'Explore my work',
+      window: {
+        file: 'Exploration · Checkout', status: '4 SOURCES IN CONTEXT',
+        contextTitle: 'CONTEXT',
+        context: [
+          { label: 'Interviews', meta: '12 notes' },
+          { label: 'Goals', meta: 'Q3' },
+          { label: 'Current flow', meta: 'v2' },
+          { label: 'System', meta: 'Tokens' },
+        ],
+        prompt: 'Propose three paths that respect the needs we found.',
+        reply: 'I can explore three hypotheses:',
+        options: ['01 · Simplify the start', '02 · Guide by intent', '03 · Show progress'],
+        chosen: 1,
+        inputPlaceholder: 'Refine with judgement and context…',
+        artifactTitle: 'GENERATED ARTIFACT · HYPOTHESIS 02',
+        artifactHeading: 'A direction to test, not a final answer.',
+        artifactNote: 'Paula reviews · adjusts · decides',
       },
     },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',

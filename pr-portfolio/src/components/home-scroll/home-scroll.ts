@@ -20,7 +20,7 @@ const SAVED = "paula-home-position-v1";
 const INTRO = 0.14;
 // Scroll length of the pinned journey, in viewport heights. Tuned by feel; the
 // GSAP beat positions are proportions of the main timeline, not of this.
-const SCREENS = 11;
+const SCREENS = 13;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -252,6 +252,75 @@ function animateCode(
   );
 }
 
+// The editor has folded into a context card. Fill the hold with a short
+// exchange: sources, a prompt, three hypotheses — two set aside, one kept — and
+// a generated artefact the cursor arrives at for review.
+function animateAI(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const q = gsap.utils.selector(root);
+  const span = end - start;
+  tl.fromTo(
+    q('[data-motion="ai-context"]'),
+    { autoAlpha: 0, x: -10 },
+    { autoAlpha: 1, x: 0, duration: span * 0.09, stagger: span * 0.02 },
+    start + span * 0.05,
+  );
+  tl.fromTo(
+    q('[data-motion="ai-prompt"]'),
+    { autoAlpha: 0, y: 10 },
+    { autoAlpha: 1, y: 0, duration: span * 0.08 },
+    start + span * 0.18,
+  );
+  tl.fromTo(
+    q('[data-motion="ai-reply"]'),
+    { autoAlpha: 0, y: 10 },
+    { autoAlpha: 1, y: 0, duration: span * 0.08 },
+    start + span * 0.3,
+  );
+  tl.fromTo(
+    q('[data-motion="ai-option"]'),
+    { autoAlpha: 0, x: -8 },
+    { autoAlpha: 1, x: 0, duration: span * 0.07, stagger: span * 0.03 },
+    start + span * 0.38,
+  );
+  // Two hypotheses are set aside; the kept one stays lit.
+  tl.to(
+    q('[data-motion="ai-option"]:not([data-chosen])'),
+    { autoAlpha: 0.4, duration: span * 0.08 },
+    start + span * 0.56,
+  );
+  tl.fromTo(
+    q(".ai-option[data-chosen]"),
+    { "--ai-pick": "0" },
+    { "--ai-pick": "1", duration: span * 0.1 },
+    start + span * 0.56,
+  );
+  tl.fromTo(
+    q('[data-motion="ai-artifact"]'),
+    { autoAlpha: 0, y: 16 },
+    { autoAlpha: 1, y: 0, duration: span * 0.1 },
+    start + span * 0.64,
+  );
+  tl.fromTo(
+    q('[data-motion="ai-artifact-el"]'),
+    { autoAlpha: 0, y: 8 },
+    { autoAlpha: 1, y: 0, duration: span * 0.07, stagger: span * 0.035 },
+    start + span * 0.74,
+  );
+  const cursor = q('[data-motion="ai-cursor"]');
+  tl.fromTo(
+    cursor,
+    { autoAlpha: 0, x: 40, y: 30 },
+    { autoAlpha: 1, duration: span * 0.06 },
+    start + span * 0.72,
+  );
+  tl.to(cursor, { x: 0, y: 0, duration: span * 0.2 }, start + span * 0.8);
+}
+
 async function initialize(root: HTMLElement, restore?: Snapshot) {
   const signal = new AbortController();
   let context: gsap.Context | undefined;
@@ -332,6 +401,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const board = q('[data-scene-panel="board"]');
       const figma = q('[data-scene-panel="figma"]');
       const code = q('[data-scene-panel="code"]');
+      const ai = q('[data-scene-panel="ai"]');
       const characterWidths = greetingChars.map(
         (char) => char.getBoundingClientRect().width,
       );
@@ -436,7 +506,19 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // line and a live preview building beneath it.
         const CD = enter(code, 0.28, { y: 36, scale: 0.96 });
         animateCode(root, main, CD.restAt, CD.outAt);
-        at = CD.outAt;
+        main.to(
+          code,
+          { autoAlpha: 0, y: -24, scale: 0.97, duration: 0.09 },
+          CD.outAt,
+        );
+        at = CD.outAt + 0.05;
+
+        // 5 → 6 · code to AI. The editor becomes a context card; a prompt opens
+        // three hypotheses, two are set aside and one is kept, and a verifiable
+        // artefact is generated for Paula to review.
+        const AI = enter(ai, 0.3, { y: 36, scale: 0.96 });
+        animateAI(root, main, AI.restAt, AI.outAt);
+        at = AI.outAt;
 
         bounds = [
           0,
@@ -445,6 +527,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           BD.inAt,
           FG.inAt,
           CD.inAt,
+          AI.inAt,
           at,
         ];
       } else {
@@ -473,10 +556,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         );
         const codeStart = clamp(
           (startOf(panels[5]) - innerHeight * 0.5) / distance,
-          figmaStart + 0.07,
-          0.93,
+          figmaStart + 0.06,
+          0.9,
         );
-        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, 1];
+        const aiStart = clamp(
+          (startOf(panels[6]) - innerHeight * 0.5) / distance,
+          codeStart + 0.06,
+          0.95,
+        );
+        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, aiStart, 1];
         const map = root.querySelector<HTMLElement>(
           '[data-motion="board-map"]',
         )!;
