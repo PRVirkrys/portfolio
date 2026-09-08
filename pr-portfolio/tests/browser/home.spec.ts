@@ -5,8 +5,9 @@ test('static home is complete when JavaScript is unavailable', async ({ browser 
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4322/');
   await expect(page.getByRole('heading', { name: 'El proceso aún importa.' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Pensar y organizar' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Investigar, pensar y organizar.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Explorar proyectos relacionados' }).first()).toHaveAttribute('href', '/work');
+  await expect(page.getByRole('link', { name: 'Explore my work' }).first()).toHaveAttribute('href', '/work');
   await context.close();
 });
 
@@ -94,7 +95,7 @@ test('phone layout retains all text, uses its phone indicator and never scrolls 
   await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-intro', 'done', { timeout: 8000 });
   await expect(page.locator('.scroll-indicator__phone')).toBeVisible();
   await expect(page.locator('.scroll-indicator__mouse')).toBeHidden();
-  await page.getByRole('heading', { name: 'Pensar y organizar' }).scrollIntoViewIfNeeded();
+  await page.getByRole('heading', { name: 'Investigar, pensar y organizar.' }).scrollIntoViewIfNeeded();
   await expect(page.locator('[data-scene-panel="board"]')).not.toHaveAttribute('inert', '');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.setViewportSize({ width: 320, height: 640 });
@@ -117,6 +118,6 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-mode', 'static');
   await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-intro', 'done');
   await expect(page.getByRole('heading', { name: 'El proceso aún importa.' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Pensar y organizar' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Investigar, pensar y organizar.' })).toBeVisible();
   await expect(page.locator('.scroll-indicator')).toBeHidden();
 });
