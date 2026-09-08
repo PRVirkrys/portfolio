@@ -8,6 +8,7 @@ import Tag from '../components/ui/Tag.astro';
 import NextCase from '../components/case/NextCase.astro';
 import { ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
+import { withBase } from '../lib/url';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -54,7 +55,7 @@ const metaRows = [
 						<>
 							{i > 0 && <span class="cs-crumb__sep" aria-hidden="true">/</span>}
 							{crumb.href
-								? <a class="cs-crumb" href={crumb.href}>{crumb.label}</a>
+								? <a class="cs-crumb" href={withBase(crumb.href)}>{crumb.label}</a>
 								: <span class:list={['cs-crumb', { 'cs-crumb--active': i === breadcrumbs.length - 1 }]}>{crumb.label}</span>
 							}
 						</>
