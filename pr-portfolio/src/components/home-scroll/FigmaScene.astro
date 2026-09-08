@@ -4,6 +4,7 @@ import TextLink from '../ui/TextLink.astro';
 import { ArrowRight } from '@lucide/astro';
 import cursor from '../../assets/home-scroll/cursor.svg';
 import type { HomeCopy } from './home-copy';
+import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 const { figma } = copy;
@@ -15,7 +16,7 @@ const categories = ['UX Design', 'UI Design', 'Design Systems'] as const;
     <h2 id="figma-title">{figma.title}</h2>
     <p class="home-figma__message">{figma.message}</p>
     <p class="home-figma__support">{figma.support}</p>
-    <TextLink href="/work" showIcon={false}>{figma.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+    <TextLink href={withBase('/work')} showIcon={false}>{figma.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
   </div>
   <div class="figma-window" data-motion="figma-window" aria-hidden="true">
     <header class="figma-window__bar">
