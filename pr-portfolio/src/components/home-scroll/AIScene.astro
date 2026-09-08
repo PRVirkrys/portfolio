@@ -1,0 +1,67 @@
+---
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import { ArrowRight, ArrowUp } from '@lucide/astro';
+import cursor from '../../assets/home-scroll/cursor.svg';
+import type { HomeCopy } from './home-copy';
+interface Props { copy: HomeCopy }
+const { copy } = Astro.props;
+const { ai } = copy;
+const categories = ['UX Design', 'Strategy', 'Engineering'] as const;
+const win = ai.window;
+---
+<section class="home-scene home-ai" data-scene-panel="ai" aria-labelledby="ai-title">
+  <div class="home-copy" data-motion="ai-copy">
+    <div class="home-tags">{ai.tags.map((tag, i) => <Tag size="sm" category={categories[i]}>{tag}</Tag>)}</div>
+    <h2 id="ai-title">{ai.title}</h2>
+    <p class="home-ai__message">{ai.message}</p>
+    <p class="home-ai__support">{ai.support}</p>
+    <TextLink href="/work" showIcon={false}>{ai.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+  </div>
+  <div class="ai-window" data-motion="ai-window" aria-hidden="true">
+    <header class="ai-window__bar">
+      <span class="ai-window__badge"></span>
+      <span class="ai-window__file">{win.file}</span>
+      <span class="ai-window__status">{win.status}</span>
+    </header>
+    <div class="ai-window__body">
+      <aside class="ai-window__context">
+        <p class="ai-window__panel-title">{win.contextTitle}</p>
+        {win.context.map(item => (
+          <span class="ai-context" data-motion="ai-context">
+            <b>{item.label}</b>
+            <em>{item.meta}</em>
+          </span>
+        ))}
+      </aside>
+      <div class="ai-window__chat">
+        <p class="ai-bubble ai-bubble--user" data-motion="ai-prompt">{win.prompt}</p>
+        <div class="ai-bubble ai-bubble--reply" data-motion="ai-reply">
+          <span>{win.reply}</span>
+          <ul class="ai-options">
+            {win.options.map((option, i) => (
+              <li class="ai-option" data-motion="ai-option" data-chosen={i === win.chosen ? '' : undefined}>{option}</li>
+            ))}
+          </ul>
+        </div>
+        <p class="ai-input"><span>{win.inputPlaceholder}</span><ArrowUp size={14} /></p>
+        <div class="ai-artifact" data-motion="ai-artifact">
+          <p class="ai-window__panel-title">{win.artifactTitle}</p>
+          <div class="ai-artifact__row">
+            <div class="ai-artifact__preview" data-motion="ai-artifact-el">
+              <i></i><i></i><i></i><b></b>
+            </div>
+            <div class="ai-artifact__note">
+              <span class="ai-artifact__heading" data-motion="ai-artifact-el">{win.artifactHeading}</span>
+              <span class="ai-artifact__meta" data-motion="ai-artifact-el">{win.artifactNote}</span>
+            </div>
+          </div>
+          <div class="ai-cursor" data-motion="ai-cursor">
+            <img src={cursor.src} width="24" height="28" alt="" />
+            <span>{copy.board.cursor}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
