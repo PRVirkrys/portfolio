@@ -1,7 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  clamp,
   desktopBounds,
   parseSnapshot,
   progressFor,
@@ -467,14 +466,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   ]);
   if (cancelled || !root.isConnected) return;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-  // Pinned/scrubbed choreography needs enough room for the board scene; below
-  // this it falls back to the stacked "flow" layout.
-  const cinematic = !reduce.matches && innerWidth >= 920 && innerHeight >= 680;
-  root.dataset.mode = reduce.matches
-    ? "static"
-    : cinematic
-      ? "cinematic"
-      : "flow";
+  // The pinned/scrubbed journey runs at every size that isn't asking for
+  // reduced motion; phones get the same chapters and beats, only tighter
+  // compositions (see `compact`). The stacked static layout is the fallback
+  // for reduced motion, no JS, or a failed init.
+  const cinematic = !reduce.matches;
+  // Below this the chapters stack copy over visual and travel distances shrink.
+  const compact = innerWidth < 768;
+  const M = compact ? 0.6 : 1;
+  root.dataset.mode = reduce.matches ? "static" : "cinematic";
   root.dataset.intro = "done";
   const footer = document.querySelector<HTMLElement>(".home-footer");
   root
@@ -561,9 +561,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           from: gsap.TweenVars,
         ) => {
           const inAt = at;
+          // Compact viewports travel shorter and squeeze less.
+          const soft: gsap.TweenVars = { ...from };
+          if (typeof soft.y === "number") soft.y *= M;
+          if (typeof soft.x === "number") soft.x *= M;
+          if (typeof soft.scale === "number")
+            soft.scale = 1 - (1 - soft.scale) * M;
           main.fromTo(
             panel,
-            { autoAlpha: 0, x: 0, y: 0, scale: 1, ...from },
+            { autoAlpha: 0, x: 0, y: 0, scale: 1, ...soft },
             { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: ENTER },
             inAt,
           );
@@ -571,26 +577,33 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           at = restAt + hold;
           return { inAt, restAt, outAt: at };
         };
+        // Scene exits use the same compact scaling.
+        const leave = (panel: gsap.TweenTarget, vars: gsap.TweenVars, pos: number) => {
+          const v = { ...vars };
+          if (typeof v.y === "number") v.y *= M;
+          if (typeof v.x === "number") v.x *= M;
+          main.to(panel, v, pos);
+        };
 
         // 0 → 1 · the name has typed and held; cursor goes and the whole
         // greeting + logo composition lifts away as one, uncovering purpose.
         main.set(typingCursors, { display: "none" }, leaveAt);
-        main.to(greeting, { autoAlpha: 0, y: -64, duration: 0.08 }, leaveAt);
+        leave(greeting, { autoAlpha: 0, y: -64, duration: 0.08 }, leaveAt);
 
         const P = enter(purpose, 0.12, { y: 40 });
-        main.to(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, P.outAt);
+        leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, P.outAt);
         at = P.outAt + 0.05;
 
         // 1 → 2 · purpose to premise.
         const PR = enter(premise, 0.15, { y: 40 });
-        main.to(premise, { autoAlpha: 0, x: -60, duration: 0.09 }, PR.outAt);
+        leave(premise, { autoAlpha: 0, x: -60, duration: 0.09 }, PR.outAt);
         at = PR.outAt + 0.05;
 
         // 2 → 3 · premise to board; the board runs its cursor choreography
         // through its hold, then the panel recedes as if zoomed past.
         const BD = enter(board, 0.32, { y: 30 });
         animateBoard(root, main, BD.restAt, BD.outAt);
-        main.to(
+        leave(
           board,
           { autoAlpha: 0, y: -24, scale: 0.96, duration: 0.09 },
           BD.outAt,
@@ -602,7 +615,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // cursor lands on an element and a feedback pill confirms the test.
         const FG = enter(figma, 0.26, { y: 36, scale: 0.96 });
         animateFigma(root, main, FG.restAt, FG.outAt);
-        main.to(
+        leave(
           figma,
           { autoAlpha: 0, y: -24, scale: 0.97, duration: 0.09 },
           FG.outAt,
@@ -614,7 +627,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // line and a live preview building beneath it.
         const CD = enter(code, 0.28, { y: 36, scale: 0.96 });
         animateCode(root, main, CD.restAt, CD.outAt);
-        main.to(
+        leave(
           code,
           { autoAlpha: 0, y: -24, scale: 0.97, duration: 0.09 },
           CD.outAt,
@@ -626,7 +639,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // artefact is generated for Paula to review.
         const AI = enter(ai, 0.3, { y: 36, scale: 0.96 });
         animateAI(root, main, AI.restAt, AI.outAt);
-        main.to(
+        leave(
           ai,
           { autoAlpha: 0, y: -24, scale: 0.97, duration: 0.09 },
           AI.outAt,
@@ -637,11 +650,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // space and the three statements land in turn; the CTA stays after.
         const MF = enter(manifesto, 0.22, { y: 30 });
         animateManifesto(root, main, MF.restAt, MF.outAt);
-        main.to(
-          manifesto,
-          { autoAlpha: 0, y: -24, duration: 0.09 },
-          MF.outAt,
-        );
+        leave(manifesto, { autoAlpha: 0, y: -24, duration: 0.09 }, MF.outAt);
         at = MF.outAt + 0.05;
 
         // 7 → 8 · manifesto to identity. The split-flap panel turns through the
@@ -663,60 +672,6 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           ID.inAt,
           at,
         ];
-      } else {
-        const distance = Math.max(1, root.offsetHeight - innerHeight);
-        const startOf = (n: HTMLElement) =>
-          n.getBoundingClientRect().top + scrollY - root.offsetTop;
-        const purposeStart = clamp(
-          (startOf(panels[1]) - innerHeight * 0.5) / distance,
-          0.08,
-          0.4,
-        );
-        const premiseStart = clamp(
-          (startOf(panels[2]) - innerHeight * 0.5) / distance,
-          purposeStart + 0.08,
-          0.6,
-        );
-        const boardStart = clamp(
-          (startOf(panels[3]) - innerHeight * 0.5) / distance,
-          premiseStart + 0.08,
-          0.75,
-        );
-        const figmaStart = clamp(
-          (startOf(panels[4]) - innerHeight * 0.5) / distance,
-          boardStart + 0.07,
-          0.85,
-        );
-        const codeStart = clamp(
-          (startOf(panels[5]) - innerHeight * 0.5) / distance,
-          figmaStart + 0.06,
-          0.9,
-        );
-        const aiStart = clamp(
-          (startOf(panels[6]) - innerHeight * 0.5) / distance,
-          codeStart + 0.05,
-          0.9,
-        );
-        const manifestoStart = clamp(
-          (startOf(panels[7]) - innerHeight * 0.5) / distance,
-          aiStart + 0.04,
-          0.92,
-        );
-        const identityStart = clamp(
-          (startOf(panels[8]) - innerHeight * 0.5) / distance,
-          manifestoStart + 0.04,
-          0.96,
-        );
-        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, aiStart, manifestoStart, identityStart, 1];
-        const map = root.querySelector<HTMLElement>(
-          '[data-motion="board-map"]',
-        )!;
-        const start = clamp(
-          (startOf(map) - innerHeight * 0.75) / distance,
-          boardStart,
-          figmaStart,
-        );
-        animateBoard(root, main, start, figmaStart);
       }
       // The scroll hint is not part of the scrubbed timeline — it has its own
       // scroll-idle lifecycle (see the hint controller after the trigger).
