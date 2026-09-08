@@ -14,7 +14,7 @@ const categories = ['Research', 'Strategy', 'UX Design'] as const;
     <h2 id="board-title" data-motion="board-title">{copy.board.title}</h2>
     <p class="home-board__message">{copy.board.message}</p>
     <p class="home-board__support">{copy.board.support}</p>
-    <TextLink href="/work" showIcon={false}>{copy.relatedProjects}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+    <TextLink href="/work" showIcon={false}>{copy.board.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
   </div>
   <div class="board-map" data-motion="board-map" aria-hidden="true">
     <div class="board-map__selection" data-motion="board-selection"></div>
