@@ -23,6 +23,7 @@ export type HomeCopy = {
       artifactTitle: string; artifactHeading: string; artifactNote: string;
     };
   };
+  manifesto: { tag: string; lines: [string, string, string]; cta: string };
   relatedProjects: string; scroll: string; skip: string;
 };
 // Stable content contract; JSON and language routing can replace this adapter later.
@@ -95,6 +96,15 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         artifactNote: 'Paula revisa · ajusta · decide',
       },
     },
+    manifesto: {
+      tag: 'TECNOLOGÍA CON PROPÓSITO',
+      lines: [
+        'La tecnología amplifica lo que hacemos.',
+        'Las personas le damos sentido.',
+        'Diseñar sigue siendo decidir qué merece existir, para quién y por qué.',
+      ],
+      cta: 'Explore my work',
+    },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
@@ -164,6 +174,15 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         artifactHeading: 'A direction to test, not a final answer.',
         artifactNote: 'Paula reviews · adjusts · decides',
       },
+    },
+    manifesto: {
+      tag: 'TECHNOLOGY WITH PURPOSE',
+      lines: [
+        'Technology amplifies what we do.',
+        'People are the ones who give it meaning.',
+        'Designing is still deciding what deserves to exist, for whom and why.',
+      ],
+      cta: 'Explore my work',
     },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',
   },

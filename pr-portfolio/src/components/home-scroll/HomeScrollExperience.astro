@@ -5,6 +5,7 @@ import BoardScene from './BoardScene.astro';
 import FigmaScene from './FigmaScene.astro';
 import CodeScene from './CodeScene.astro';
 import AIScene from './AIScene.astro';
+import ManifestoScene from './ManifestoScene.astro';
 import ScrollIndicator from './ScrollIndicator.astro';
 import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
@@ -55,6 +56,7 @@ const chars = (value: string) => Array.from(value);
     <FigmaScene copy={copy} />
     <CodeScene copy={copy} />
     <AIScene copy={copy} />
+    <ManifestoScene copy={copy} />
   </div>
   <ScrollIndicator label={copy.scroll} />
 </main>
