@@ -871,6 +871,117 @@ html:not(.dark) .hero-logo {
 .home-manifesto .text-link {
   margin-top: 12px;
 }
+/* Identity — the closing split-flap. Every role is its own layer so the scrub
+   reverses cleanly; the assembled name + CTAs show without JS. */
+.home-identity {
+  justify-content: center;
+}
+.identity-logo {
+  position: absolute;
+  left: clamp(32px, 11%, 216px);
+  top: 50%;
+  width: clamp(140px, 16vw, 220px);
+  aspect-ratio: 287 / 247;
+  transform: translateY(-50%);
+}
+.identity-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 760px;
+  text-align: center;
+}
+.identity-head {
+  position: relative;
+  height: 1.5em;
+  width: 100%;
+  font: 500 clamp(15px, 1.5vw, 19px) / 1.5 var(--font-sans);
+  letter-spacing: 0.14em;
+  color: var(--color-text-secondary);
+}
+.identity-head__a,
+.identity-head__b {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.flip-panel {
+  position: relative;
+  width: min(680px, 94%);
+  height: clamp(92px, 13vh, 148px);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+  perspective: 1000px;
+}
+.flip-stack {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.flip-word {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-inline: 12px;
+  backface-visibility: hidden;
+  font: 500 clamp(26px, 4.6vw, 58px) / 1 var(--font-heading);
+  letter-spacing: -0.5px;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.flip-hinge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--color-border-strong);
+  transform-origin: center;
+  opacity: 0.12;
+}
+.identity-roles-list {
+  display: none;
+}
+.identity-text {
+  max-width: 42ch;
+  font: 400 clamp(15px, 1.5vw, 18px) / 1.6 var(--font-sans);
+  color: var(--color-text-secondary);
+}
+.identity-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 24px;
+  margin-top: 8px;
+}
+/* Without the pinned stage the panel just reads the name and the roles are a
+   plain list. */
+.home-scroll:not([data-mode="cinematic"]) .flip-word:not([data-name]) {
+  display: none;
+}
+.home-scroll:not([data-mode="cinematic"]) .identity-head__a {
+  display: none;
+}
+.home-scroll:not([data-mode="cinematic"]) .identity-roles-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+}
 .home-footer {
   position: fixed;
   z-index: 25;
@@ -1129,6 +1240,15 @@ html.home-boot
   .code-cursor {
     left: auto;
     right: 12%;
+  }
+  .identity-logo {
+    position: static;
+    transform: none;
+    width: clamp(88px, 28vw, 128px);
+    margin: 0 auto 4px;
+  }
+  .flip-word {
+    font-size: clamp(22px, 7vw, 34px);
   }
   .board-map {
     max-width: 560px;

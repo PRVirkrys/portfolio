@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 // Scenes in narrative order — mirrors src/components/home-scroll/home-progress.ts.
-const SCENES = ['greeting', 'purpose', 'premise', 'board', 'figma', 'code', 'ai', 'manifesto'] as const;
+const SCENES = ['greeting', 'purpose', 'premise', 'board', 'figma', 'code', 'ai', 'manifesto', 'identity'] as const;
 type SceneName = typeof SCENES[number];
 
 // Stable test navigation: binary-search the scroll range for the point where the
@@ -38,6 +38,7 @@ test('static home is complete when JavaScript is unavailable', async ({ browser 
   await expect(page.getByRole('heading', { name: 'Diseñar también es construir.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
+  await expect(page.getByText('PAULA RODAS', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Explorar proyectos relacionados' }).first()).toHaveAttribute('href', '/work');
   await expect(page.getByRole('link', { name: 'Explore my work' }).first()).toHaveAttribute('href', '/work');
   await context.close();
@@ -75,7 +76,7 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   expect(await headerOpacity()).toBeLessThan(.9);
 
   // Every chapter is reached, in order, on the way down.
-  for (const scene of ['purpose', 'premise', 'board', 'figma', 'code', 'ai', 'manifesto'] as const) {
+  for (const scene of ['purpose', 'premise', 'board', 'figma', 'code', 'ai', 'manifesto', 'identity'] as const) {
     await seekScene(page, scene);
     await expect(root).toHaveAttribute('data-scene', scene);
     await expect(page.locator(`[data-scene-panel="${scene}"]`)).not.toHaveAttribute('inert', '');
@@ -95,7 +96,7 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   expect(Math.abs(first!.y - second!.y)).toBeLessThan(1);
 
   // And the same chapters unwind in reverse on the way up.
-  for (const scene of ['manifesto', 'ai', 'figma', 'board', 'premise', 'purpose', 'greeting'] as const) {
+  for (const scene of ['identity', 'manifesto', 'ai', 'figma', 'board', 'premise', 'purpose', 'greeting'] as const) {
     await seekScene(page, scene, .4);
     await expect(root).toHaveAttribute('data-scene', scene);
   }
@@ -113,10 +114,20 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   await expect(page.locator('.ai-option[data-chosen]')).toBeVisible();
   await seekScene(page, 'manifesto', .9);
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
+  await seekScene(page, 'identity', .04);
+  await expect(page.locator('.flip-word[data-word-index="0"]')).toBeVisible();
+  await expect(page.locator('.flip-word[data-name]')).toBeHidden();
+  await expect(page.locator('[data-motion="identity-ctas"]')).toBeHidden();
+  await seekScene(page, 'identity', .96);
+  await expect(page.locator('.flip-word[data-name]')).toBeVisible();
+  await expect(page.locator('[data-motion="identity-head-b"]')).toBeVisible();
+  await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
+  await seekScene(page, 'identity', .04);
+  await expect(page.locator('.flip-word[data-name]')).toBeHidden();
   await page.reload();
   await expect(root).toHaveAttribute('data-ready', 'true');
   await expect(root).toHaveAttribute('data-intro', 'done');
-  await expect(root).toHaveAttribute('data-scene', 'manifesto');
+  await expect(root).toHaveAttribute('data-scene', 'identity');
   await scrollTo(0);
   await expect(root).toHaveAttribute('data-scene', 'greeting');
   await expect(page.locator('[data-scene-panel="greeting"]')).not.toHaveAttribute('inert', '');
@@ -185,5 +196,6 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.getByRole('heading', { name: 'Diseñar también es construir.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
+  await expect(page.getByText('PAULA RODAS', { exact: true })).toBeVisible();
   await expect(page.locator('.scroll-indicator')).toBeHidden();
 });
