@@ -281,6 +281,18 @@ html:not(.dark) .hero-logo {
   font: 400 14px/1.55 var(--font-sans);
   letter-spacing: 0;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+/* Driven by the hint controller in home-scroll.ts. Position only ever changes
+   while hidden, so the centre→bottom move is never seen mid-fade. */
+.scroll-indicator[data-pos="center"] {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+}
+.scroll-indicator[data-hint="show"] {
+  opacity: 1;
 }
 .scroll-indicator svg {
   width: 20px;
@@ -288,29 +300,71 @@ html:not(.dark) .hero-logo {
   display: block;
   overflow: visible;
 }
-.scroll-indicator rect {
+.scroll-indicator .scroll-body {
   stroke: currentColor;
 }
 .scroll-indicator circle {
   fill: currentColor;
 }
-.scroll-indicator circle:last-of-type {
+.scroll-indicator .scroll-hint-dot,
+.scroll-indicator .scroll-hint-ring {
   transform-box: fill-box;
   transform-origin: center;
-  animation: home-scroll-hint 1.7s ease-in-out infinite;
+}
+/* Motion mirrored from Figma node 16085:234253 (PR Brand / DS): one 2s loop —
+   the inner dot slides down 14px and fades while a ring pulses out to 2x and
+   fades behind the mouse. Opacity and transform carry different easings, so
+   each runs as its own keyframe track on the same element. */
+.scroll-indicator .scroll-hint-dot {
+  animation:
+    scroll-hint-dot-move 2s linear infinite,
+    scroll-hint-dot-fade 2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+.scroll-indicator .scroll-hint-ring {
+  animation:
+    scroll-hint-ring-scale 2s cubic-bezier(0.5, 0, 0.1, 1) infinite,
+    scroll-hint-ring-fade 2s linear infinite;
 }
 .scroll-indicator__phone {
   display: none;
 }
-@keyframes home-scroll-hint {
-  0%,
-  12% {
-    transform: translateY(-10.5px) scale(1);
-    opacity: 0.85;
+@keyframes scroll-hint-dot-move {
+  0% {
+    transform: translateY(0);
   }
-  70%,
+  74.4%,
   100% {
-    transform: translateY(7px) scale(0.2);
+    transform: translateY(14px);
+  }
+}
+@keyframes scroll-hint-dot-fade {
+  0% {
+    opacity: 1;
+  }
+  74.3%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes scroll-hint-ring-scale {
+  0% {
+    transform: scale(1);
+  }
+  74.4%,
+  100% {
+    transform: scale(2);
+  }
+}
+@keyframes scroll-hint-ring-fade {
+  0% {
+    opacity: 1;
+  }
+  15% {
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.3, 0, 0.45, 0.65);
+  }
+  64.4%,
+  100% {
     opacity: 0;
   }
 }
