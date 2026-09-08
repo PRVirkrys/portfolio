@@ -160,28 +160,40 @@ test('the approved intro is frozen: 3px white line, logo reveal, typed name and 
   await expect(page.locator('[data-motion="greeting-name"] [data-typing-cursor]')).toHaveCSS('display', 'inline-block');
 });
 
-test('phone layout retains all text, uses its phone indicator and never scrolls sideways', async ({ page }) => {
+test('phone runs the same pinned journey, its phone indicator, and never scrolls sideways', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-ready', 'true');
-  await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-intro', 'done', { timeout: 8000 });
+  const root = page.locator('[data-home-scroll]');
+  await expect(root).toHaveAttribute('data-ready', 'true');
+  await expect(root).toHaveAttribute('data-mode', 'cinematic'); // not a stacked fallback
+  await expect(root).toHaveAttribute('data-intro', 'done', { timeout: 8000 });
   await expect(page.locator('.scroll-indicator__phone')).toBeVisible();
   await expect(page.locator('.scroll-indicator__mouse')).toBeHidden();
-  await page.getByRole('heading', { name: 'Investigar, pensar y organizar.' }).scrollIntoViewIfNeeded();
-  await expect(page.locator('[data-scene-panel="board"]')).not.toHaveAttribute('inert', '');
-  await page.getByRole('heading', { name: 'Imaginar, dar forma y probar.' }).scrollIntoViewIfNeeded();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  // The same chapters, in order, driven by scroll.
+  for (const scene of ['purpose', 'board', 'figma', 'code', 'ai', 'manifesto', 'identity'] as const) {
+    await seekScene(page, scene);
+    await expect(root).toHaveAttribute('data-scene', scene);
+  }
+  // The split-flap still closes on the name.
+  await seekScene(page, 'identity', .97);
+  await expect(page.locator('.flip-word[data-name]')).toBeVisible();
+  await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
+  // Reverse order on the way back up.
+  for (const scene of ['manifesto', 'ai', 'code', 'figma', 'board', 'purpose', 'greeting'] as const) {
+    await seekScene(page, scene, .4);
+    await expect(root).toHaveAttribute('data-scene', scene);
+  }
+
+  const noSideScroll = () => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
+  expect(await noSideScroll()).toBe(true);
   await page.setViewportSize({ width: 320, height: 640 });
-  const narrowLayout = await page.evaluate(() => ({
-    fits: document.documentElement.scrollWidth <= innerWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-    viewportWidth: innerWidth,
-    outside: [...document.querySelectorAll<HTMLElement>('body *')]
-      .filter(node => node.getBoundingClientRect().left < -.5 || node.getBoundingClientRect().right > innerWidth + .5)
-      .slice(0, 8)
-      .map(node => `${node.tagName}.${node.className}`),
-  }));
-  expect(narrowLayout).toMatchObject({ fits: true });
+  await page.waitForTimeout(600); // debounced rebuild at the new size
+  await expect(root).toHaveAttribute('data-ready', 'true');
+  await seekScene(page, 'figma');
+  expect(await noSideScroll()).toBe(true);
+  await seekScene(page, 'identity', .97);
+  expect(await noSideScroll()).toBe(true);
 });
 
 test('reduced motion exposes the full story without an automatic intro or a pinned stage', async ({ page }) => {

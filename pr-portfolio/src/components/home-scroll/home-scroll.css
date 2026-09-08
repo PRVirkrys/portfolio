@@ -1241,10 +1241,13 @@ html.home-boot
     left: auto;
     right: 12%;
   }
+  .home-identity {
+    flex-direction: column;
+  }
   .identity-logo {
     position: static;
     transform: none;
-    width: clamp(88px, 28vw, 128px);
+    width: clamp(84px, 26vw, 120px);
     margin: 0 auto 4px;
   }
   .flip-word {
@@ -1313,6 +1316,130 @@ html.home-boot
   }
   .home-skip {
     left: 12px;
+  }
+
+  /* Pinned journey on a phone: every chapter must fit one clipped viewport, so
+     copy and the tool windows are compact. Same story, tighter composition. */
+  [data-home-scroll][data-mode="cinematic"] .home-scene {
+    padding: calc(var(--home-header-height) + 18px) 16px
+      calc(var(--home-bottom-nav) + 16px);
+    align-items: flex-start;
+  }
+  [data-home-scroll][data-mode="cinematic"] .home-greeting,
+  [data-home-scroll][data-mode="cinematic"] .home-purpose,
+  [data-home-scroll][data-mode="cinematic"] .home-premise,
+  [data-home-scroll][data-mode="cinematic"] .home-manifesto,
+  [data-home-scroll][data-mode="cinematic"] .home-identity {
+    align-items: center;
+  }
+  [data-home-scroll][data-mode="cinematic"] .home-figma,
+  [data-home-scroll][data-mode="cinematic"] .home-code,
+  [data-home-scroll][data-mode="cinematic"] .home-ai,
+  [data-home-scroll][data-mode="cinematic"] .home-board {
+    gap: 18px;
+  }
+  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai, .home-board) h2 {
+    font-size: 24px;
+    letter-spacing: -0.3px;
+  }
+  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai) .home-copy {
+    gap: 8px;
+  }
+  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai) .home-copy p {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai, .home-board) .home-tags {
+    display: none;
+  }
+  [data-home-scroll][data-mode="cinematic"] .home-board .home-copy p {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  [data-home-scroll][data-mode="cinematic"] .home-board .home-board__support {
+    font-size: 13px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .board-map {
+    max-width: 300px;
+    aspect-ratio: 320 / 296;
+  }
+  [data-home-scroll][data-mode="cinematic"] .board-card {
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .figma-window,
+  [data-home-scroll][data-mode="cinematic"] .code-window,
+  [data-home-scroll][data-mode="cinematic"] .ai-window {
+    font-size: 11px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .figma-window__bar,
+  [data-home-scroll][data-mode="cinematic"] .code-window__bar,
+  [data-home-scroll][data-mode="cinematic"] .ai-window__bar {
+    padding: 8px 12px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .figma-window__body {
+    grid-template-columns: 84px minmax(0, 1fr);
+    min-height: 168px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .figma-window__props {
+    display: none;
+  }
+  [data-home-scroll][data-mode="cinematic"] .code-window__body {
+    grid-template-columns: 92px minmax(0, 1fr);
+    min-height: 188px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-window__body {
+    grid-template-columns: 92px minmax(0, 1fr);
+    min-height: 200px;
+  }
+  [data-home-scroll][data-mode="cinematic"] :is(.figma-window__panel, .figma-window__canvas, .code-window__explorer, .ai-window__context, .ai-window__chat) {
+    padding: 12px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-window__chat {
+    gap: 8px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-context {
+    padding: 5px 7px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-context em {
+    display: none;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-bubble {
+    padding: 8px 10px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-option {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .code-file {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  [data-home-scroll][data-mode="cinematic"] .figma-wire {
+    width: min(180px, 100%);
+    gap: 8px;
+    padding: 12px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .figma-wire__image {
+    height: 52px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .code-editor__lines {
+    font-size: 10px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .code-preview,
+  [data-home-scroll][data-mode="cinematic"] .ai-artifact__preview {
+    display: none;
+  }
+  [data-home-scroll][data-mode="cinematic"] .ai-artifact__row {
+    margin-top: 6px;
+  }
+  [data-home-scroll][data-mode="cinematic"] .identity-head {
+    height: 1.4em;
+    letter-spacing: 0.1em;
+  }
+  [data-home-scroll][data-mode="cinematic"] .flip-panel {
+    height: clamp(78px, 12vh, 112px);
   }
 }
 @media (max-width: 359px) {
