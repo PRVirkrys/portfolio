@@ -20,7 +20,7 @@ const SAVED = "paula-home-position-v1";
 const INTRO = 0.14;
 // Scroll length of the pinned journey, in viewport heights. Tuned by feel; the
 // GSAP beat positions are proportions of the main timeline, not of this.
-const SCREENS = 13;
+const SCREENS = 16;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -344,6 +344,89 @@ function animateManifesto(
   );
 }
 
+// The closing split-flap: one panel turns through the seven roles (each a
+// scroll stop with a hinge fold), then "I AM A" becomes "I AM", the panel
+// reads the name, and the logo, line and CTAs settle. Fully reversible — every
+// word is its own layer, none of it depends on swapping text mid-scrub.
+function animateIdentity(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const q = gsap.utils.selector(root);
+  const span = end - start;
+  const words = q('[data-motion="flip-word"]');
+  const hinge = q('[data-motion="flip-hinge"]');
+  const turns = words.length - 1; // seven role→role/name folds
+  const flipZone = span * 0.62;
+  const step = flipZone / turns;
+  const fold = step * 0.62;
+
+  tl.set(words[0], { autoAlpha: 1, rotationX: 0 }, start);
+  for (let k = 1; k < words.length; k += 1) {
+    const at = start + span * 0.03 + (k - 1) * step;
+    tl.to(words[k - 1], { autoAlpha: 0, rotationX: -90, duration: fold }, at);
+    tl.fromTo(
+      words[k],
+      { autoAlpha: 0, rotationX: 90 },
+      { autoAlpha: 1, rotationX: 0, duration: fold },
+      at,
+    );
+    // Hinge shadow swells at the fold's midpoint, then settles.
+    tl.fromTo(
+      hinge,
+      { scaleX: 0.6, autoAlpha: 0.12 },
+      { scaleX: 1, autoAlpha: 0.55, duration: fold * 0.5 },
+      at,
+    );
+    tl.to(
+      hinge,
+      { scaleX: 0.6, autoAlpha: 0.12, duration: fold * 0.5 },
+      at + fold * 0.5,
+    );
+    // The last fold also swaps the header prefix.
+    if (k === turns) {
+      tl.to(
+        q('[data-motion="identity-head-a"]'),
+        { autoAlpha: 0, y: -10, duration: fold },
+        at,
+      );
+      tl.fromTo(
+        q('[data-motion="identity-head-b"]'),
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, y: 0, duration: fold },
+        at,
+      );
+    }
+  }
+
+  const reveal = start + span * 0.68;
+  tl.to(
+    q('[data-motion="identity-tag"]'),
+    { autoAlpha: 0, duration: span * 0.06 },
+    reveal - span * 0.02,
+  );
+  tl.fromTo(
+    q('[data-motion="identity-logo"]'),
+    { autoAlpha: 0, x: -32 },
+    { autoAlpha: 1, x: 0, duration: span * 0.12 },
+    reveal,
+  );
+  tl.fromTo(
+    q('[data-motion="identity-text"]'),
+    { autoAlpha: 0, y: 16 },
+    { autoAlpha: 1, y: 0, duration: span * 0.1 },
+    reveal + span * 0.08,
+  );
+  tl.fromTo(
+    q('[data-motion="identity-ctas"]'),
+    { autoAlpha: 0, y: 14 },
+    { autoAlpha: 1, y: 0, duration: span * 0.12 },
+    reveal + span * 0.14,
+  );
+}
+
 async function initialize(root: HTMLElement, restore?: Snapshot) {
   const signal = new AbortController();
   let context: gsap.Context | undefined;
@@ -426,6 +509,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const code = q('[data-scene-panel="code"]');
       const ai = q('[data-scene-panel="ai"]');
       const manifesto = q('[data-scene-panel="manifesto"]');
+      const identity = q('[data-scene-panel="identity"]');
       const characterWidths = greetingChars.map(
         (char) => char.getBoundingClientRect().width,
       );
@@ -553,7 +637,19 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // space and the three statements land in turn; the CTA stays after.
         const MF = enter(manifesto, 0.22, { y: 30 });
         animateManifesto(root, main, MF.restAt, MF.outAt);
-        at = MF.outAt;
+        main.to(
+          manifesto,
+          { autoAlpha: 0, y: -24, duration: 0.09 },
+          MF.outAt,
+        );
+        at = MF.outAt + 0.05;
+
+        // 7 → 8 · manifesto to identity. The split-flap panel turns through the
+        // seven roles, then "I AM A" becomes "I AM", the panel reads PAULA
+        // RODAS, and the logo, line and CTAs settle in. This is the close.
+        const ID = enter(identity, 0.56, { y: 36 });
+        animateIdentity(root, main, ID.restAt, ID.outAt);
+        at = ID.outAt;
 
         bounds = [
           0,
@@ -564,6 +660,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           CD.inAt,
           AI.inAt,
           MF.inAt,
+          ID.inAt,
           at,
         ];
       } else {
@@ -602,10 +699,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         );
         const manifestoStart = clamp(
           (startOf(panels[7]) - innerHeight * 0.5) / distance,
-          aiStart + 0.05,
-          0.95,
+          aiStart + 0.04,
+          0.92,
         );
-        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, aiStart, manifestoStart, 1];
+        const identityStart = clamp(
+          (startOf(panels[8]) - innerHeight * 0.5) / distance,
+          manifestoStart + 0.04,
+          0.96,
+        );
+        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, aiStart, manifestoStart, identityStart, 1];
         const map = root.querySelector<HTMLElement>(
           '[data-motion="board-map"]',
         )!;

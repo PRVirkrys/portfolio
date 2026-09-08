@@ -24,6 +24,10 @@ export type HomeCopy = {
     };
   };
   manifesto: { tag: string; lines: [string, string, string]; cta: string };
+  identity: {
+    tag: string; prefix: string; closingPrefix: string; roles: string[]; name: string;
+    text: string; ctaPrimary: string; ctaSecondary: string;
+  };
   relatedProjects: string; scroll: string; skip: string;
 };
 // Stable content contract; JSON and language routing can replace this adapter later.
@@ -105,6 +109,14 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       ],
       cta: 'Explore my work',
     },
+    identity: {
+      tag: 'IDENTIDAD EN MOVIMIENTO',
+      prefix: 'I AM A', closingPrefix: 'I AM',
+      roles: ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BRAND DESIGNER', 'DESIGNER'],
+      name: 'PAULA RODAS',
+      text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
+      ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
+    },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
@@ -183,6 +195,14 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         'Designing is still deciding what deserves to exist, for whom and why.',
       ],
       cta: 'Explore my work',
+    },
+    identity: {
+      tag: 'IDENTITY IN MOTION',
+      prefix: 'I AM A', closingPrefix: 'I AM',
+      roles: ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BRAND DESIGNER', 'DESIGNER'],
+      name: 'PAULA RODAS',
+      text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
+      ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
     },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',
   },

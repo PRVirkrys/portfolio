@@ -1,0 +1,45 @@
+---
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import Button from '../ui/Button.astro';
+import lower from '../../assets/home-scroll/logo-lower.svg';
+import upper from '../../assets/home-scroll/logo-upper.svg';
+import left from '../../assets/home-scroll/logo-left.svg';
+import type { HomeCopy } from './home-copy';
+interface Props { copy: HomeCopy }
+const { copy } = Astro.props;
+const id = copy.identity;
+// The split-flap panel shows one word at a time: the seven roles, then the name.
+const words = [...id.roles, id.name];
+---
+<section class="home-scene home-identity" data-scene-panel="identity" aria-labelledby="identity-title">
+  <div class="identity-logo" data-motion="identity-logo" aria-hidden="true">
+    <img class="hero-logo__piece hero-logo__piece--left" src={left.src} width="138" height="247" alt="" />
+    <img class="hero-logo__piece hero-logo__piece--upper" src={upper.src} width="147" height="141" alt="" />
+    <img class="hero-logo__piece hero-logo__piece--lower" src={lower.src} width="118" height="114" alt="" />
+  </div>
+  <div class="identity-main">
+    <div class="home-tags" data-motion="identity-tag"><Tag size="sm" category="UX Design">{id.tag}</Tag></div>
+    <p class="identity-head">
+      <span class="identity-head__a" data-motion="identity-head-a">{id.prefix}</span>
+      <span class="identity-head__b" data-motion="identity-head-b">{id.closingPrefix}</span>
+    </p>
+    <div class="flip-panel" data-motion="flip-panel">
+      <span class="flip-hinge" data-motion="flip-hinge" aria-hidden="true"></span>
+      <span class="flip-stack">
+        <span class="sr-only" id="identity-title">{id.closingPrefix} {id.name}</span>
+        {words.map((word, i) => (
+          <span class="flip-word" data-motion="flip-word" data-word-index={i} data-name={i === words.length - 1 ? '' : undefined}>{word}</span>
+        ))}
+      </span>
+    </div>
+    <ul class="identity-roles-list" aria-hidden="true">
+      {id.roles.map(role => <li>{role}</li>)}
+    </ul>
+    <p class="identity-text" data-motion="identity-text">{id.text}</p>
+    <div class="identity-ctas" data-motion="identity-ctas">
+      <Button href="/work" variant="primary" size="md" showLeadingIcon={false}>{id.ctaPrimary}</Button>
+      <TextLink href="/contact" showIcon={true}>{id.ctaSecondary}</TextLink>
+    </div>
+  </div>
+</section>
