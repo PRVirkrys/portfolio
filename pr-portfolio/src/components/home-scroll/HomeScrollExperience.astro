@@ -12,13 +12,14 @@ import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
 import { ArrowRight } from '@lucide/astro';
 import { homeCopy, type Locale } from './home-copy';
+import { withBase } from '../../lib/url';
 import './home-scroll.css';
 interface Props { locale?: Locale }
 const { locale = 'es' } = Astro.props;
 const copy = homeCopy[locale];
 const chars = (value: string) => Array.from(value);
 ---
-<a class="home-skip" href="/work">{copy.skip}</a>
+<a class="home-skip" href={withBase('/work')}>{copy.skip}</a>
 <main class="home-scroll" data-home-scroll data-locale={locale} tabindex="-1">
   <div class="home-stage">
     <div class="home-intro" data-intro-overlay aria-hidden="true">
@@ -50,7 +51,7 @@ const chars = (value: string) => Array.from(value);
         <div class="home-tags"><Tag size="sm" category="Strategy">{copy.premise.tag}</Tag></div>
         <h2 id="premise-title">{copy.premise.title}</h2>
         <p>{copy.premise.body}</p>
-        <TextLink href="/work" showIcon={false}>{copy.relatedProjects}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+        <TextLink href={withBase('/work')} showIcon={false}>{copy.relatedProjects}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
       </div>
     </section>
     <BoardScene copy={copy} />
