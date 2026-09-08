@@ -319,7 +319,7 @@ html:not(.dark) .hero-logo {
   display: none;
 }
 .home-scroll[data-mode="cinematic"] {
-  height: var(--home-track-height, 560svh);
+  height: var(--home-track-height, 640svh);
 }
 .home-scroll[data-mode="cinematic"] .home-stage {
   position: sticky;
@@ -332,6 +332,31 @@ html:not(.dark) .hero-logo {
   inset: 0;
   height: 100%;
   min-height: 0;
+}
+.home-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: none;
+  pointer-events: none;
+}
+[data-home-scroll][data-ready="true"]:not([data-mode="static"]) .home-intro {
+  display: block;
+}
+.home-intro__line {
+  position: absolute;
+  left: 50%;
+  /* top, height and margin-top are set from JS: centred on the logo, and
+     125% of the logo's height. It grows from its middle outwards. */
+  top: 50%;
+  width: 3px;
+  height: 200px;
+  margin-left: -1.5px;
+  background: #ffffff;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.45);
+  transform: scaleY(0);
+  transform-origin: center center;
+  will-change: transform, opacity;
 }
 .home-skip {
   position: fixed;

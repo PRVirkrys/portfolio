@@ -1,85 +1,205 @@
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { clamp, desktopBounds, parseSnapshot, progressFor, snapshotAt, type Bounds, type Snapshot } from './home-progress';
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  clamp,
+  desktopBounds,
+  parseSnapshot,
+  progressFor,
+  snapshotAt,
+  type Bounds,
+  type Snapshot,
+} from "./home-progress";
 
 gsap.registerPlugin(ScrollTrigger);
-const SEEN = 'paula-home-intro-v1';
-const SAVED = 'paula-home-position-v1';
-const read = (key: string) => { try { return sessionStorage.getItem(key); } catch { return null; } };
-const write = (key: string, value: string) => { try { sessionStorage.setItem(key, value); } catch { /* Private browsing still gets a usable page. */ } };
+const SEEN = "paula-home-intro-v1";
+const SAVED = "paula-home-position-v1";
+// The intro (line → wipe → logo → UI) is the opening slice of the same scrubbed
+// timeline as the rest, so scroll drives and reverses it. INTRO is its length in
+// timeline units; the main story keeps its own 0..1 span after it.
+const INTRO = 0.14;
+const TOTAL = 1 + INTRO;
+const MAIN_SCREENS = 5.6;
+const read = (key: string) => {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+const write = (key: string, value: string) => {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    /* Private browsing still gets a usable page. */
+  }
+};
 let dispose: (() => void) | undefined;
 let currentRoot: HTMLElement | null = null;
 let installed = false;
 
 function measureConnections(root: HTMLElement) {
   const map = root.querySelector<HTMLElement>('[data-motion="board-map"]')!;
-  const cards = Object.fromEntries([...map.querySelectorAll<HTMLElement>('[data-node]')].map(n => [n.dataset.node!, n]));
-  const box = (id: string) => { const n = cards[id]; return { x: n.offsetLeft, y: n.offsetTop, w: n.offsetWidth, h: n.offsetHeight }; };
-  for (const path of map.querySelectorAll<SVGPathElement>('[data-edge]')) {
+  const cards = Object.fromEntries(
+    [...map.querySelectorAll<HTMLElement>("[data-node]")].map((n) => [
+      n.dataset.node!,
+      n,
+    ]),
+  );
+  const box = (id: string) => {
+    const n = cards[id];
+    return {
+      x: n.offsetLeft,
+      y: n.offsetTop,
+      w: n.offsetWidth,
+      h: n.offsetHeight,
+    };
+  };
+  for (const path of map.querySelectorAll<SVGPathElement>("[data-edge]")) {
     const edge = path.dataset.edge!;
-    const [from, to] = edge === 'draft' ? ['needs', 'product'] : edge.split('-');
-    const a = box(from), b = box(to);
+    const [from, to] =
+      edge === "draft" ? ["needs", "product"] : edge.split("-");
+    const a = box(from),
+      b = box(to);
     const horizontal = Math.abs(a.y - b.y) < 10;
     const sx = horizontal ? a.x + a.w : a.x + a.w / 2;
     const sy = horizontal ? a.y + a.h / 2 : a.y + a.h;
     const ex = horizontal ? b.x : b.x + b.w / 2;
     const ey = horizontal ? b.y + b.h / 2 : b.y;
     const middle = (sy + ey) / 2;
-    path.setAttribute('d', horizontal ? `M${sx},${sy} H${ex}` : `M${sx},${sy} V${middle} H${ex} V${ey}`);
+    path.setAttribute(
+      "d",
+      horizontal
+        ? `M${sx},${sy} H${ex}`
+        : `M${sx},${sy} V${middle} H${ex} V${ey}`,
+    );
   }
 }
 
-function animateBoard(root: HTMLElement, tl: gsap.core.Timeline, start: number, end: number) {
+function animateBoard(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
   const q = gsap.utils.selector(root);
   const span = end - start;
-  const cards = q('[data-node]');
+  const cards = q("[data-node]");
   const small = innerWidth < 840;
-  tl.fromTo(cards, { opacity: 0, x: (i: number) => [16, -18, 20, -16, 12][i], y: (i: number) => [20, -18, 15, -10, 12][i] }, { opacity: 1, duration: span * .15, stagger: span * .025 }, start);
-  tl.to(cards, { x: 0, y: 0, duration: span * .25, stagger: span * .035 }, start + span * .15);
-	const paths = q('[data-edge]:not([data-edge="draft"])') as unknown as SVGPathElement[];
-  paths.forEach((path, i) => { const length = path.getTotalLength(); tl.fromTo(path, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: span * .14 }, start + span * (.40 + i * .065)); });
+  tl.fromTo(
+    cards,
+    {
+      opacity: 0,
+      x: (i: number) => [16, -18, 20, -16, 12][i],
+      y: (i: number) => [20, -18, 15, -10, 12][i],
+    },
+    { opacity: 1, duration: span * 0.15, stagger: span * 0.025 },
+    start,
+  );
+  tl.to(
+    cards,
+    { x: 0, y: 0, duration: span * 0.25, stagger: span * 0.035 },
+    start + span * 0.15,
+  );
+  const paths = q(
+    '[data-edge]:not([data-edge="draft"])',
+  ) as unknown as SVGPathElement[];
+  paths.forEach((path, i) => {
+    const length = path.getTotalLength();
+    tl.fromTo(
+      path,
+      { strokeDasharray: length, strokeDashoffset: length },
+      { strokeDashoffset: 0, duration: span * 0.14 },
+      start + span * (0.4 + i * 0.065),
+    );
+  });
   const draft = q('[data-edge="draft"]');
-  tl.to(draft, { opacity: .65, duration: span * .08 }, start + span * .45);
-  tl.to(draft, { opacity: 0, duration: span * .08 }, start + span * .61);
-  tl.fromTo(q('[data-motion="board-selection"]'), { opacity: 0, scale: .97 }, { opacity: 1, scale: 1, duration: span * .16 }, start + span * .82);
+  tl.to(draft, { opacity: 0.65, duration: span * 0.08 }, start + span * 0.45);
+  tl.to(draft, { opacity: 0, duration: span * 0.08 }, start + span * 0.61);
+  tl.fromTo(
+    q('[data-motion="board-selection"]'),
+    { opacity: 0, scale: 0.97 },
+    { opacity: 1, scale: 1, duration: span * 0.16 },
+    start + span * 0.82,
+  );
   const cursor = q('[data-motion="board-cursor"]');
-  tl.fromTo(cursor, { opacity: 0, x: small ? -90 : -230, y: -170 }, { opacity: 1, duration: span * .05 }, start);
-  tl.to(cursor, { x: small ? -30 : -100, y: -230, duration: span * .18 }, start + span * .08);
-  tl.to(cursor, { x: small ? -110 : -280, y: -80, duration: span * .18 }, start + span * .29);
-  tl.to(cursor, { x: small ? -30 : -40, y: -130, duration: span * .17 }, start + span * .5);
-  tl.to(cursor, { x: 0, y: 0, duration: span * .22 }, start + span * .73);
+  tl.fromTo(
+    cursor,
+    { opacity: 0, x: small ? -90 : -230, y: -170 },
+    { opacity: 1, duration: span * 0.05 },
+    start,
+  );
+  tl.to(
+    cursor,
+    { x: small ? -30 : -100, y: -230, duration: span * 0.18 },
+    start + span * 0.08,
+  );
+  tl.to(
+    cursor,
+    { x: small ? -110 : -280, y: -80, duration: span * 0.18 },
+    start + span * 0.29,
+  );
+  tl.to(
+    cursor,
+    { x: small ? -30 : -40, y: -130, duration: span * 0.17 },
+    start + span * 0.5,
+  );
+  tl.to(cursor, { x: 0, y: 0, duration: span * 0.22 }, start + span * 0.73);
 }
 
 async function initialize(root: HTMLElement, restore?: Snapshot) {
   const signal = new AbortController();
   let context: gsap.Context | undefined;
   let trigger: ScrollTrigger | undefined;
-  let intro: gsap.core.Timeline | undefined;
+  let intro: gsap.core.Tween | undefined;
   let bounds: Bounds = desktopBounds;
   let cancelled = false;
   let resizeTimer = 0;
   let finishIntro = () => {};
   const save = () => {
-    if (trigger) write(SAVED, JSON.stringify(snapshotAt(trigger.progress, bounds)));
+    if (trigger)
+      write(SAVED, JSON.stringify(snapshotAt(trigger.progress, bounds)));
   };
   dispose = () => {
-    cancelled = true; signal.abort(); clearTimeout(resizeTimer); intro?.kill(); context?.revert();
-    document.documentElement.classList.remove('home-boot');
-    root.querySelectorAll<HTMLElement>('[data-scene-panel]').forEach(n => { n.inert = false; n.removeAttribute('aria-hidden'); });
-    root.removeAttribute('data-ready'); root.removeAttribute('data-mode');
+    cancelled = true;
+    signal.abort();
+    clearTimeout(resizeTimer);
+    intro?.kill();
+    context?.revert();
+    document.documentElement.classList.remove("home-boot");
+    root.querySelectorAll<HTMLElement>("[data-scene-panel]").forEach((n) => {
+      n.inert = false;
+      n.removeAttribute("aria-hidden");
+    });
+    root.removeAttribute("data-ready");
+    root.removeAttribute("data-mode");
   };
   // Fonts are local assets. A timeout also supports offline fallback fonts.
-  await Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 1800))]);
+  await Promise.race([
+    document.fonts.ready,
+    new Promise((resolve) => setTimeout(resolve, 1800)),
+  ]);
   if (cancelled || !root.isConnected) return;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const cinematic = !reduce.matches && innerWidth >= 1024 && innerHeight >= 760;
-  root.dataset.mode = reduce.matches ? 'static' : cinematic ? 'cinematic' : 'flow';
-  root.dataset.intro = 'done';
-  const footer = document.querySelector<HTMLElement>('.home-footer');
-  root.closest<HTMLElement>('.home-page')?.style.setProperty('--home-footer-height', `${footer?.offsetHeight ?? 49}px`);
-  root.style.setProperty('--home-track-height', `${innerHeight * 5.6}px`);
+  root.dataset.mode = reduce.matches
+    ? "static"
+    : cinematic
+      ? "cinematic"
+      : "flow";
+  root.dataset.intro = "done";
+  const footer = document.querySelector<HTMLElement>(".home-footer");
+  root
+    .closest<HTMLElement>(".home-page")
+    ?.style.setProperty(
+      "--home-footer-height",
+      `${footer?.offsetHeight ?? 49}px`,
+    );
+  root.style.setProperty(
+    "--home-track-height",
+    `${innerHeight * MAIN_SCREENS * TOTAL}px`,
+  );
   measureConnections(root);
-  const panels = [...root.querySelectorAll<HTMLElement>('[data-scene-panel]')];
+  const panels = [...root.querySelectorAll<HTMLElement>("[data-scene-panel]")];
   const q = gsap.utils.selector(root);
   const saved = restore ?? parseSnapshot(read(SAVED));
   const needsIntro = !reduce.matches && !read(SEEN) && !saved && scrollY < 5;
@@ -87,66 +207,196 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   try {
     context = gsap.context(() => {
       if (reduce.matches) return;
-      const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
-      tl.to({}, { duration: 1 });
+      const main = gsap.timeline({ defaults: { ease: "none" } });
+      main.to({}, { duration: 1 });
       const greeting = q('[data-scene-panel="greeting"]');
-      const greetingText = q('.greeting-line');
-      const greetingChars = q('.greeting-char') as HTMLElement[];
-      const typingCursors = q('[data-typing-cursor]') as HTMLElement[];
+      const greetingText = q(".greeting-line");
+      const greetingChars = q(".greeting-char") as HTMLElement[];
+      const typingCursors = q("[data-typing-cursor]") as HTMLElement[];
       const premise = q('[data-scene-panel="premise"]');
       const board = q('[data-scene-panel="board"]');
-      const characterWidths = greetingChars.map(char => char.getBoundingClientRect().width);
+      const characterWidths = greetingChars.map(
+        (char) => char.getBoundingClientRect().width,
+      );
       gsap.set(greetingChars, { width: 0, opacity: 0 });
-      gsap.set(typingCursors, { display: 'none' });
-      gsap.set(typingCursors[0], { display: 'inline-block' });
-      tl.to(greetingChars, {
-        width: (index: number) => characterWidths[index],
-        opacity: 1,
-        duration: .001,
-        stagger: .0045,
-        ease: 'steps(1)',
-      }, .015);
-      const lineEnds = greetingText.map(line => line.querySelectorAll('.greeting-char').length)
-        .reduce<number[]>((ends, length) => [...ends, length + (ends.at(-1) ?? 0)], []);
+      gsap.set(typingCursors, { display: "none" });
+      // The typing cursor stays hidden through the intro; it only shows once the
+      // logo has finished moving left, i.e. from the start of the main slice.
+      main.set(typingCursors[0], { display: "inline-block" }, 0);
+      main.to(
+        greetingChars,
+        {
+          width: (index: number) => characterWidths[index],
+          opacity: 1,
+          duration: 0.001,
+          stagger: 0.0045,
+          ease: "steps(1)",
+        },
+        0.015,
+      );
+      const lineEnds = greetingText
+        .map((line) => line.querySelectorAll(".greeting-char").length)
+        .reduce<number[]>(
+          (ends, length) => [...ends, length + (ends.at(-1) ?? 0)],
+          [],
+        );
       lineEnds.slice(0, -1).forEach((end, index) => {
-        const at = .015 + end * .0045;
-        tl.set(typingCursors[index], { display: 'none' }, at);
-        tl.set(typingCursors[index + 1], { display: 'inline-block' }, at);
+        const at = 0.015 + end * 0.0045;
+        main.set(typingCursors[index], { display: "none" }, at);
+        main.set(typingCursors[index + 1], { display: "inline-block" }, at);
       });
       if (cinematic) {
-        tl.to(greeting, { opacity: 0, duration: .12 }, .14);
-        tl.to(q('[data-motion="logo-left"]'), { x: -300, y: -50, duration: .19 }, .14);
-        tl.to(q('[data-motion="logo-upper"]'), { x: 80, y: -240, duration: .19 }, .14);
-        tl.to(q('[data-motion="logo-lower"]'), { x: 330, y: 230, duration: .19 }, .14);
-        tl.fromTo(premise, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: .09 }, .20);
-        tl.to(premise, { autoAlpha: 0, x: -60, duration: .10 }, .40);
-        tl.fromTo(board, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: .09 }, .45);
-        animateBoard(root, tl, .52, .93);
+        main.to(greeting, { opacity: 0, duration: 0.12 }, 0.14);
+        main.to(
+          q('[data-motion="logo-left"]'),
+          { x: -300, y: -50, duration: 0.19 },
+          0.14,
+        );
+        main.to(
+          q('[data-motion="logo-upper"]'),
+          { x: 80, y: -240, duration: 0.19 },
+          0.14,
+        );
+        main.to(
+          q('[data-motion="logo-lower"]'),
+          { x: 330, y: 230, duration: 0.19 },
+          0.14,
+        );
+        main.fromTo(
+          premise,
+          { autoAlpha: 0, y: 40 },
+          { autoAlpha: 1, y: 0, duration: 0.09 },
+          0.2,
+        );
+        main.to(premise, { autoAlpha: 0, x: -60, duration: 0.1 }, 0.4);
+        main.fromTo(
+          board,
+          { autoAlpha: 0, y: 30 },
+          { autoAlpha: 1, y: 0, duration: 0.09 },
+          0.45,
+        );
+        animateBoard(root, main, 0.52, 0.93);
       } else {
         const distance = Math.max(1, root.offsetHeight - innerHeight);
-        const startOf = (n: HTMLElement) => n.getBoundingClientRect().top + scrollY - root.offsetTop;
-        const premiseStart = clamp((startOf(panels[1]) - innerHeight * .5) / distance, .1, .5);
-        const boardStart = clamp((startOf(panels[2]) - innerHeight * .5) / distance, premiseStart + .1, .8);
+        const startOf = (n: HTMLElement) =>
+          n.getBoundingClientRect().top + scrollY - root.offsetTop;
+        const premiseStart = clamp(
+          (startOf(panels[1]) - innerHeight * 0.5) / distance,
+          0.1,
+          0.5,
+        );
+        const boardStart = clamp(
+          (startOf(panels[2]) - innerHeight * 0.5) / distance,
+          premiseStart + 0.1,
+          0.8,
+        );
         bounds = [0, premiseStart, boardStart, 1];
-        const map = root.querySelector<HTMLElement>('[data-motion="board-map"]')!;
-        const start = clamp((startOf(map) - innerHeight * .75) / distance, boardStart, .8);
-        animateBoard(root, tl, start, .96);
+        const map = root.querySelector<HTMLElement>(
+          '[data-motion="board-map"]',
+        )!;
+        const start = clamp(
+          (startOf(map) - innerHeight * 0.75) / distance,
+          boardStart,
+          0.8,
+        );
+        animateBoard(root, main, start, 0.96);
       }
-      tl.to(q('[data-motion="scroll-indicator"]'), { autoAlpha: 0, duration: .04 }, .96);
+      main.to(
+        q('[data-motion="scroll-indicator"]'),
+        { autoAlpha: 0, duration: 0.04 },
+        0.96,
+      );
+
+      // Opening slice: the white line is drawn down the viewport centre, then
+      // sweeps left. The logo waits with its right edge against the line and is
+      // uncovered in its wake — clip inset and line share one ease so they stay
+      // glued — before the line clears and the logo glides beside the greeting.
+      const logo = root.querySelector<HTMLElement>(
+        '[data-motion="hero-logo"]',
+      )!;
+      const line = root.querySelector<HTMLElement>("[data-intro-line]");
+      const ui = [
+        ...document.querySelectorAll(
+          ".home-page > .header, .home-page > .sidebar, .home-footer",
+        ),
+        ...q(".scroll-indicator"),
+      ];
+      const logoRect = logo.getBoundingClientRect();
+      const spread = logoRect.width;
+      const revealOffset = innerWidth / 2 - (logoRect.left + spread);
+      const covered = `inset(-20% 0% -20% ${spread}px)`;
+      const introTl = gsap.timeline();
+      introTl.set(logo, { opacity: 1 }, 0);
+      if (line) {
+        // 25% taller than the logo, centred on it; it draws from its middle out.
+        const logoHeight = logoRect.height || 206;
+        const lineHeight = logoHeight * 1.5;
+        line.style.height = `${lineHeight}px`;
+        line.style.top = `${(logoRect.top || (innerHeight - logoHeight) / 2) + logoHeight / 2}px`;
+        line.style.marginTop = `${-lineHeight / 2}px`;
+        introTl.fromTo(
+          line,
+          { scaleY: 0, opacity: 1, x: 0, transformOrigin: "center center" },
+          { scaleY: 1, duration: 0.5, ease: "power2.inOut" },
+          0.15,
+        );
+        // One continuous sweep: the line tracks the logo's left edge the whole
+        // way — while the logo is uncovered in its wake and glides home — so it
+        // never rides on top of the logo. Endpoint matches the logo's final left
+        // edge (see the shared ease/window with the logo tween below).
+        introTl.to(
+          line,
+          { x: -(spread + revealOffset), duration: 1, ease: "power3.inOut" },
+          0.85,
+        );
+        // Then it shrinks away in place at the logo's edge.
+        introTl.to(
+          line,
+          { opacity: 0, scaleY: 0, duration: 0.32, ease: "power1.in" },
+          1.95,
+        );
+      }
+      introTl.fromTo(
+        logo,
+        { x: revealOffset, clipPath: covered },
+        {
+          x: 0,
+          clipPath: "inset(-20% 0% -20% 0px)",
+          duration: 1,
+          ease: "power3.inOut",
+        },
+        0.85,
+      );
+      introTl.fromTo(
+        ui,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.55, ease: "power1.out" },
+        1.5,
+      );
+      introTl.duration(INTRO);
+
+      const tl = gsap.timeline({ paused: true });
+      tl.add(introTl, 0);
+      tl.add(main, INTRO);
+      const B = (p: number) => (INTRO + p) / TOTAL;
+      bounds = [B(0), B(bounds[1]), B(bounds[2]), 1] as Bounds;
+
       const update = (self: ScrollTrigger) => {
         const state = snapshotAt(self.progress, bounds);
         root.dataset.scene = state.scene;
         root.dataset.progress = self.progress.toFixed(4);
-        if (cinematic) panels.forEach(panel => {
-          const inactive = panel.dataset.scenePanel !== state.scene;
-          if (inactive && panel.contains(document.activeElement)) root.focus({ preventScroll: true });
-          panel.inert = inactive;
-          panel.setAttribute('aria-hidden', String(inactive));
-        });
+        if (cinematic)
+          panels.forEach((panel) => {
+            const inactive = panel.dataset.scenePanel !== state.scene;
+            if (inactive && panel.contains(document.activeElement))
+              root.focus({ preventScroll: true });
+            panel.inert = inactive;
+            panel.setAttribute("aria-hidden", String(inactive));
+          });
       };
       trigger = ScrollTrigger.create({
         trigger: root,
-        start: 'top top',
+        start: "top top",
         end: () => `+=${Math.max(1, root.offsetHeight - innerHeight)}`,
         invalidateOnRefresh: true,
         animation: tl,
@@ -155,70 +405,141 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       });
       ScrollTrigger.refresh();
       update(trigger);
+      const introEnd = () =>
+        trigger!.start + (INTRO / TOTAL) * (trigger!.end - trigger!.start);
       if (needsIntro) {
-        root.dataset.intro = 'running';
-        const logo = root.querySelector<HTMLElement>('[data-motion="hero-logo"]')!;
-        const scene = panels[0].getBoundingClientRect();
-        const logoRect = logo.getBoundingClientRect();
-        const ui = [...document.querySelectorAll('.home-page > .header, .home-page > .sidebar, .home-footer'), ...q('.scroll-indicator')];
-        const centerOffset = scene.left + scene.width / 2 - (logoRect.left + logoRect.width / 2);
-        trigger.disable(false);
-        intro = gsap.timeline({ onComplete: () => finishIntro() });
-        intro.fromTo(logo, { opacity: 0, scale: .25, x: centerOffset, filter: 'blur(5px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .85, ease: 'power2.out' }, .35);
-        intro.to(logo, { x: 0, duration: .55, ease: 'power2.inOut' }, 1.2);
-        intro.fromTo(ui, { opacity: 0 }, { opacity: 1, duration: .6 }, 1.45);
+        // First visit: auto-scroll through the intro slice. Any real scroll,
+        // touch or key press kills this tween and hands the timeline straight to
+        // the user at whatever position they interrupted it — no snap.
+        root.dataset.intro = "running";
+        const proxy = { y: trigger.start };
+        intro = gsap.to(proxy, {
+          y: introEnd(),
+          duration: 2.4,
+          ease: "power1.inOut",
+          onUpdate: () => window.scrollTo(0, proxy.y),
+          onComplete: () => finishIntro(),
+        });
         let finished = false;
         finishIntro = () => {
-          if (finished) return; finished = true;
-          intro?.progress(1).kill();
-          gsap.set(logo, { clearProps: 'transform,opacity,filter' });
-          gsap.set(ui, { clearProps: 'opacity' });
-          root.dataset.intro = 'done'; write(SEEN, '1');
-          trigger?.enable(false, false); ScrollTrigger.update();
+          if (finished) return;
+          finished = true;
+          intro?.kill();
+          root.dataset.intro = "done";
+          write(SEEN, "1");
         };
+      } else if (!saved) {
+        // Reloads and revisits open at the greeting with the UI already in.
+        const target = introEnd();
+        if (scrollY < target - 1) {
+          window.scrollTo({ top: target, behavior: "instant" });
+          ScrollTrigger.update();
+        }
       }
     }, root);
-    document.documentElement.classList.remove('home-boot');
+    document.documentElement.classList.remove("home-boot");
     if (trigger && saved) {
       const progress = progressFor(saved, bounds);
-      window.scrollTo({ top: trigger.start + progress * (trigger.end - trigger.start), behavior: 'instant' });
+      window.scrollTo({
+        top: trigger.start + progress * (trigger.end - trigger.start),
+        behavior: "instant",
+      });
       ScrollTrigger.update();
     }
-    root.dataset.ready = 'true';
+    root.dataset.ready = "true";
   } catch (error) {
-    intro?.kill(); context?.revert();
-    panels.forEach(panel => { panel.inert = false; panel.removeAttribute('aria-hidden'); });
-    root.dataset.mode = 'static'; root.dataset.intro = 'done'; root.dataset.ready = 'true';
-    document.documentElement.classList.remove('home-boot');
-    console.error('Home motion could not initialize; showing the static story.', error);
+    intro?.kill();
+    context?.revert();
+    panels.forEach((panel) => {
+      panel.inert = false;
+      panel.removeAttribute("aria-hidden");
+    });
+    root.dataset.mode = "static";
+    root.dataset.intro = "done";
+    root.dataset.ready = "true";
+    document.documentElement.classList.remove("home-boot");
+    console.error(
+      "Home motion could not initialize; showing the static story.",
+      error,
+    );
   }
 
-  for (const event of ['wheel', 'touchstart', 'pointerdown'] as const) window.addEventListener(event, () => finishIntro(), { passive: true, signal: signal.signal });
-  window.addEventListener('keydown', event => { if (['Tab', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) finishIntro(); }, { signal: signal.signal });
-  window.addEventListener('pagehide', save, { signal: signal.signal });
-  document.addEventListener('astro:before-swap', save, { signal: signal.signal });
-  root.addEventListener('click', event => { if ((event.target as Element).closest('a[href]')) save(); }, { signal: signal.signal });
-  const width = innerWidth, height = innerHeight;
+  for (const event of ["wheel", "touchstart", "pointerdown"] as const)
+    window.addEventListener(event, () => finishIntro(), {
+      passive: true,
+      signal: signal.signal,
+    });
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        [
+          "Tab",
+          "ArrowDown",
+          "ArrowUp",
+          "PageDown",
+          "PageUp",
+          "Home",
+          "End",
+          " ",
+        ].includes(event.key)
+      )
+        finishIntro();
+    },
+    { signal: signal.signal },
+  );
+  window.addEventListener("pagehide", save, { signal: signal.signal });
+  document.addEventListener("astro:before-swap", save, {
+    signal: signal.signal,
+  });
+  root.addEventListener(
+    "click",
+    (event) => {
+      if ((event.target as Element).closest("a[href]")) save();
+    },
+    { signal: signal.signal },
+  );
+  const width = innerWidth,
+    height = innerHeight;
   const rebuild = () => {
     clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
       const state = trigger ? snapshotAt(trigger.progress, bounds) : undefined;
-      finishIntro(); dispose?.(); void initialize(root, state);
+      finishIntro();
+      dispose?.();
+      void initialize(root, state);
     }, 160);
   };
-  window.addEventListener('resize', () => { if (innerWidth !== width || Math.abs(innerHeight - height) > 90) rebuild(); }, { signal: signal.signal });
-  reduce.addEventListener('change', rebuild, { signal: signal.signal });
-  window.addEventListener('pageshow', event => { if (event.persisted) ScrollTrigger.refresh(); }, { signal: signal.signal });
+  window.addEventListener(
+    "resize",
+    () => {
+      if (innerWidth !== width || Math.abs(innerHeight - height) > 90)
+        rebuild();
+    },
+    { signal: signal.signal },
+  );
+  reduce.addEventListener("change", rebuild, { signal: signal.signal });
+  window.addEventListener(
+    "pageshow",
+    (event) => {
+      if (event.persisted) ScrollTrigger.refresh();
+    },
+    { signal: signal.signal },
+  );
 }
 
 export function mountHomeScroll() {
   if (!installed) {
     installed = true;
-    document.addEventListener('astro:page-load', mountHomeScroll);
-    document.addEventListener('astro:before-swap', () => { dispose?.(); currentRoot = null; });
+    document.addEventListener("astro:page-load", mountHomeScroll);
+    document.addEventListener("astro:before-swap", () => {
+      dispose?.();
+      currentRoot = null;
+    });
   }
-  const root = document.querySelector<HTMLElement>('[data-home-scroll]');
+  const root = document.querySelector<HTMLElement>("[data-home-scroll]");
   if (!root || root === currentRoot) return;
-  dispose?.(); currentRoot = root;
+  dispose?.();
+  currentRoot = root;
   void initialize(root);
 }
