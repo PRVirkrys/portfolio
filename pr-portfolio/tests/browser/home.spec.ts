@@ -208,6 +208,13 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.getByRole('heading', { name: 'Diseñar también es construir.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
+  // The split-flap degrades to the name plus a plain roles list.
   await expect(page.getByText('PAULA RODAS', { exact: true })).toBeVisible();
+  await expect(page.locator('.identity-roles-list')).toBeVisible();
+  await expect(page.locator('.identity-ctas .button')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toBeVisible();
+  // Decorative tool windows stay out of the accessibility tree.
+  for (const w of ['.figma-window', '.code-window', '.ai-window'])
+    await expect(page.locator(w)).toHaveAttribute('aria-hidden', 'true');
   await expect(page.locator('.scroll-indicator')).toBeHidden();
 });
