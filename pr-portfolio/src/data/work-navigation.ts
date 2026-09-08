@@ -1,4 +1,5 @@
 import { iconUrl } from "../lib/icons";
+import { withBase } from '../lib/url';
 
 export type TagCategory =
   | "Research"
@@ -65,7 +66,7 @@ export const works: Work[] = [
         label: "La Meva Salut",
         logo: iconUrl("client-lms.png"),
         logoClass: "client-bubble__logo--lms",
-        href: "/work/caso-estudio-onboarding/",
+        href: withBase("/work/caso-estudio-onboarding/"),
         surface: "light",
       },
       {
