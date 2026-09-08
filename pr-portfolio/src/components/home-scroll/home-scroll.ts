@@ -193,6 +193,65 @@ function animateFigma(
   );
 }
 
+// The design canvas has become an editor. Fill the hold by assembling it: the
+// explorer, the file revealed in two blocks (never keystroke by keystroke), the
+// active line lit, the cursor landing on it, then a live preview built up.
+function animateCode(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const q = gsap.utils.selector(root);
+  const span = end - start;
+  const lines = q('[data-motion="code-line"]');
+  const half = Math.ceil(lines.length / 2);
+  tl.fromTo(
+    q('[data-motion="code-file"]'),
+    { autoAlpha: 0, x: -10 },
+    { autoAlpha: 1, x: 0, duration: span * 0.1, stagger: span * 0.02 },
+    start + span * 0.05,
+  );
+  tl.fromTo(
+    lines.slice(0, half),
+    { autoAlpha: 0, y: 8 },
+    { autoAlpha: 1, y: 0, duration: span * 0.08, stagger: span * 0.015 },
+    start + span * 0.2,
+  );
+  tl.fromTo(
+    lines.slice(half),
+    { autoAlpha: 0, y: 8 },
+    { autoAlpha: 1, y: 0, duration: span * 0.08, stagger: span * 0.015 },
+    start + span * 0.38,
+  );
+  tl.fromTo(
+    q(".code-line[data-active]"),
+    { "--code-hl": "0" },
+    { "--code-hl": "1", duration: span * 0.12 },
+    start + span * 0.52,
+  );
+  const cursor = q('[data-motion="code-cursor"]');
+  tl.fromTo(
+    cursor,
+    { autoAlpha: 0, x: 40, y: -30 },
+    { autoAlpha: 1, duration: span * 0.06 },
+    start + span * 0.5,
+  );
+  tl.to(cursor, { x: 0, y: 0, duration: span * 0.2 }, start + span * 0.58);
+  tl.fromTo(
+    q('[data-motion="code-preview"]'),
+    { autoAlpha: 0, y: 18 },
+    { autoAlpha: 1, y: 0, duration: span * 0.1 },
+    start + span * 0.66,
+  );
+  tl.fromTo(
+    q('[data-motion="code-preview-el"]'),
+    { autoAlpha: 0, y: 8 },
+    { autoAlpha: 1, y: 0, duration: span * 0.08, stagger: span * 0.04 },
+    start + span * 0.76,
+  );
+}
+
 async function initialize(root: HTMLElement, restore?: Snapshot) {
   const signal = new AbortController();
   let context: gsap.Context | undefined;
@@ -272,6 +331,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const premise = q('[data-scene-panel="premise"]');
       const board = q('[data-scene-panel="board"]');
       const figma = q('[data-scene-panel="figma"]');
+      const code = q('[data-scene-panel="code"]');
       const characterWidths = greetingChars.map(
         (char) => char.getBoundingClientRect().width,
       );
@@ -364,7 +424,19 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // cursor lands on an element and a feedback pill confirms the test.
         const FG = enter(figma, 0.26, { y: 36, scale: 0.96 });
         animateFigma(root, main, FG.restAt, FG.outAt);
-        at = FG.outAt;
+        main.to(
+          figma,
+          { autoAlpha: 0, y: -24, scale: 0.97, duration: 0.09 },
+          FG.outAt,
+        );
+        at = FG.outAt + 0.05;
+
+        // 4 → 5 · figma to code. The canvas becomes an editor: explorer, then
+        // the file revealed in blocks (not keystrokes), then the cursor on a
+        // line and a live preview building beneath it.
+        const CD = enter(code, 0.28, { y: 36, scale: 0.96 });
+        animateCode(root, main, CD.restAt, CD.outAt);
+        at = CD.outAt;
 
         bounds = [
           0,
@@ -372,6 +444,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           PR.inAt,
           BD.inAt,
           FG.inAt,
+          CD.inAt,
           at,
         ];
       } else {
@@ -395,10 +468,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         );
         const figmaStart = clamp(
           (startOf(panels[4]) - innerHeight * 0.5) / distance,
-          boardStart + 0.08,
-          0.9,
+          boardStart + 0.07,
+          0.85,
         );
-        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, 1];
+        const codeStart = clamp(
+          (startOf(panels[5]) - innerHeight * 0.5) / distance,
+          figmaStart + 0.07,
+          0.93,
+        );
+        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, codeStart, 1];
         const map = root.querySelector<HTMLElement>(
           '[data-motion="board-map"]',
         )!;
