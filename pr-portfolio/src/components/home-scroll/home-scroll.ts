@@ -15,10 +15,12 @@ const SEEN = "paula-home-intro-v1";
 const SAVED = "paula-home-position-v1";
 // The intro (line → wipe → logo → UI) is the opening slice of the same scrubbed
 // timeline as the rest, so scroll drives and reverses it. INTRO is its length in
-// timeline units; the main story keeps its own 0..1 span after it.
+// timeline units; the main story keeps its own span after it, and `total` (built
+// once the main timeline exists) is the whole thing intro + main.
 const INTRO = 0.14;
-const TOTAL = 1 + INTRO;
-const MAIN_SCREENS = 8;
+// Scroll length of the pinned journey, in viewport heights. Tuned by feel; the
+// GSAP beat positions are proportions of the main timeline, not of this.
+const SCREENS = 11;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -146,6 +148,51 @@ function animateBoard(
   tl.to(cursor, { x: 0, y: 0, duration: span * 0.22 }, start + span * 0.73);
 }
 
+// The board frame has become a design-tool window; fill its reading hold by
+// assembling it — side panels, then the wireframe built block by block, then
+// Paula's cursor landing on an element and a feedback pill confirming a test.
+function animateFigma(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const q = gsap.utils.selector(root);
+  const span = end - start;
+  tl.fromTo(
+    q('[data-motion="figma-layer"]'),
+    { autoAlpha: 0, x: -12 },
+    { autoAlpha: 1, x: 0, duration: span * 0.1, stagger: span * 0.03 },
+    start + span * 0.05,
+  );
+  tl.fromTo(
+    q('[data-motion="figma-block"]'),
+    { autoAlpha: 0, y: 14 },
+    { autoAlpha: 1, y: 0, duration: span * 0.1, stagger: span * 0.05 },
+    start + span * 0.18,
+  );
+  tl.fromTo(
+    q('[data-motion="figma-prop"]'),
+    { autoAlpha: 0, x: 12 },
+    { autoAlpha: 1, x: 0, duration: span * 0.1, stagger: span * 0.03 },
+    start + span * 0.5,
+  );
+  const cursor = q('[data-motion="figma-cursor"]');
+  tl.fromTo(
+    cursor,
+    { autoAlpha: 0, x: 70, y: 60 },
+    { autoAlpha: 1, duration: span * 0.06 },
+    start + span * 0.5,
+  );
+  tl.to(cursor, { x: 0, y: 0, duration: span * 0.22 }, start + span * 0.58);
+  tl.fromTo(
+    q('[data-motion="figma-feedback"]'),
+    { autoAlpha: 0, scale: 0.8, y: 6 },
+    { autoAlpha: 1, scale: 1, y: 0, duration: span * 0.1 },
+    start + span * 0.82,
+  );
+}
+
 async function initialize(root: HTMLElement, restore?: Snapshot) {
   const signal = new AbortController();
   let context: gsap.Context | undefined;
@@ -204,7 +251,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
     );
   root.style.setProperty(
     "--home-track-height",
-    `${innerHeight * MAIN_SCREENS * TOTAL}px`,
+    `${innerHeight * SCREENS}px`,
   );
   measureConnections(root);
   const panels = [...root.querySelectorAll<HTMLElement>("[data-scene-panel]")];
@@ -224,6 +271,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const purpose = q('[data-scene-panel="purpose"]');
       const premise = q('[data-scene-panel="premise"]');
       const board = q('[data-scene-panel="board"]');
+      const figma = q('[data-scene-panel="figma"]');
       const characterWidths = greetingChars.map(
         (char) => char.getBoundingClientRect().width,
       );
@@ -263,47 +311,69 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         main.set(typingCursors[index + 1], { display: "inline-block" }, at);
       });
       if (cinematic) {
-        // 0 → 1 · greeting to purpose. The name has finished typing and held;
-        // now the cursor goes and the whole greeting + logo composition lifts
-        // away as one, uncovering the purpose statement rising from below.
+        // Each chapter after the greeting: fade/slide in over ENTER, sit still
+        // for `hold` (its own choreography fills that), then the caller slides
+        // it out and advances the cursor. One running position drives them all,
+        // so adding a chapter is appending a call — no scattered magic numbers.
+        const ENTER = 0.09;
+        let at = leaveAt;
+        const enter = (
+          panel: gsap.TweenTarget,
+          hold: number,
+          from: gsap.TweenVars,
+        ) => {
+          const inAt = at;
+          main.fromTo(
+            panel,
+            { autoAlpha: 0, x: 0, y: 0, scale: 1, ...from },
+            { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: ENTER },
+            inAt,
+          );
+          const restAt = inAt + ENTER;
+          at = restAt + hold;
+          return { inAt, restAt, outAt: at };
+        };
+
+        // 0 → 1 · the name has typed and held; cursor goes and the whole
+        // greeting + logo composition lifts away as one, uncovering purpose.
         main.set(typingCursors, { display: "none" }, leaveAt);
-        main.to(
-          greeting,
-          { autoAlpha: 0, y: -64, duration: 0.08 },
-          leaveAt,
-        );
-        main.fromTo(
-          purpose,
-          { autoAlpha: 0, y: 40 },
-          { autoAlpha: 1, y: 0, duration: 0.09 },
-          leaveAt + 0.05,
-        );
+        main.to(greeting, { autoAlpha: 0, y: -64, duration: 0.08 }, leaveAt);
+
+        const P = enter(purpose, 0.12, { y: 40 });
+        main.to(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, P.outAt);
+        at = P.outAt + 0.05;
+
         // 1 → 2 · purpose to premise.
+        const PR = enter(premise, 0.15, { y: 40 });
+        main.to(premise, { autoAlpha: 0, x: -60, duration: 0.09 }, PR.outAt);
+        at = PR.outAt + 0.05;
+
+        // 2 → 3 · premise to board; the board runs its cursor choreography
+        // through its hold, then the panel recedes as if zoomed past.
+        const BD = enter(board, 0.32, { y: 30 });
+        animateBoard(root, main, BD.restAt, BD.outAt);
         main.to(
-          purpose,
-          { autoAlpha: 0, y: -34, duration: 0.08 },
-          leaveAt + 0.25,
-        );
-        main.fromTo(
-          premise,
-          { autoAlpha: 0, y: 40 },
-          { autoAlpha: 1, y: 0, duration: 0.09 },
-          leaveAt + 0.3,
-        );
-        // 2 → 3 · premise to board.
-        main.to(
-          premise,
-          { autoAlpha: 0, x: -60, duration: 0.09 },
-          leaveAt + 0.5,
-        );
-        main.fromTo(
           board,
-          { autoAlpha: 0, y: 30 },
-          { autoAlpha: 1, y: 0, duration: 0.09 },
-          leaveAt + 0.55,
+          { autoAlpha: 0, y: -24, scale: 0.96, duration: 0.09 },
+          BD.outAt,
         );
-        animateBoard(root, main, leaveAt + 0.6, 0.99);
-        bounds = [0, leaveAt + 0.03, leaveAt + 0.27, leaveAt + 0.52, 1];
+        at = BD.outAt + 0.05;
+
+        // 3 → 4 · board to figma. The design-tool window rises where the board
+        // receded and assembles: layers, wireframe blocks, properties, then the
+        // cursor lands on an element and a feedback pill confirms the test.
+        const FG = enter(figma, 0.26, { y: 36, scale: 0.96 });
+        animateFigma(root, main, FG.restAt, FG.outAt);
+        at = FG.outAt;
+
+        bounds = [
+          0,
+          P.inAt + 0.02,
+          PR.inAt,
+          BD.inAt,
+          FG.inAt,
+          at,
+        ];
       } else {
         const distance = Math.max(1, root.offsetHeight - innerHeight);
         const startOf = (n: HTMLElement) =>
@@ -321,18 +391,23 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         const boardStart = clamp(
           (startOf(panels[3]) - innerHeight * 0.5) / distance,
           premiseStart + 0.08,
-          0.85,
+          0.75,
         );
-        bounds = [0, purposeStart, premiseStart, boardStart, 1];
+        const figmaStart = clamp(
+          (startOf(panels[4]) - innerHeight * 0.5) / distance,
+          boardStart + 0.08,
+          0.9,
+        );
+        bounds = [0, purposeStart, premiseStart, boardStart, figmaStart, 1];
         const map = root.querySelector<HTMLElement>(
           '[data-motion="board-map"]',
         )!;
         const start = clamp(
           (startOf(map) - innerHeight * 0.75) / distance,
           boardStart,
-          0.8,
+          figmaStart,
         );
-        animateBoard(root, main, start, 0.96);
+        animateBoard(root, main, start, figmaStart);
       }
       // The scroll hint is not part of the scrubbed timeline — it has its own
       // scroll-idle lifecycle (see the hint controller after the trigger).
@@ -407,7 +482,10 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const tl = gsap.timeline({ paused: true });
       tl.add(introTl, 0);
       tl.add(main, INTRO);
-      const B = (p: number) => (INTRO + p) / TOTAL;
+      // The main timeline is as long as its beats make it; remap the scene cuts
+      // (still in main-time) into the whole intro + main progress space.
+      const total = INTRO + main.duration();
+      const B = (p: number) => (INTRO + p) / total;
       bounds = bounds.map((value, index) =>
         index === bounds.length - 1 ? 1 : B(value),
       );
@@ -415,6 +493,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const update = (self: ScrollTrigger) => {
         const state = snapshotAt(self.progress, bounds);
         root.dataset.scene = state.scene;
+        root.dataset.sceneProgress = state.progress.toFixed(4);
         root.dataset.progress = self.progress.toFixed(4);
         if (cinematic)
           panels.forEach((panel) => {
@@ -437,7 +516,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       ScrollTrigger.refresh();
       update(trigger);
       const introEnd = () =>
-        trigger!.start + (INTRO / TOTAL) * (trigger!.end - trigger!.start);
+        trigger!.start + (INTRO / total) * (trigger!.end - trigger!.start);
 
       // Scroll hint lifecycle: it sits centred on the page at the very start,
       // ducks out the instant the user scrolls, and 3s after they stop it comes

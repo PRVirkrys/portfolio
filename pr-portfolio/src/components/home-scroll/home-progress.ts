@@ -2,11 +2,11 @@
 // rising cut points in global-progress space; scene i owns [bounds[i], bounds[i+1]).
 // Restored snapshots keep a scene name + its local 0..1 progress, so a saved
 // position survives a layout change that moves the cut points.
-export const scenes = ['greeting', 'purpose', 'premise', 'board'] as const;
+export const scenes = ['greeting', 'purpose', 'premise', 'board', 'figma'] as const;
 export type Scene = typeof scenes[number];
 export type Snapshot = { scene: Scene; progress: number };
 export type Bounds = readonly number[];
-export const desktopBounds: Bounds = [0, .16, .34, .54, 1];
+export const desktopBounds: Bounds = [0, .14, .3, .46, .72, 1];
 export const clamp = (value: number, low = 0, high = 1) => Math.min(high, Math.max(low, value));
 
 export function snapshotAt(value: number, bounds: Bounds): Snapshot {
