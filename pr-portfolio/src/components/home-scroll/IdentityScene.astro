@@ -7,6 +7,7 @@ import lower from '../../assets/home-scroll/logo-lower.svg';
 import upper from '../../assets/home-scroll/logo-upper.svg';
 import left from '../../assets/home-scroll/logo-left.svg';
 import type { HomeCopy } from './home-copy';
+import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 const id = copy.identity;
@@ -38,8 +39,8 @@ const PLATES = 20; // "FULL-STACK DEVELOPER" is the widest
     </ul>
     <p class="identity-text" data-motion="identity-text">{id.text}</p>
     <div class="identity-ctas" data-motion="identity-ctas">
-      <Button href="/work" variant="primary" size="md" showLeadingIcon={false}>{id.ctaPrimary}</Button>
-      <TextLink href="/contacto" showIcon={true}>{id.ctaSecondary}</TextLink>
+      <Button href={withBase('/work')} variant="primary" size="md" showLeadingIcon={false}>{id.ctaPrimary}</Button>
+      <TextLink href={withBase('/contacto')} showIcon={true}>{id.ctaSecondary}</TextLink>
     </div>
   </div>
 </section>
