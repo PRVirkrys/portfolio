@@ -1,0 +1,53 @@
+---
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import { ArrowRight } from '@lucide/astro';
+import cursor from '../../assets/home-scroll/cursor.svg';
+import type { HomeCopy } from './home-copy';
+interface Props { copy: HomeCopy }
+const { copy } = Astro.props;
+const { figma } = copy;
+const categories = ['UX Design', 'UI Design', 'Design Systems'] as const;
+---
+<section class="home-scene home-figma" data-scene-panel="figma" aria-labelledby="figma-title">
+  <div class="home-copy" data-motion="figma-copy">
+    <div class="home-tags">{figma.tags.map((tag, i) => <Tag size="sm" category={categories[i]}>{tag}</Tag>)}</div>
+    <h2 id="figma-title">{figma.title}</h2>
+    <p class="home-figma__message">{figma.message}</p>
+    <p class="home-figma__support">{figma.support}</p>
+    <TextLink href="/work" showIcon={false}>{figma.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+  </div>
+  <div class="figma-window" data-motion="figma-window" aria-hidden="true">
+    <header class="figma-window__bar">
+      <span class="figma-window__badge"></span>
+      <span class="figma-window__file">{figma.window.file}</span>
+      <span class="figma-window__status">{figma.window.status}</span>
+    </header>
+    <div class="figma-window__body">
+      <aside class="figma-window__panel figma-window__layers">
+        <p class="figma-window__panel-title">{figma.window.layersTitle}</p>
+        {figma.window.layers.map(layer => <span class="figma-layer" data-motion="figma-layer">{layer}</span>)}
+      </aside>
+      <div class="figma-window__canvas">
+        <div class="figma-wire">
+          <div class="figma-wire__image" data-motion="figma-block"></div>
+          <div class="figma-wire__heading" data-motion="figma-block"></div>
+          <div class="figma-wire__line" data-motion="figma-block"></div>
+          <div class="figma-wire__line figma-wire__line--short" data-motion="figma-block"></div>
+          <div class="figma-wire__input" data-motion="figma-block"></div>
+          <div class="figma-wire__input" data-motion="figma-block"></div>
+          <div class="figma-wire__cta" data-motion="figma-block"></div>
+        </div>
+        <div class="figma-feedback" data-motion="figma-feedback">{figma.window.feedback}</div>
+        <div class="figma-cursor" data-motion="figma-cursor">
+          <img src={cursor.src} width="24" height="28" alt="" />
+          <span>{copy.board.cursor}</span>
+        </div>
+      </div>
+      <aside class="figma-window__panel figma-window__props">
+        <p class="figma-window__panel-title">{figma.window.propsTitle}</p>
+        {figma.window.props.map(prop => <span class="figma-prop" data-motion="figma-prop">{prop}</span>)}
+      </aside>
+    </div>
+  </div>
+</section>

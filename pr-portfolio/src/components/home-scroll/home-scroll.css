@@ -270,6 +270,175 @@ html:not(.dark) .hero-logo {
   font: 400 14px/1.15 var(--font-heading);
   white-space: nowrap;
 }
+/* Ideation / prototyping — a design-tool window rebuilt with real nodes, not a
+   screenshot. Scoped to .home-figma; blocks start visible so the no-JS and
+   reduced-motion fallbacks show the assembled window. */
+.home-figma {
+  display: grid;
+  grid-template-columns: minmax(0, 548px) minmax(0, 580px);
+  gap: clamp(32px, 4vw, 64px);
+}
+.home-figma__message {
+  font-size: 22px;
+}
+.home-figma__support {
+  color: var(--color-text-secondary);
+  font-size: 20px;
+}
+.figma-window {
+  align-self: center;
+  width: 100%;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+  font: 400 13px/1.4 var(--font-sans);
+}
+.figma-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-strong);
+}
+.figma-window__badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--home-greeting-purple);
+}
+.figma-window__file {
+  font-weight: 500;
+  color: var(--color-text);
+}
+.figma-window__status {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+}
+.figma-window__body {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 116px;
+  min-height: 300px;
+}
+.figma-window__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 14px;
+}
+.figma-window__layers {
+  border-right: 1px solid var(--color-border-strong);
+}
+.figma-window__props {
+  border-left: 1px solid var(--color-border-strong);
+}
+.figma-window__panel-title {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+.figma-layer {
+  color: var(--color-text-secondary);
+}
+.figma-prop {
+  padding: 5px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+.figma-window__canvas {
+  position: relative;
+  padding: 24px;
+  background:
+    radial-gradient(circle, var(--hero-dot-color) 0.5px, transparent 1px) 0 0 /
+    18px 18px;
+}
+.figma-wire {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(240px, 100%);
+  margin-inline: auto;
+  padding: 18px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+.figma-wire__image {
+  height: 74px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border-strong);
+}
+.figma-wire__heading {
+  height: 14px;
+  width: 70%;
+  border-radius: 3px;
+  background: var(--color-text-secondary);
+}
+.figma-wire__line {
+  height: 8px;
+  border-radius: 3px;
+  background: var(--color-border-strong);
+}
+.figma-wire__line--short {
+  width: 74%;
+}
+.figma-wire__input {
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+}
+.figma-wire__cta {
+  height: 28px;
+  width: 96px;
+  align-self: center;
+  border-radius: var(--radius-sm);
+  background: var(--home-greeting-purple);
+}
+.figma-feedback {
+  position: absolute;
+  top: 24%;
+  right: 14%;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-green-500);
+  color: #10101f;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.figma-feedback::before {
+  content: "✓ ";
+}
+.figma-cursor {
+  position: absolute;
+  right: 18%;
+  bottom: 14%;
+  width: 80px;
+  height: 54px;
+}
+.figma-cursor img {
+  display: block;
+  width: 24px;
+  height: 28px;
+  margin: 0;
+  border-radius: 0;
+}
+.figma-cursor span {
+  position: absolute;
+  top: 23px;
+  left: 20px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: #fafafb;
+  background: var(--home-greeting-purple);
+  font: 400 14px/1.15 var(--font-heading);
+  white-space: nowrap;
+}
 .home-footer {
   position: fixed;
   z-index: 25;
@@ -452,7 +621,8 @@ html.home-boot
   .home-premise h2 {
     font-size: 64px;
   }
-  .home-board {
+  .home-board,
+  .home-figma {
     gap: 32px;
   }
   .home-copy p {
@@ -497,15 +667,20 @@ html.home-boot
   .home-board .home-board__support {
     font-size: 16px;
   }
-  .home-board {
+  .home-board,
+  .home-figma {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
     gap: 40px;
   }
-  .home-board .home-copy {
+  .home-board .home-copy,
+  .home-figma .home-copy {
     gap: 16px;
+  }
+  .figma-window__body {
+    grid-template-columns: 96px minmax(0, 1fr) 100px;
   }
   .board-map {
     max-width: 560px;
