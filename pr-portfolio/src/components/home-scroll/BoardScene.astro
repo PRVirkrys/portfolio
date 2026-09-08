@@ -4,6 +4,7 @@ import TextLink from '../ui/TextLink.astro';
 import { ArrowRight } from '@lucide/astro';
 import cursor from '../../assets/home-scroll/cursor.svg';
 import type { HomeCopy } from './home-copy';
+import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 const categories = ['Research', 'Strategy', 'UX Design'] as const;
@@ -14,7 +15,7 @@ const categories = ['Research', 'Strategy', 'UX Design'] as const;
     <h2 id="board-title" data-motion="board-title">{copy.board.title}</h2>
     <p class="home-board__message">{copy.board.message}</p>
     <p class="home-board__support">{copy.board.support}</p>
-    <TextLink href="/work" showIcon={false}>{copy.board.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+    <TextLink href={withBase('/work')} showIcon={false}>{copy.board.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
   </div>
   <div class="board-map" data-motion="board-map" aria-hidden="true">
     <div class="board-map__selection" data-motion="board-selection"></div>
