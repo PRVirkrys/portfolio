@@ -147,7 +147,7 @@ $logo-safety-surface--dark: p.$color-neutral-950;
 // muddy a light background instead of softening it. Figma only specifies
 // the dark version; light is our own mirrored equivalent, not a pulled value.
 $hero-dot-color: p.$color-brand-purple-500;
-$hero-dot-color--dark: #b07ddf;
+$hero-dot-color--dark: #b07ddf4f;
 $hero-scrim-start: rgb(244, 244, 245);
 $hero-scrim-start--dark: p.$color-neutral-950;
 $hero-scrim-mid: rgba(244, 244, 245, 0.5);

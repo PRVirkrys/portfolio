@@ -1,0 +1,27 @@
+---
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import { ArrowRight } from '@lucide/astro';
+import cursor from '../../assets/home-scroll/cursor.svg';
+import type { HomeCopy } from './home-copy';
+interface Props { copy: HomeCopy }
+const { copy } = Astro.props;
+const categories = ['Research', 'Strategy', 'UX Design'] as const;
+---
+<section class="home-scene home-board" data-scene-panel="board" aria-labelledby="board-title">
+  <div class="home-copy" data-motion="board-copy">
+    <div class="home-tags" data-motion="board-tags">{copy.board.tags.map((tag, i) => <Tag size="sm" category={categories[i]}>{tag}</Tag>)}</div>
+    <h2 id="board-title" data-motion="board-title">{copy.board.title}</h2>
+    <p class="home-board__message">{copy.board.message}</p>
+    <p class="home-board__support">{copy.board.support}</p>
+    <TextLink href="/work" showIcon={false}>{copy.relatedProjects}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+  </div>
+  <div class="board-map" data-motion="board-map" aria-hidden="true">
+    <div class="board-map__selection" data-motion="board-selection"></div>
+    <svg class="board-map__connections" data-motion="connections" aria-hidden="true"><!-- Geometry is measured from the translated HTML cards after fonts load. -->
+      <path data-edge="research-needs" /><path data-edge="research-goals" /><path data-edge="needs-flows" /><path data-edge="goals-flows" /><path data-edge="flows-product" /><path data-edge="draft" />
+    </svg>
+    {Object.entries(copy.board.nodes).map(([key, label]) => <div class="board-card" data-node={key}>{label}</div>)}
+    <div class="board-cursor" data-motion="board-cursor"><img src={cursor.src} width="24" height="28" alt="" /><span>{copy.board.cursor}</span></div>
+  </div>
+</section>

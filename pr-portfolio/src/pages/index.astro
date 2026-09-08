@@ -1,172 +1,25 @@
 ---
-// Figma: PR Brand (DS) → op2 (node 15993:35251) → content (node 15993:39285)
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import Tag from '../components/ui/Tag.astro';
-import TextLink from '../components/ui/TextLink.astro';
+import HomeScrollExperience from '../components/home-scroll/HomeScrollExperience.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 ---
-
 <!doctype html>
-<html lang="en" class="dark">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header transparent />
-		<main class="hero">
-			<div class="hero__scrim" aria-hidden="true"></div>
-			<div class="hero__content">
-				<div class="hero__tags">
-					<Tag category="Research" size="sm">Research</Tag>
-					<Tag category="UX Design" size="sm">UX Design</Tag>
-					<Tag category="UI Design" size="sm">UI Design</Tag>
-					<Tag category="Design Systems" size="sm">Design Systems</Tag>
-				</div>
-				<h1 class="hero__heading">
-					I design and build products that make <span class="hero__accent hero__accent--purple">complex ideas</span> actually <span
-						class="hero__accent hero__accent--green">usable.</span
-					>
-				</h1>
-				<p class="hero__lead">I work at the intersection of product, design systems and code to ship experiences that scale.</p>
-				<!-- TODO: point at a real work/projects destination once one exists -->
-				<TextLink href="/" size="lg">Explore related work</TextLink>
-			</div>
-			<div class="hero__visual" aria-hidden="true"><!-- reserved for a future animation --></div>
-		</main>
-		<Footer />
-	</body>
+<html lang="es" class="dark">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <script is:inline>
+      // A bounded first-paint guard: a failed/blocked module always reveals the static home.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('home-boot');
+        setTimeout(() => document.documentElement.classList.remove('home-boot'), 3500);
+      }
+    </script>
+  </head>
+  <body class="home-page">
+    <Header transparent />
+    <HomeScrollExperience locale="es" />
+    <div class="home-footer"><Footer /></div>
+  </body>
 </html>
-
-<style>
-	/* .hero sets its own padding-top per breakpoint (rather than inheriting
-	   global.css's `main` rule) because as a class selector it would silently
-	   win that cascade fight anyway — see the header-height comment below. */
-	/* Dot-grid backdrop (Figma "Dots" background, node 15993:35252, board
-	   component "Dot master" 15751:13557: a 2px circle repeated on a 36px
-	   grid) reproduced as a CSS radial-gradient instead of an exported image
-	   — vector-crisp at any zoom/DPI, zero asset weight, and both the dot
-	   size and spacing scale with --ui-scale like every other token here, so
-	   it stays consistent with the rest of the UI density without ever
-	   needing a re-export from Figma. Color is --hero-dot-color (semantic,
-	   theme-aware — see _semantic.scss). */
-	.hero {
-		box-sizing: border-box;
-		position: relative;
-		display: flex;
-		width: 100%;
-		max-width: none;
-		flex: 1 0 auto;
-		align-items: center;
-		margin-inline: 0;
-		padding-inline: var(--gutter-mobile);
-		padding-top: var(--component-header-height-mobile);
-		padding-bottom: var(--section-mobile);
-		background-image: radial-gradient(circle, var(--hero-dot-color) calc(1px * var(--ui-scale)), transparent calc(1px * var(--ui-scale)));
-		background-size: calc(36px * var(--ui-scale)) calc(36px * var(--ui-scale));
-	}
-	/* Figma's own trick for keeping the dots from fighting the text (node
-	   15993:39285: a near-bg linear-gradient blended over the pattern with
-	   mix-blend-mode) — near-opaque over the text column, fading out toward
-	   the empty visual column. Figma only specifies this for dark mode
-	   (near-black + "darken"); light mode mirrors it with the inverted pair
-	   (near-white + "lighten", both via --hero-scrim-* tokens) since darken
-	   would just muddy a light background instead of softening it. First in
-	   the DOM, before .hero__content, so it paints behind the real content
-	   with no z-index needed. */
-	.hero__scrim {
-		position: absolute;
-		inset: 0;
-		background-image: linear-gradient(89deg, var(--hero-scrim-start) 30%, var(--hero-scrim-mid) 93%, transparent 100%);
-		mix-blend-mode: var(--hero-scrim-blend);
-		pointer-events: none;
-	}
-	.hero__content {
-		/* position: relative (with no z-index) is enough to lift this above
-		   .hero__scrim: positioned elements always paint above static ones in
-		   the same stacking context regardless of DOM order, so without this
-		   the scrim — despite coming first in the markup — would render over
-		   the text instead of behind it. */
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-8);
-		max-width: 42rem;
-	}
-	/* .hero__content is a column flex container with the default
-	   align-items: stretch, so without this the TextLink (an inline-flex
-	   component meant to hug its own label width) gets stretched to the
-	   column's full width like the block-level heading/lead siblings. */
-	.hero__content > :global(.text-link) {
-		align-self: flex-start;
-	}
-	.hero__tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: calc(10px * var(--ui-scale));
-	}
-	.hero__heading {
-		margin: 0;
-		color: var(--color-text);
-		font-family: var(--typography-display-l-desktop-font-family);
-		font-weight: 400;
-		font-size: calc(64px * var(--ui-scale));
-		line-height: 1.2;
-		letter-spacing: calc(-0.5px * var(--ui-scale));
-	}
-	.hero__accent--purple {
-		color: #9d76fd;
-	}
-	.hero__accent--green {
-		color: var(--color-brand-green-500);
-	}
-	.hero__lead {
-		margin: 0;
-		max-width: 58ch;
-		color: var(--color-text-secondary);
-		font-family: var(--font-sans);
-		font-weight: 400;
-		font-size: calc(24px * var(--ui-scale));
-		line-height: 1.75;
-		letter-spacing: calc(1px * var(--ui-scale));
-	}
-	.hero__visual {
-		display: none;
-	}
-	/* .hero__heading/.hero__lead otherwise stay at their desktop size (64px/
-	   24px) all the way down to phone widths with no downscaling at all —
-	   long words (e.g. "complex", "actually") then render wider than the
-	   viewport itself, forcing real horizontal overflow on the whole page
-	   (not just clipped text), which throws off every position:fixed
-	   element's effective right edge, including Header's. */
-	@media (max-width: 839px) {
-		.hero__heading {
-			font-size: calc(40px * var(--ui-scale));
-		}
-		.hero__lead {
-			font-size: calc(18px * var(--ui-scale));
-		}
-	}
-	/* Matches Header.astro's own mobile/desktop breakpoint exactly (839/840):
-	   the header switches to its fixed-height solid bar there, so hero's
-	   top-clearance has to switch at the same point or content would sit
-	   under the header in between. No explicit min-height needed — .hero
-	   already has flex: 1 0 auto inside the column-flex <body>, so once
-	   padding-top reserves the header's height it naturally fills the rest
-	   of the viewport between header and footer. */
-	@media (min-width: 840px) {
-		.hero {
-			padding-top: var(--component-header-height-desktop);
-			padding-inline: var(--gutter-desktop);
-		}
-	}
-	@media (min-width: 1024px) {
-		.hero__visual {
-			display: block;
-			flex: 1 1 auto;
-			align-self: stretch;
-			min-width: 0;
-		}
-	}
-</style>

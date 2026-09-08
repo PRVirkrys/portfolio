@@ -1,0 +1,53 @@
+---
+import AnimatedHeroLogo from './AnimatedHeroLogo.astro';
+import BoardScene from './BoardScene.astro';
+import ScrollIndicator from './ScrollIndicator.astro';
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import { ArrowRight } from '@lucide/astro';
+import { homeCopy, type Locale } from './home-copy';
+import './home-scroll.css';
+interface Props { locale?: Locale }
+const { locale = 'es' } = Astro.props;
+const copy = homeCopy[locale];
+const chars = (value: string) => Array.from(value);
+---
+<a class="home-skip" href="/work">{copy.skip}</a>
+<main class="home-scroll" data-home-scroll data-locale={locale} tabindex="-1">
+  <div class="home-stage">
+    <section class="home-scene home-greeting" data-scene-panel="greeting" aria-labelledby="greeting-title">
+      <div class="home-greeting__layout">
+        <AnimatedHeroLogo />
+        <h1 id="greeting-title" class="home-greeting__text">
+          <span class="sr-only">{copy.intro.greeting} {copy.intro.prefix} {copy.intro.name}</span>
+          <span class="greeting-hello greeting-line" data-motion="greeting-hello" aria-hidden="true">
+            {chars(copy.intro.greeting).map((char, index, all) => <span class:list={["greeting-char", { "greeting-punctuation": index === all.length - 1 }]}>{char}</span>)}
+            <span class="typing-cursor" data-typing-cursor aria-hidden="true"></span>
+          </span>
+          <span class="greeting-prefix greeting-line" data-motion="greeting-prefix" aria-hidden="true">
+            {chars(copy.intro.prefix).map(char => <span class="greeting-char">{char}</span>)}
+            <span class="typing-cursor" data-typing-cursor aria-hidden="true"></span>
+          </span>
+          <span class="greeting-name greeting-line" data-motion="greeting-name" aria-hidden="true">
+            {chars(copy.intro.name).map(char => <span class="greeting-char">{char}</span>)}
+            <span class="typing-cursor" data-typing-cursor aria-hidden="true"></span>
+          </span>
+        </h1>
+      </div>
+    </section>
+    <section class="home-scene home-premise" data-scene-panel="premise" aria-labelledby="premise-title">
+      <div class="home-copy" data-motion="premise-copy">
+        <div class="home-tags"><Tag size="sm" category="Strategy">{copy.premise.tag}</Tag></div>
+        <h2 id="premise-title">{copy.premise.title}</h2>
+        <p>{copy.premise.body}</p>
+        <TextLink href="/work" showIcon={false}>{copy.relatedProjects}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+      </div>
+    </section>
+    <BoardScene copy={copy} />
+  </div>
+  <ScrollIndicator label={copy.scroll} />
+</main>
+<script>
+  import { mountHomeScroll } from './home-scroll';
+  mountHomeScroll();
+</script>
