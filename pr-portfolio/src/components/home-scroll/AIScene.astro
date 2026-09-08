@@ -4,6 +4,7 @@ import TextLink from '../ui/TextLink.astro';
 import { ArrowRight, ArrowUp } from '@lucide/astro';
 import cursor from '../../assets/home-scroll/cursor.svg';
 import type { HomeCopy } from './home-copy';
+import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 const { ai } = copy;
@@ -16,7 +17,7 @@ const win = ai.window;
     <h2 id="ai-title">{ai.title}</h2>
     <p class="home-ai__message">{ai.message}</p>
     <p class="home-ai__support">{ai.support}</p>
-    <TextLink href="/work" showIcon={false}>{ai.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+    <TextLink href={withBase('/work')} showIcon={false}>{ai.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
   </div>
   <div class="ai-window" data-motion="ai-window" aria-hidden="true">
     <header class="ai-window__bar">
