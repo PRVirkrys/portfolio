@@ -1,0 +1,16 @@
+---
+// One split-flap plate: two static halves, an upper leaf that folds down and a
+// lower leaf that folds into place, plus an always-visible hinge line. The
+// renderer (home-scroll.ts) sets the four glyphs and the leaf CSS vars from
+// split-flap.ts; SSR content is the resting glyph so no-JS shows it assembled.
+interface Props { char: string; empty?: boolean; gap?: boolean }
+const { char, empty = false, gap = false } = Astro.props;
+const glyph = char === ' ' ? '' : char;
+---
+<span class:list={["flap", { "is-gap": gap }]} data-flap hidden={empty} aria-hidden="true">
+  <span class="flap__half flap__half--top"><b data-flap-top>{glyph}</b></span>
+  <span class="flap__half flap__half--bottom"><b data-flap-bottom>{glyph}</b></span>
+  <span class="flap__leaf flap__leaf--upper"><b data-flap-upper>{glyph}</b></span>
+  <span class="flap__leaf flap__leaf--lower"><b data-flap-lower>{glyph}</b></span>
+  <span class="flap__hinge" aria-hidden="true"></span>
+</span>

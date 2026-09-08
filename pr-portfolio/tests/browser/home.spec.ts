@@ -16,7 +16,7 @@ async function seekScene(page: Page, scene: SceneName, local = 0.5) {
     return { scene: r.dataset.scene ?? '', local: Number(r.dataset.sceneProgress ?? 0) };
   });
   let lo = 0, hi = 1;
-  for (let i = 0; i < 18; i += 1) {
+  for (let i = 0; i < 14; i += 1) {
     const mid = (lo + hi) / 2;
     await page.evaluate(y => window.scrollTo(0, y), mid * range);
     await page.waitForTimeout(40);
@@ -26,6 +26,53 @@ async function seekScene(page: Page, scene: SceneName, local = 0.5) {
   }
   await page.evaluate(y => window.scrollTo(0, y), ((lo + hi) / 2) * range);
   await page.waitForTimeout(300);
+}
+
+// The word the split-flap has resolved to: the resting glyph of every shown
+// plate (interior gaps count as a space).
+async function flapText(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const row = document.querySelector('[data-flap-row]');
+    if (!row) return '';
+    return [...row.querySelectorAll<HTMLElement>('[data-flap]')]
+      .filter(f => !f.hidden)
+      .map(f => f.classList.contains('is-gap') ? ' ' : (f.querySelector('[data-flap-bottom]')?.textContent ?? ''))
+      .join('')
+      .trim();
+  });
+}
+
+const FLAP_MESSAGES = [
+  'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
+  'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER', 'PAULA RODAS',
+] as const;
+
+// Scroll through the identity scene until the split-flap has settled on `word`.
+// Robust to the scrubbed timeline lagging the scrollbar: it steps toward the
+// target message and waits out mid-flip readings (holds are wide).
+async function seekFlapWord(page: Page, word: string) {
+  const targetIdx = FLAP_MESSAGES.indexOf(word as typeof FLAP_MESSAGES[number]);
+  await seekScene(page, 'identity', Math.min(0.12 + targetIdx * 0.09, 0.9));
+  const range = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+  let pos = await page.evaluate(() => window.scrollY / (document.documentElement.scrollHeight - innerHeight));
+  let miss = 0;
+  for (let i = 0; i < 26; i += 1) {
+    const t = await flapText(page);
+    if (t === word) return;
+    const idx = FLAP_MESSAGES.indexOf(t as typeof FLAP_MESSAGES[number]);
+    let dir: number;
+    if (idx === -1) { // mid-flip: let the scrub settle, then nudge back a hair
+      if (miss < 2) { miss += 1; await page.waitForTimeout(220); continue; }
+      dir = -1;
+    } else {
+      miss = 0;
+      dir = idx < targetIdx ? 1 : -1;
+    }
+    pos = Math.min(1, Math.max(0, pos + dir * 0.005));
+    await page.evaluate(y => window.scrollTo(0, y), pos * range);
+    await page.waitForTimeout(170);
+  }
+  expect(await flapText(page), `split-flap never settled on "${word}"`).toBe(word);
 }
 
 test('static home is complete when JavaScript is unavailable', async ({ browser }) => {
@@ -38,7 +85,12 @@ test('static home is complete when JavaScript is unavailable', async ({ browser 
   await expect(page.getByRole('heading', { name: 'Diseñar también es construir.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
-  await expect(page.getByText('PAULA RODAS', { exact: true })).toBeVisible();
+  // Identity close renders assembled: the name in plates + the roles list.
+  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS');
+  await expect(page.locator('[data-flap-row] [data-flap]:not([hidden])').first()).toBeVisible();
+  await expect(page.locator('.identity-roles-list')).toContainText('BUILDER');
+  await expect(page.locator('.identity-roles-list')).toContainText('FULL-STACK DEVELOPER');
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '/contacto');
   await expect(page.getByRole('link', { name: 'Explorar proyectos relacionados' }).first()).toHaveAttribute('href', '/work');
   await expect(page.getByRole('link', { name: 'Explore my work' }).first()).toHaveAttribute('href', '/work');
   await context.close();
@@ -114,16 +166,20 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   await expect(page.locator('.ai-option[data-chosen]')).toBeVisible();
   await seekScene(page, 'manifesto', .9);
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
+  // The close is a per-character split-flap, not a single word panel.
+  await expect(page.locator('.flip-panel, .flip-word')).toHaveCount(0);
+  await expect(page.locator('[data-flap-row] [data-flap]')).not.toHaveCount(1);
   await seekScene(page, 'identity', .04);
-  await expect(page.locator('.flip-word[data-word-index="0"]')).toBeVisible();
-  await expect(page.locator('.flip-word[data-name]')).toBeHidden();
   await expect(page.locator('[data-motion="identity-ctas"]')).toBeHidden();
-  await seekScene(page, 'identity', .96);
-  await expect(page.locator('.flip-word[data-name]')).toBeVisible();
+  await seekFlapWord(page, 'UX DESIGNER');                     // its opening hold
+  await seekFlapWord(page, 'FULL-STACK DEVELOPER');            // roles turn in order
+  await seekScene(page, 'identity', .95);
+  expect(await flapText(page)).toBe('PAULA RODAS');
   await expect(page.locator('[data-motion="identity-head-b"]')).toBeVisible();
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
-  await seekScene(page, 'identity', .04);
-  await expect(page.locator('.flip-word[data-name]')).toBeHidden();
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '/contacto');
+  await seekFlapWord(page, 'DESIGNER');                        // back up → previous role
+  await seekScene(page, 'identity', .95);
   await page.reload();
   await expect(root).toHaveAttribute('data-ready', 'true');
   await expect(root).toHaveAttribute('data-intro', 'done');
@@ -175,9 +231,10 @@ test('phone runs the same pinned journey, its phone indicator, and never scrolls
     await seekScene(page, scene);
     await expect(root).toHaveAttribute('data-scene', scene);
   }
-  // The split-flap still closes on the name.
-  await seekScene(page, 'identity', .97);
-  await expect(page.locator('.flip-word[data-name]')).toBeVisible();
+  // The split-flap turns through the roles and still closes on the name.
+  await seekFlapWord(page, 'UX DESIGNER');
+  await seekScene(page, 'identity', .95);
+  expect(await flapText(page)).toBe('PAULA RODAS');
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
   // Reverse order on the way back up.
   for (const scene of ['manifesto', 'ai', 'code', 'figma', 'board', 'purpose', 'greeting'] as const) {
@@ -208,11 +265,16 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.getByRole('heading', { name: 'Diseñar también es construir.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
-  // The split-flap degrades to the name plus a plain roles list.
-  await expect(page.getByText('PAULA RODAS', { exact: true })).toBeVisible();
+  // The split-flap degrades to the name (resting) plus a plain roles list.
+  expect(await flapText(page)).toBe('PAULA RODAS');
+  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS');
   await expect(page.locator('.identity-roles-list')).toBeVisible();
+  await expect(page.locator('.identity-roles-list li')).toHaveText([
+    'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
+    'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER',
+  ]);
   await expect(page.locator('.identity-ctas .button')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '/contacto');
   // Decorative tool windows stay out of the accessibility tree.
   for (const w of ['.figma-window', '.code-window', '.ai-window'])
     await expect(page.locator(w)).toHaveAttribute('aria-hidden', 'true');

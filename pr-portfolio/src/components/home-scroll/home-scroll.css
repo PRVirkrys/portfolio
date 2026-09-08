@@ -871,32 +871,32 @@ html:not(.dark) .hero-logo {
 .home-manifesto .text-link {
   margin-top: 12px;
 }
-/* Identity — the closing split-flap. Every role is its own layer so the scrub
-   reverses cleanly; the assembled name + CTAs show without JS. */
+/* Identity (8A2 / 8B2) — logo left, a per-character split-flap right. The plates
+   are a pure render of scroll progress, so the scrub reverses exactly. */
 .home-identity {
   justify-content: center;
+  gap: clamp(24px, 5vw, 72px);
 }
 .identity-logo {
-  position: absolute;
-  left: clamp(32px, 11%, 216px);
-  top: 50%;
-  width: clamp(140px, 16vw, 220px);
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(150px, 18vw, 260px);
   aspect-ratio: 287 / 247;
-  transform: translateY(-50%);
 }
 .identity-main {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 18px;
+  align-items: flex-start;
+  gap: 16px;
   width: 100%;
-  max-width: 760px;
-  text-align: center;
+  max-width: 640px;
+  text-align: left;
 }
 .identity-head {
   position: relative;
   height: 1.5em;
   width: 100%;
+  text-align: left;
   font: 500 clamp(15px, 1.5vw, 19px) / 1.5 var(--font-sans);
   letter-spacing: 0.14em;
   color: var(--color-text-secondary);
@@ -907,47 +907,124 @@ html:not(.dark) .hero-logo {
   left: 0;
   right: 0;
 }
-.flip-panel {
+
+/* Split-flap: one row of per-character plates. Sizes track the Figma 44×62
+   plate; --flap-n (the active message length) is set by the renderer and
+   drives the width down for the long roles so it stays one row on desktop. */
+.flap-row {
+  --flap-row-max: 620px;
+  --flap-gap: 5px;
+  --flap-n: 11;
+  --flap-w: clamp(24px, calc((var(--flap-row-max) - (var(--flap-n) - 1) * var(--flap-gap)) / var(--flap-n)), 44px);
+  --flap-h: calc(var(--flap-w) * 1.41);
   position: relative;
-  width: min(680px, 94%);
-  height: clamp(92px, 13vh, 148px);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-raised);
-  overflow: hidden;
-  perspective: 1000px;
-}
-.flip-stack {
-  position: relative;
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--flap-gap);
   width: 100%;
-  height: 100%;
+  min-height: var(--flap-h);
+  perspective: 900px;
+}
+.flap {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--flap-w);
+  height: var(--flap-h);
+  border-radius: 6px;
+  background: #0d0d16;
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+  overflow: hidden;
   transform-style: preserve-3d;
+  font: 600 calc(var(--flap-h) * 0.62) / 1 var(--font-heading);
+  color: #fafafb;
 }
-.flip-word {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding-inline: 12px;
-  backface-visibility: hidden;
-  font: 500 clamp(26px, 4.6vw, 58px) / 1 var(--font-heading);
-  letter-spacing: -0.5px;
-  color: var(--color-text);
-  white-space: nowrap;
+.flap.is-gap {
+  background: #0d0d16;
 }
-.flip-hinge {
+.flap__half,
+.flap__leaf {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  height: 1px;
-  background: var(--color-border-strong);
-  transform-origin: center;
-  opacity: 0.12;
+  height: 50%;
+  overflow: hidden;
 }
+.flap__half b,
+.flap__leaf b {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--flap-h);
+  display: grid;
+  place-items: center;
+  font: inherit;
+}
+.flap__half--top,
+.flap__leaf--upper {
+  top: 0;
+  border-bottom: 1px solid #00000066;
+}
+.flap__half--top b,
+.flap__leaf--upper b {
+  top: 0;
+}
+.flap__half--bottom,
+.flap__leaf--lower {
+  bottom: 0;
+}
+.flap__half--bottom b,
+.flap__leaf--lower b {
+  bottom: 0;
+}
+.flap__leaf {
+  z-index: 2;
+  background: #0d0d16;
+  backface-visibility: hidden;
+}
+.flap__leaf--upper {
+  transform-origin: 50% 100%;
+  transform: rotateX(var(--flap-upper-rot, 0deg));
+  opacity: var(--flap-upper-op, 1);
+}
+.flap__leaf--lower {
+  transform-origin: 50% 0%;
+  transform: rotateX(var(--flap-lower-rot, 90deg));
+  opacity: var(--flap-lower-op, 0);
+}
+.flap__leaf--upper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: calc(var(--flap-shade, 0) * 0.55);
+}
+.flap__hinge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 0.5px);
+  height: 1px;
+  background: #00000088;
+  z-index: 3;
+}
+/* The full role sequence as secondary text under the flap (8A2). */
 .identity-roles-list {
-  display: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--home-greeting-purple);
+}
+.identity-roles-list li + li::before {
+  content: "·";
+  margin-right: 6px;
+  opacity: 0.6;
 }
 .identity-text {
   max-width: 42ch;
@@ -958,29 +1035,12 @@ html:not(.dark) .hero-logo {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: 16px 24px;
   margin-top: 8px;
 }
-/* Without the pinned stage the panel just reads the name and the roles are a
-   plain list. */
-.home-scroll:not([data-mode="cinematic"]) .flip-word:not([data-name]) {
-  display: none;
-}
+/* Without the pinned stage the flap is already resting on the name (SSR). */
 .home-scroll:not([data-mode="cinematic"]) .identity-head__a {
   display: none;
-}
-.home-scroll:not([data-mode="cinematic"]) .identity-roles-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px 14px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  color: var(--color-text-secondary);
 }
 .home-footer {
   position: fixed;
@@ -1243,15 +1303,35 @@ html.home-boot
   }
   .home-identity {
     flex-direction: column;
+    gap: 16px;
   }
   .identity-logo {
-    position: static;
-    transform: none;
     width: clamp(84px, 26vw, 120px);
-    margin: 0 auto 4px;
+    margin: 0 auto;
   }
-  .flip-word {
-    font-size: clamp(22px, 7vw, 34px);
+  .identity-main {
+    align-items: center;
+    text-align: center;
+  }
+  .identity-roles-list {
+    justify-content: center;
+    font-size: 12px;
+  }
+  /* Two rows for the long roles: interior spaces become a word break; the row
+     keeps a stable two-line height so the CTAs below never jump. */
+  .flap-row {
+    --flap-row-max: min(92vw, 420px);
+    --flap-w: clamp(18px, 6.4vw, 30px);
+    min-height: calc(var(--flap-h) * 2 + 8px);
+    align-content: center;
+    row-gap: 8px;
+  }
+  .flap.is-gap {
+    flex-basis: 100%;
+    width: 0;
+    height: 0;
+    box-shadow: none;
+    background: none;
   }
   .board-map {
     max-width: 560px;
@@ -1437,9 +1517,7 @@ html.home-boot
   [data-home-scroll][data-mode="cinematic"] .identity-head {
     height: 1.4em;
     letter-spacing: 0.1em;
-  }
-  [data-home-scroll][data-mode="cinematic"] .flip-panel {
-    height: clamp(78px, 12vh, 112px);
+    text-align: center;
   }
 }
 @media (max-width: 359px) {
