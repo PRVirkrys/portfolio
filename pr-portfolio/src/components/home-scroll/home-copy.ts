@@ -8,6 +8,13 @@ export type HomeCopy = {
     tags: [string, string, string]; title: string; message: string; support: string; cta: string;
     window: { file: string; status: string; layersTitle: string; layers: string[]; propsTitle: string; props: string[]; feedback: string };
   };
+  code: {
+    tags: [string, string, string]; title: string; message: string; support: string; cta: string;
+    window: {
+      file: string; status: string; explorerTitle: string; files: string[]; lines: string[]; highlightLine: number;
+      previewTitle: string; previewHeading: string; previewBody: string; previewCta: string;
+    };
+  };
   relatedProjects: string; scroll: string; skip: string;
 };
 // Stable content contract; JSON and language routing can replace this adapter later.
@@ -30,6 +37,31 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         feedback: 'Claridad mejorada',
       },
     },
+    code: {
+      tags: ['UX ENGINEERING', 'FRONT-END', 'DESIGN SYSTEMS'],
+      title: 'Diseñar también es construir.',
+      message: 'Implemento lo que diseño para que la intención no se pierda entre el prototipo y el producto real.',
+      support: 'El código me permite validar decisiones, crear sistemas consistentes y llevar experiencias cuidadas a producción.',
+      cta: 'Explore my work',
+      window: {
+        file: 'ProductCard.astro', status: 'BUILD PASSED',
+        explorerTitle: 'EXPLORER',
+        files: ['src', 'components', 'ProductCard.astro', 'Button.astro', 'styles', 'pages'],
+        lines: [
+          '---',
+          'const { title, body } = Astro.props;',
+          '---',
+          '<article class="product-card">',
+          '  <h3>{title}</h3>',
+          '  <p>{body}</p>',
+          '  <Button>Explore</Button>',
+          '</article>',
+        ],
+        highlightLine: 3,
+        previewTitle: 'LIVE PREVIEW', previewHeading: 'Producto claro',
+        previewBody: 'Diseño y código, unidos.', previewCta: 'Explore',
+      },
+    },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
@@ -48,6 +80,31 @@ export const homeCopy: Record<Locale, HomeCopy> = {
         layersTitle: 'LAYERS', layers: ['01 Start', '02 Flow', '03 Form', '04 Confirmation'],
         propsTitle: 'PROPERTIES', props: ['W 280', 'H 360', 'Gap 16'],
         feedback: 'Clarity improved',
+      },
+    },
+    code: {
+      tags: ['UX ENGINEERING', 'FRONT-END', 'DESIGN SYSTEMS'],
+      title: 'Designing is building too.',
+      message: 'I implement what I design so the intent is not lost between the prototype and the real product.',
+      support: 'Code lets me validate decisions, build consistent systems and take careful experiences to production.',
+      cta: 'Explore my work',
+      window: {
+        file: 'ProductCard.astro', status: 'BUILD PASSED',
+        explorerTitle: 'EXPLORER',
+        files: ['src', 'components', 'ProductCard.astro', 'Button.astro', 'styles', 'pages'],
+        lines: [
+          '---',
+          'const { title, body } = Astro.props;',
+          '---',
+          '<article class="product-card">',
+          '  <h3>{title}</h3>',
+          '  <p>{body}</p>',
+          '  <Button>Explore</Button>',
+          '</article>',
+        ],
+        highlightLine: 3,
+        previewTitle: 'LIVE PREVIEW', previewHeading: 'Clear product',
+        previewBody: 'Design and code, together.', previewCta: 'Explore',
       },
     },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',

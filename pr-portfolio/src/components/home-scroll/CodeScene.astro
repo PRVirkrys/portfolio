@@ -1,0 +1,58 @@
+---
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import { ArrowRight } from '@lucide/astro';
+import cursor from '../../assets/home-scroll/cursor.svg';
+import type { HomeCopy } from './home-copy';
+interface Props { copy: HomeCopy }
+const { copy } = Astro.props;
+const { code } = copy;
+const categories = ['Engineering', 'UX Design', 'Design Systems'] as const;
+const win = code.window;
+---
+<section class="home-scene home-code" data-scene-panel="code" aria-labelledby="code-title">
+  <div class="home-copy" data-motion="code-copy">
+    <div class="home-tags">{code.tags.map((tag, i) => <Tag size="sm" category={categories[i]}>{tag}</Tag>)}</div>
+    <h2 id="code-title">{code.title}</h2>
+    <p class="home-code__message">{code.message}</p>
+    <p class="home-code__support">{code.support}</p>
+    <TextLink href="/work" showIcon={false}>{code.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+  </div>
+  <div class="code-window" data-motion="code-window" aria-hidden="true">
+    <header class="code-window__bar">
+      <span class="code-window__dots"><i></i><i></i><i></i></span>
+      <span class="code-window__file">{win.file}</span>
+      <span class="code-window__status">{win.status}</span>
+    </header>
+    <div class="code-window__body">
+      <aside class="code-window__explorer">
+        <p class="code-window__panel-title">{win.explorerTitle}</p>
+        {win.files.map(file => (
+          <span class="code-file" data-motion="code-file" data-active={file === win.file ? '' : undefined}>{file}</span>
+        ))}
+      </aside>
+      <div class="code-window__editor">
+        <ol class="code-editor__lines">
+          {win.lines.map((line, i) => (
+            <li class="code-line" data-motion="code-line" data-active={i === win.highlightLine ? '' : undefined}>
+              <span class="code-line__no">{String(i + 1).padStart(2, '0')}</span>
+              <code>{line}</code>
+            </li>
+          ))}
+        </ol>
+        <div class="code-cursor" data-motion="code-cursor">
+          <img src={cursor.src} width="24" height="28" alt="" />
+          <span>{copy.board.cursor}</span>
+        </div>
+        <div class="code-preview" data-motion="code-preview">
+          <p class="code-window__panel-title">{win.previewTitle}</p>
+          <div class="code-preview__card">
+            <span class="code-preview__heading" data-motion="code-preview-el">{win.previewHeading}</span>
+            <span class="code-preview__body" data-motion="code-preview-el">{win.previewBody}</span>
+            <span class="code-preview__cta" data-motion="code-preview-el">{win.previewCta}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
