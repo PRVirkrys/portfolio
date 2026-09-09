@@ -5,6 +5,9 @@
   --home-header-height: var(--component-header-height-desktop);
   --home-greeting-pink: #f41e50;
   --home-greeting-purple: #9d76fd;
+  /* Figma selection-UI blue for the "Container text mark" boxes. No brand-token
+     equivalent — a scoped variable, same pattern as the greeting colours. */
+  --home-select-blue: #008ff0;
   /* One heading scale for the scene h2s: a working tier (board/figma/code/ai)
      and a slightly larger statement tier (purpose/premise), both under the
      64px hero. Fluid, so the per-breakpoint size overrides go away. */
@@ -29,6 +32,11 @@
      the 16px support text on these large scenes. Redefine the token it reads
      so every home CTA sits with the support line. */
   --typography-ui-link-lg-font-size: var(--home-body);
+  /* Shared sizing for the Figma "Container text mark" boxes (TextMark.astro):
+     the greeting lines and the purpose phrase. Padding is a ratio of the box
+     font-size (Figma: 7.5px on ~48px ≈ 0.16em). */
+  --text-mark-size: clamp(29px, 4.6vw, 48px);
+  --text-mark-pad: 0.16em;
 }
 .home-stage {
   background-image: radial-gradient(
@@ -97,10 +105,106 @@
 .home-purpose {
   text-align: center;
 }
+.home-purpose__stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+/* The purpose phrase is now a TextMark box (h2). Keep the heading reset from
+   the shared rule; the box owns its own size/leading. */
 .home-purpose__title {
-  max-width: 20ch;
-  font-size: var(--home-h2-statement);
-  color: var(--color-text);
+  max-width: min(90vw, 24ch);
+  text-wrap: balance;
+}
+.home-purpose__title .text-mark__text {
+  white-space: normal;
+}
+/* Click impact on the emphasis word: a quick pink starburst that collapses
+   into a small shape shifting red → purple. Placed by JS at the word centre. */
+.purpose-spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  opacity: 0;
+  transform: scale(0.2);
+  will-change: transform, opacity;
+}
+.purpose-spark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: var(--home-greeting-pink);
+}
+.purpose-blob {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  clip-path: polygon(
+    30% 0,
+    70% 0,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0 70%,
+    0 30%
+  );
+  background: color-mix(
+    in srgb,
+    var(--home-greeting-pink),
+    var(--home-greeting-purple) calc(var(--blob-mix, 0) * 100%)
+  );
+  opacity: 0;
+  transform: scale(0);
+  will-change: transform, opacity;
+}
+
+/* ---- Transition ribbon: one continuous celeste → rosa stroke ------------- */
+.home-ribbon {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.home-ribbon__from {
+  stop-color: var(--color-brand-cyan-500);
+}
+.home-ribbon__mid {
+  stop-color: color-mix(
+    in srgb,
+    var(--color-brand-cyan-500),
+    var(--home-greeting-pink) 55%
+  );
+}
+.home-ribbon__to {
+  stop-color: var(--home-greeting-pink);
+}
+.home-ribbon [data-ribbon-path] {
+  stroke-width: var(--ribbon-width, 10);
+  opacity: var(--ribbon-op, 1);
+}
+
+/* ---- Static / no-JS / reduced-motion: no cursor, ribbon or selection chrome */
+.home-scroll:not([data-mode="cinematic"]) .home-ribbon,
+.home-scroll:not([data-mode="cinematic"]) .narrative-cursor,
+.home-scroll:not([data-mode="cinematic"]) .greeting-group,
+.home-scroll:not([data-mode="cinematic"]) .text-mark__caret,
+.home-scroll:not([data-mode="cinematic"]) .text-mark__handle,
+.home-scroll:not([data-mode="cinematic"]) .purpose-spark,
+.home-scroll:not([data-mode="cinematic"]) .purpose-blob {
+  display: none;
+}
+.home-scroll:not([data-mode="cinematic"]) .text-mark__box {
+  border-color: transparent;
 }
 .home-premise .home-copy {
   max-width: 870px;
@@ -110,6 +214,7 @@
   max-width: 18ch;
 }
 .home-greeting__layout {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,57 +223,180 @@
   max-width: 100%;
 }
 .home-greeting__text {
+  position: relative;
   margin: 0;
   min-width: 0;
-  width: 6.2em;
-  overflow: hidden;
-  font: 500 64px/1.15 var(--font-heading);
-  letter-spacing: 0;
 }
-.home-greeting__text > .greeting-line {
-  display: block;
-  width: fit-content;
+
+/* ---- Figma "Container text mark": a selectable text box ------------------- */
+/* One reusable box (TextMark.astro) for the greeting lines and the purpose
+   phrase. `--sel` (0..1) drives the whole selected look at once — blue border,
+   corner handles, caret — so GSAP toggles it with a single tween and it
+   reverses cleanly. `--type` (0..1) is the left-to-right typing reveal.
+   `--emph` (0..1) turns the marked fragment to the semantic purple. */
+.text-mark {
+  --text-mark-color: #fafafb;
+  position: relative;
+  display: inline-block;
+  font: 500 var(--text-mark-size) / 1.15 var(--font-heading);
+  letter-spacing: 0;
+  color: var(--text-mark-color);
+}
+.text-mark[data-tone="purple"] {
+  --text-mark-color: var(--home-greeting-purple);
+}
+.text-mark__box {
+  position: relative;
+  display: inline-block;
+  padding: var(--text-mark-pad);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      transparent,
+      var(--home-select-blue) calc(var(--sel, 0) * 100%)
+    );
+}
+.text-mark__text {
+  display: inline-block;
   max-width: 100%;
+  clip-path: inset(-30% calc((1 - var(--type, 1)) * 100%) -30% -2%);
+}
+.text-mark__part {
+  color: var(--text-mark-color);
+}
+.text-mark__part[data-emphasis] {
+  color: color-mix(
+    in srgb,
+    var(--text-mark-color),
+    var(--home-greeting-purple) calc(var(--emph, 1) * 100%)
+  );
+}
+.text-mark__caret {
+  position: absolute;
+  right: calc(var(--text-mark-pad) * 0.15);
+  top: 50%;
+  width: 0.05em;
+  height: 0.84em;
+  transform: translateY(-50%);
+  background: currentColor;
+  /* Gated by --sel only; a CSS blink animation would override this opacity and
+     leak a caret onto deselected boxes. */
+  opacity: var(--sel, 0);
+}
+.text-mark__handle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fafafb;
+  border: 1px solid var(--home-select-blue);
+  opacity: var(--sel, 0);
+  pointer-events: none;
+}
+.text-mark__handle--is {
+  left: -3.5px;
+  top: -3.5px;
+}
+.text-mark__handle--ds {
+  right: -3.5px;
+  top: -3.5px;
+}
+.text-mark__handle--ib {
+  left: -3.5px;
+  bottom: -3.5px;
+}
+.text-mark__handle--db {
+  right: -3.5px;
+  bottom: -3.5px;
+}
+/* ---- Greeting: the three marks + the group-selection overlay ------------- */
+.greeting-marks {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 7.1em;
+  /* Loose while typing, then tightened to a flush stack (Figma "Achica el gap").
+     Stays >= 0 — a negative gap would just clamp. */
+  gap: calc(var(--text-mark-size) * 0.26 * (1 - var(--gap-close, 0)));
+}
+.greeting-mark {
+  position: relative;
+}
+.greeting-mark .text-mark__text {
   white-space: nowrap;
 }
-.greeting-char {
-  display: inline-block;
-  width: auto;
-  overflow: hidden;
-  vertical-align: bottom;
-  white-space: pre;
+.greeting-group {
+  position: absolute;
+  inset: -3px;
+  border: 1px solid var(--home-select-blue);
+  opacity: var(--group-sel, 0);
+  pointer-events: none;
 }
-.typing-cursor {
+.greeting-group .text-mark__handle {
+  opacity: 1;
+}
+.greeting-group__tick {
+  position: absolute;
+  right: -1px;
+  width: 22px;
+  height: 2px;
+  background: var(--home-select-blue);
+  transform: translateX(100%);
+  opacity: var(--group-tick, 0);
+}
+.greeting-group__tick--1 {
+  top: 34%;
+}
+.greeting-group__tick--2 {
+  top: 66%;
+}
+
+/* ---- Narrative cursor (reuses cursor.svg) ------------------------------- */
+.narrative-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.narrative-cursor__pointer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 22px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+.narrative-cursor__pointer svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.narrative-cursor__label,
+.narrative-cursor__msg {
+  position: absolute;
+  left: 17px;
+  white-space: nowrap;
+  font: 500 12px/1.4 var(--font-sans);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.narrative-cursor__label {
+  top: 17px;
+  background: var(--home-greeting-purple);
+  color: #fafafb;
+}
+.narrative-cursor__msg {
+  top: 41px;
+  background: #fafafb;
+  color: #10101f;
+  opacity: var(--cursor-msg, 0);
+}
+.narrative-cursor__msg:empty {
   display: none;
-  width: 0.055em;
-  height: 0.88em;
-  margin-left: 0.055em;
-  vertical-align: -0.06em;
-  background: currentColor;
-  animation: greeting-cursor-blink 0.72s steps(1, end) infinite;
-}
-@keyframes greeting-cursor-blink {
-  0%,
-  48% {
-    opacity: 1;
-  }
-  49%,
-  100% {
-    opacity: 0;
-  }
-}
-.greeting-hello {
-  color: var(--color-action-ghost-text);
-  font-size: 48px;
-}
-.greeting-punctuation {
-  color: var(--color-brand-green-500);
-}
-.greeting-prefix {
-  color: var(--home-greeting-pink);
-}
-.greeting-name {
-  color: var(--home-greeting-purple);
 }
 html:not(.dark) .home-page {
   --home-greeting-pink: #bd1640;
@@ -1292,16 +1520,33 @@ html.home-boot
       calc(var(--home-footer-height) + var(--home-bottom-nav) + 100px);
   }
   .home-greeting__layout {
-    gap: 22px;
+    gap: 18px;
   }
   .hero-logo {
     width: clamp(78px, 28vw, 110px);
   }
-  .home-greeting__text {
-    font-size: clamp(24px, 8.2vw, 32px);
+  .home-page {
+    /* Smaller boxes so the composition + cursor never force sideways scroll. */
+    --text-mark-size: clamp(21px, 6.2vw, 30px);
   }
-  .greeting-hello {
-    font-size: 30px;
+  .greeting-marks {
+    min-width: 0;
+  }
+  .home-purpose__title {
+    max-width: min(88vw, 20ch);
+  }
+  .narrative-cursor__label,
+  .narrative-cursor__msg {
+    /* Sit to the left of the pointer so the bubble can never run off the
+       right edge of a narrow viewport. */
+    left: auto;
+    right: 4px;
+    font-size: 11px;
+  }
+  .narrative-cursor__msg {
+    /* Longer idle text wraps downward instead of off the left edge. */
+    white-space: normal;
+    max-width: 46vw;
   }
   .home-copy {
     gap: 24px;
@@ -1578,13 +1823,10 @@ html.home-boot
     padding-inline: 20px;
   }
   .home-greeting__layout {
-    gap: 16px;
+    gap: 12px;
   }
-  .home-greeting__text {
-    font-size: 25px;
-  }
-  .greeting-hello {
-    font-size: 25px;
+  .home-page {
+    --text-mark-size: clamp(19px, 6.6vw, 24px);
   }
   .board-card {
     padding: 12px 8px;
@@ -1593,6 +1835,13 @@ html.home-boot
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-indicator {
+    display: none;
+  }
+  .text-mark__text {
+    clip-path: none;
+  }
+  .narrative-cursor,
+  .home-ribbon {
     display: none;
   }
   .home-scene {

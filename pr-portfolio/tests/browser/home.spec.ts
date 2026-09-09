@@ -103,29 +103,35 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   const root = page.locator('[data-home-scroll]');
   await expect(root).toHaveAttribute('data-ready', 'true');
   await expect(root).toHaveAttribute('data-intro', 'done', { timeout: 8000 });
-  await expect(page.locator('[data-motion="greeting-prefix"]')).toHaveText('Yo soy');
-  const nameChars = page.locator('[data-motion="greeting-name"] .greeting-char');
-  const charWidths = () => nameChars.evaluateAll(chars => chars.map(char => char.getBoundingClientRect().width));
+  // The greeting is now three Figma text-mark boxes (¡Hola! / Yo soy / Paula Rodas).
+  const marks = page.locator('[data-greeting-marks] .greeting-mark');
+  await expect(marks).toHaveCount(3);
+  await expect(marks.nth(1)).toContainText('Yo soy');
+  await expect(marks.nth(2)).toContainText('Paula Rodas');
+  await expect(marks.nth(2)).toHaveAttribute('data-tone', 'purple');
+  const nameType = () => marks.nth(2).evaluate(el => Number(getComputedStyle(el).getPropertyValue('--type')) || 0);
+  const nameShown = () => marks.nth(2).evaluate(el => Number(getComputedStyle(el).opacity));
+  const groupShown = () => page.locator('[data-greeting-group]').evaluate(el => Number(getComputedStyle(el).opacity));
   const headerOpacity = () => page.locator('.header').first().evaluate(el => Number(getComputedStyle(el).opacity));
   const scrollTo = async (progress: number) => {
     await page.evaluate(p => window.scrollTo(0, p * (document.documentElement.scrollHeight - innerHeight)), progress);
     await page.waitForTimeout(350);
   };
 
-  expect((await charWidths()).every(width => width === 0)).toBe(true);
+  expect(await nameShown()).toBeLessThan(0.5);
   expect(await headerOpacity()).toBeCloseTo(1, 1);
   await scrollTo(.03);
   await expect(root).toHaveAttribute('data-scene', 'greeting');
-  expect((await charWidths()).every(width => width === 0)).toBe(true);
+  expect(await nameShown()).toBeLessThan(0.5);
 
-  // The name is fully typed and still — nothing scrolls away — before it leaves.
-  await seekScene(page, 'greeting', .75);
+  // The name box is typed and the three are then selected as a group.
+  await seekScene(page, 'greeting', .78);
   await expect(root).toHaveAttribute('data-scene', 'greeting');
-  expect((await charWidths()).every(width => width > 0)).toBe(true);
-  await expect(page.locator('[data-motion="greeting-name"] [data-typing-cursor]')).toHaveCSS('display', 'inline-block');
+  expect(await nameType()).toBeGreaterThan(0.9);
+  expect(await groupShown()).toBeGreaterThan(0.2);
 
   await scrollTo(0);
-  expect((await charWidths()).every(width => width === 0)).toBe(true);
+  expect(await nameType()).toBeLessThan(0.1); // the typing reverses cleanly
   expect(await headerOpacity()).toBeLessThan(.9);
 
   // Every chapter is reached, in order, on the way down.
@@ -134,9 +140,9 @@ test('intro hands over to a reversible journey through every chapter, kept on re
     await expect(root).toHaveAttribute('data-scene', scene);
     await expect(page.locator(`[data-scene-panel="${scene}"]`)).not.toHaveAttribute('inert', '');
   }
-  // The name is not torn down or reset once it has left the greeting.
-  await seekScene(page, 'purpose');
-  expect((await charWidths()).every(width => width > 0)).toBe(true);
+  // The purpose phrase takes the stage after the transition ribbon.
+  await seekScene(page, 'purpose', .6);
+  await expect(page.locator('#purpose-title')).toBeVisible();
   await expect(page.locator('[data-scene-panel="board"]')).toHaveAttribute('inert', '');
 
   // The board holds its geometry when scrolled away and back.
@@ -153,6 +159,15 @@ test('intro hands over to a reversible journey through every chapter, kept on re
     await seekScene(page, scene, .4);
     await expect(root).toHaveAttribute('data-scene', scene);
   }
+
+  // The intro narrative resolves: the phrase reads in full and its emphasis
+  // word ("forma") has turned from the base white to the semantic purple.
+  await seekScene(page, 'purpose', .96);
+  await expect(page.locator('#purpose-title')).toContainText('forma');
+  const emphColour = await page.locator('#purpose-title [data-emphasis]').evaluate(el => getComputedStyle(el).color);
+  const restColour = await page.locator('#purpose-title .text-mark__part:not([data-emphasis])').first().evaluate(el => getComputedStyle(el).color);
+  expect(emphColour).not.toBe(restColour);
+  await expect(page.locator('[data-ribbon-path]')).toHaveAttribute('d', /.+/);
 
   await seekScene(page, 'figma', .9);
   await expect(page.locator('.figma-window')).toBeVisible();
@@ -192,7 +207,7 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   expect(errors).toEqual([]);
 });
 
-test('the approved intro is frozen: 3px white line, logo reveal, typed name and its cursor', async ({ page }) => {
+test('the approved intro is frozen: 3px white line, logo reveal, typed name boxes and the narrative cursor', async ({ page }) => {
   await page.goto('/');
   const root = page.locator('[data-home-scroll]');
   await expect(root).toHaveAttribute('data-ready', 'true');
@@ -210,12 +225,17 @@ test('the approved intro is frozen: 3px white line, logo reveal, typed name and 
   await expect(root).toHaveAttribute('data-scene', 'greeting');
   await expect(page.locator('.hero-logo')).toBeVisible();
   await expect(page.locator('.header').first()).toHaveCSS('opacity', '1');
-  const nameChars = page.locator('[data-motion="greeting-name"] .greeting-char');
-  const typed = () => nameChars.evaluateAll(cs => cs.every(c => c.getBoundingClientRect().width > 0));
-  expect(await typed()).toBe(false);
-  await seekScene(page, 'greeting', .75);
-  expect(await typed()).toBe(true);
-  await expect(page.locator('[data-motion="greeting-name"] [data-typing-cursor]')).toHaveCSS('display', 'inline-block');
+  const marks = page.locator('[data-greeting-marks] .greeting-mark');
+  await expect(marks).toHaveCount(3);
+  const typeOf = (i: number) =>
+    marks.nth(i).evaluate(el => Number(getComputedStyle(el).getPropertyValue('--type')) || 0);
+  // The three boxes are typed in order, not all at once.
+  await seekScene(page, 'greeting', .22);
+  expect(await typeOf(0)).toBeGreaterThan(0.5);
+  expect(await typeOf(2)).toBeLessThan(0.2);
+  await seekScene(page, 'greeting', .78);
+  expect(await typeOf(2)).toBeGreaterThan(0.9);
+  await expect(page.locator('.narrative-cursor--greeting')).toBeAttached();
 });
 
 test('phone runs the same pinned journey, its phone indicator, and never scrolls sideways', async ({ page }) => {
@@ -261,6 +281,20 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-mode', 'static');
   await expect(page.locator('[data-home-scroll]')).toHaveAttribute('data-intro', 'done');
+  // Intro narrative degrades to plain text: the three greeting lines and the
+  // purpose phrase with its emphasis word already in purple — no cursor,
+  // ribbon or selection chrome.
+  const marks = page.locator('[data-greeting-marks] .greeting-mark');
+  await expect(marks.nth(0)).toContainText('¡Hola!');
+  await expect(marks.nth(2)).toContainText('Paula Rodas');
+  await expect(page.locator('#purpose-title')).toContainText('Diseño para darle forma a lo que todavía no está claro.');
+  {
+    const emph = await page.locator('#purpose-title [data-emphasis]').evaluate(el => getComputedStyle(el).color);
+    const rest = await page.locator('#purpose-title .text-mark__part:not([data-emphasis])').first().evaluate(el => getComputedStyle(el).color);
+    expect(emph).not.toBe(rest);
+  }
+  await expect(page.locator('.narrative-cursor')).toBeHidden();
+  await expect(page.locator('.home-ribbon')).toBeHidden();
   await expect(page.getByRole('heading', { name: 'El proceso aún importa.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Investigar, pensar y organizar.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Imaginar, dar forma y probar.' })).toBeVisible();

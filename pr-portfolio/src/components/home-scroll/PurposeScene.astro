@@ -1,8 +1,28 @@
 ---
 import type { HomeCopy } from './home-copy';
+import TextMark from './TextMark.astro';
+import NarrativeCursor from './NarrativeCursor.astro';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 ---
 <section class="home-scene home-purpose" data-scene-panel="purpose" aria-labelledby="purpose-title">
-  <h2 id="purpose-title" class="home-purpose__title" data-motion="purpose-title">{copy.purpose.title}</h2>
+  <div class="home-purpose__stage">
+    <TextMark
+      tag="h2"
+      id="purpose-title"
+      class="home-purpose__title"
+      motion="purpose-title"
+      parts={copy.purpose.parts}
+      selected={false}
+    />
+    <span class="purpose-spark" data-purpose-spark aria-hidden="true">
+      <svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M0,-46 8,-15 30,-36 15,-9 46,-13 17,0 46,13 15,9 30,36 8,15 0,46 -8,15 -30,36 -15,9 -46,13 -17,0 -46,-13 -15,-9 -30,-36 -8,-15Z"
+        />
+      </svg>
+    </span>
+    <span class="purpose-blob" data-purpose-blob aria-hidden="true"></span>
+    <NarrativeCursor label={copy.intro.cursorLabel} class="narrative-cursor--purpose" />
+  </div>
 </section>

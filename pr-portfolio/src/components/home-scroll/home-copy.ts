@@ -1,7 +1,16 @@
 export type Locale = 'es' | 'en';
+export type TextPart = { text: string; emphasis?: boolean };
 export type HomeCopy = {
-  intro: { greeting: string; prefix: string; name: string };
-  purpose: { title: string };
+  intro: {
+    greeting: string; prefix: string; name: string;
+    // Narrative cursor: label is a proper noun (never translated); the rest is
+    // the cursor bubble copy — short greeting, then the two idle nudges.
+    cursorLabel: string; cursorShort: string; idleQuestion: string; scrollInvite: string;
+  };
+  // `title` is the plain sentence (screen-reader label + static fallback).
+  // `parts` is the same sentence split for the animation; concatenating the
+  // parts must equal `title`, and exactly one part is the emphasis fragment.
+  purpose: { title: string; parts: TextPart[] };
   premise: { tag: string; title: string; body: string };
   board: { tags: [string, string, string]; title: string; message: string; support: string; cta: string; nodes: Record<'research' | 'needs' | 'goals' | 'flows' | 'product', string>; cursor: string };
   figma: {
@@ -33,8 +42,19 @@ export type HomeCopy = {
 // Stable content contract; JSON and language routing can replace this adapter later.
 export const homeCopy: Record<Locale, HomeCopy> = {
   es: {
-    intro: { greeting: '¡Hola!', prefix: 'Yo soy', name: 'Paula Rodas' },
-    purpose: { title: 'Diseño para darle forma a lo que todavía no está claro.' },
+    intro: {
+      greeting: '¡Hola!', prefix: 'Yo soy', name: 'Paula Rodas',
+      cursorLabel: 'Paula', cursorShort: 'Hey! Hola...',
+      idleQuestion: '¿Continuamos...?', scrollInvite: 'Vamos, haz scroll...',
+    },
+    purpose: {
+      title: 'Diseño para darle forma a lo que todavía no está claro.',
+      parts: [
+        { text: 'Diseño para darle ' },
+        { text: 'forma', emphasis: true },
+        { text: ' a lo que todavía no está claro.' },
+      ],
+    },
     premise: { tag: 'DISEÑAR ES ENTENDER', title: 'El proceso aún importa.', body: 'Porque una buena experiencia no empieza en la interfaz. Empieza entendiendo a las personas, el problema y por qué merece ser resuelto.' },
     board: { tags: ['INVESTIGACIÓN UX', 'ESTRATEGIA', 'ARQUITECTURA'], title: 'Investigar, pensar y organizar.', message: 'Observo, pregunto y conecto lo que descubro para entender a las personas, el contexto y los objetivos del negocio.', support: 'Los hallazgos se convierten en relaciones, prioridades y flujos que dan dirección al producto.', cta: 'Explore my work', nodes: { research: 'Investigación', needs: 'Necesidades de las personas', goals: 'Objetivos del negocio', flows: 'Flujos', product: 'Producto' }, cursor: 'Paula' },
     figma: {
@@ -120,8 +140,19 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
-    intro: { greeting: 'Hi!', prefix: 'I’m', name: 'Paula Rodas' },
-    purpose: { title: 'Design gives shape to what is not clear yet.' },
+    intro: {
+      greeting: 'Hi!', prefix: 'I’m', name: 'Paula Rodas',
+      cursorLabel: 'Paula', cursorShort: 'Hey! Hi...',
+      idleQuestion: 'Shall we continue?', scrollInvite: 'Go ahead, scroll...',
+    },
+    purpose: {
+      title: 'Design gives shape to what is not clear yet.',
+      parts: [
+        { text: 'Design gives ' },
+        { text: 'shape', emphasis: true },
+        { text: ' to what is not clear yet.' },
+      ],
+    },
     premise: { tag: 'DESIGN IS UNDERSTANDING', title: 'The process still matters.', body: 'A good experience does not start with the interface. It starts with understanding people, the problem, and why it is worth solving.' },
     board: { tags: ['UX RESEARCH', 'STRATEGY', 'ARCHITECTURE'], title: 'Research, think and organise.', message: 'I observe, ask and connect what I find to understand people, context and business goals.', support: 'Findings turn into relationships, priorities and flows that give the product direction.', cta: 'Explore my work', nodes: { research: 'Research', needs: 'User needs', goals: 'Business goals', flows: 'Flows', product: 'Product' }, cursor: 'Paula' },
     figma: {
