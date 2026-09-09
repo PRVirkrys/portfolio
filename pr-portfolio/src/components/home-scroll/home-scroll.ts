@@ -167,33 +167,66 @@ function animateGreeting(
     );
     tl.to(marks[i], { "--sel": 0, duration: D(0.03) }, A(offAt));
   };
-  line(0, 0.04, 0.07, 0.2);
-  line(1, 0.24, 0.27, 0.4);
-  line(2, 0.44, 0.47, 0.61);
+  line(0, 0.03, 0.06, 0.18);
+  line(1, 0.21, 0.24, 0.36);
+  line(2, 0.39, 0.42, 0.54);
 
-  // Select the three as a group, tighten the gap, move the cursor away, clear.
+  // Select all three: the cursor jumps to the block's top-left corner, drags to
+  // the bottom-right, and the selection box is "drawn" from the corner as it
+  // goes (Figma node 16140:22495). Then it settles — handles + ticks — and the
+  // line gap tightens with it.
+  const bx0 = Math.min(...m.map((v) => v.x));
+  const bx1 = Math.max(...m.map((v) => v.x + v.w));
+  const by0 = m[0].y;
+  const by1 = m[2].y + m[2].h;
+  const gap0 = parseFloat(getComputedStyle(marksWrap).gap) || 0;
+  const boxW = bx1 - bx0 + 8;
+  const boxH = by1 - by0 + 8;
+  const boxHTight = Math.max(0, boxH - 2 * gap0);
+  const topLeft = { x: bx0 - 8, y: by0 - 10 };
+  const botRight = { x: bx1 + 4, y: by1 + 6 };
+
+  gsap.set(group, { left: -4, top: -4 });
+
+  tl.to(
+    cursor,
+    { x: topLeft.x, y: topLeft.y, duration: D(0.05), ease: "power2.inOut" },
+    A(0.55),
+  );
   tl.fromTo(
     group,
-    { autoAlpha: 0, "--group-sel": 0, "--group-tick": 0 },
-    { autoAlpha: 1, "--group-sel": 1, duration: D(0.05) },
-    A(0.63),
+    { autoAlpha: 0, "--group-sel": 1, "--group-handles": 0, "--group-tick": 0, width: 0, height: 0 },
+    { autoAlpha: 1, width: boxW, height: boxH, duration: D(0.13), ease: "none" },
+    A(0.61),
   );
-  tl.to(group, { "--group-tick": 1, duration: D(0.05) }, A(0.71));
+  tl.to(
+    cursor,
+    { x: botRight.x, y: botRight.y, duration: D(0.13), ease: "none" },
+    A(0.61),
+  );
+  tl.to(group, { "--group-handles": 1, "--group-tick": 1, duration: D(0.05) }, A(0.76));
   tl.fromTo(
     marksWrap,
     { "--gap-close": 0 },
     { "--gap-close": 1, duration: D(0.12), ease: "power2.inOut" },
-    A(0.71),
+    A(0.78),
   );
+  tl.to(group, { height: boxHTight, duration: D(0.12), ease: "power2.inOut" }, A(0.78));
   tl.to(
     cursor,
     { x: lowerLeft.x, y: lowerLeft.y, duration: D(0.09), ease: "power1.inOut" },
-    A(0.85),
+    A(0.92),
   );
   tl.to(
     group,
-    { autoAlpha: 0, "--group-sel": 0, "--group-tick": 0, duration: D(0.05) },
-    A(0.95),
+    {
+      autoAlpha: 0,
+      "--group-sel": 0,
+      "--group-handles": 0,
+      "--group-tick": 0,
+      duration: D(0.05),
+    },
+    A(0.97),
   );
   if (msgEl)
     tl.fromTo(
@@ -937,7 +970,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // (animateGreeting), a celeste→rosa ribbon carries the composition off
         // and delivers the purpose phrase (animateTransition), which is typed
         // and clicked on its emphasis word (animatePurpose). All scrubbed here.
-        const GREET = 1;
+        const GREET = 1.3;
         const TRANS = 0.42;
         const PURPOSE_HOLD = 0.66;
         const gStart = 0.03;
