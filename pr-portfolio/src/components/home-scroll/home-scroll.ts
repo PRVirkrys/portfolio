@@ -8,6 +8,7 @@ import {
   type Bounds,
   type Snapshot,
 } from "./home-progress";
+import { homeCopy, type HomeCopy, type Locale } from "./home-copy";
 import { splitFlapStateAt } from "./split-flap";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -19,8 +20,9 @@ const SAVED = "paula-home-position-v1";
 // once the main timeline exists) is the whole thing intro + main.
 const INTRO = 0.14;
 // Scroll length of the pinned journey, in viewport heights. Tuned by feel; the
-// GSAP beat positions are proportions of the main timeline, not of this.
-const SCREENS = 16;
+// GSAP beat positions are proportions of the main timeline, not of this. Raised
+// with the longer intro narrative (text boxes → ribbon → purpose phrase).
+const SCREENS = 22;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -75,6 +77,250 @@ function measureConnections(root: HTMLElement) {
         : `M${sx},${sy} V${middle} H${ex} V${ey}`,
     );
   }
+}
+
+// The greeting: three Figma "Container text mark" boxes appear and are typed,
+// selected together, their line gap is tightened, then the selection clears.
+// Every state is a CSS variable (--type / --sel / --group-sel / --gap-close /
+// --cursor-msg) tweened on `main`, so scrubbing backwards replays it exactly —
+// no textContent is swapped. Cursor rest points are measured from the laid-out
+// composition, so they follow the language and viewport.
+function animateGreeting(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  span: number,
+  copy: HomeCopy,
+) {
+  const layoutEl = root.querySelector<HTMLElement>(".home-greeting__layout");
+  const marksWrap = root.querySelector<HTMLElement>("[data-greeting-marks]");
+  const marks = marksWrap
+    ? [...marksWrap.querySelectorAll<HTMLElement>(".greeting-mark")]
+    : [];
+  const group = root.querySelector<HTMLElement>("[data-greeting-group]");
+  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--greeting");
+  const msgEl = cursor?.querySelector<HTMLElement>("[data-cursor-msg]") ?? null;
+  if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor) return;
+  if (msgEl) msgEl.textContent = copy.intro.cursorShort;
+
+  const base = layoutEl.getBoundingClientRect();
+  const rel = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height };
+  };
+  const m = marks.map(rel);
+  const tip = (i: number) => ({ x: m[i].x + m[i].w - 2, y: m[i].y + m[i].h * 0.5 });
+  const lowerLeft = { x: m[2].x - 10, y: m[2].y + m[2].h + 16 };
+  const A = (f: number) => start + f * span;
+  const D = (f: number) => f * span;
+
+  tl.fromTo(
+    cursor,
+    { autoAlpha: 0, x: tip(0).x + 60, y: tip(0).y + 52 },
+    { autoAlpha: 1, x: tip(0).x, y: tip(0).y, duration: D(0.06), ease: "power2.out" },
+    A(0),
+  );
+
+  const line = (i: number, appearAt: number, typeAt: number, offAt: number) => {
+    tl.fromTo(
+      marks[i],
+      { autoAlpha: 0, "--sel": 0, "--type": 0 },
+      { autoAlpha: 1, "--sel": 1, duration: D(0.03) },
+      A(appearAt),
+    );
+    tl.to(marks[i], { "--type": 1, duration: D(0.09), ease: "none" }, A(typeAt));
+    tl.to(marks[i], { "--sel": 0, duration: D(0.03) }, A(offAt));
+    if (i < 2)
+      tl.to(
+        cursor,
+        { x: tip(i + 1).x, y: tip(i + 1).y, duration: D(0.05), ease: "power1.inOut" },
+        A(offAt + 0.01),
+      );
+  };
+  line(0, 0.05, 0.09, 0.21);
+  line(1, 0.27, 0.31, 0.41);
+  line(2, 0.47, 0.51, 0.63);
+
+  // Select the three as a group, tighten the gap, move the cursor away, clear.
+  tl.fromTo(
+    group,
+    { autoAlpha: 0, "--group-sel": 0, "--group-tick": 0 },
+    { autoAlpha: 1, "--group-sel": 1, duration: D(0.05) },
+    A(0.63),
+  );
+  tl.to(group, { "--group-tick": 1, duration: D(0.05) }, A(0.71));
+  tl.fromTo(
+    marksWrap,
+    { "--gap-close": 0 },
+    { "--gap-close": 1, duration: D(0.12), ease: "power2.inOut" },
+    A(0.71),
+  );
+  tl.to(
+    cursor,
+    { x: lowerLeft.x, y: lowerLeft.y, duration: D(0.09), ease: "power1.inOut" },
+    A(0.85),
+  );
+  tl.to(
+    group,
+    { autoAlpha: 0, "--group-sel": 0, "--group-tick": 0, duration: D(0.05) },
+    A(0.95),
+  );
+  if (msgEl)
+    tl.fromTo(
+      msgEl,
+      { "--cursor-msg": 0 },
+      { "--cursor-msg": 1, duration: D(0.04) },
+      A(0.99),
+    );
+}
+
+// The transition ribbon: one continuous celeste → rosa stroke whose path is
+// built from the measured greeting block and purpose box (so it scales with the
+// viewport) and drawn with a single strokeDashoffset tween — reversible.
+function animateTransition(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const svg = root.querySelector<SVGSVGElement>("[data-ribbon]");
+  const path = root.querySelector<SVGPathElement>("[data-ribbon-path]");
+  const stage = root.querySelector<HTMLElement>(".home-stage");
+  const greet = root.querySelector<HTMLElement>(".home-greeting__layout");
+  const box = root.querySelector<HTMLElement>(".home-purpose__title");
+  if (!svg || !path || !stage || !greet || !box) return;
+
+  const s = stage.getBoundingClientRect();
+  const g = greet.getBoundingClientRect();
+  const p = box.getBoundingClientRect();
+  svg.setAttribute(
+    "viewBox",
+    `0 0 ${Math.round(s.width)} ${Math.round(s.height)}`,
+  );
+  const r = Math.min(64, s.width * 0.05);
+  const x0 = Math.max(r + 4, g.left - s.left + g.width * 0.26);
+  const y0 = g.bottom - s.top + 10;
+  const y1 = Math.min(s.height - r - 8, y0 + s.height * 0.3);
+  const x1 = s.width - Math.max(40, s.width * 0.06);
+  const y2 = Math.max(r + 8, s.height * 0.16);
+  const x2 = Math.min(x1 - 2 * r - 4, p.left - s.left + p.width * 0.42);
+  const y3 = Math.max(y2 + r, p.top - s.top - 14);
+  path.setAttribute(
+    "d",
+    [
+      `M ${x0} ${y0}`,
+      `L ${x0} ${y1 - r}`,
+      `Q ${x0} ${y1} ${x0 + r} ${y1}`,
+      `L ${x1 - r} ${y1}`,
+      `Q ${x1} ${y1} ${x1} ${y1 - r}`,
+      `L ${x1} ${y2 + r}`,
+      `Q ${x1} ${y2} ${x1 - r} ${y2}`,
+      `L ${x2 + r} ${y2}`,
+      `Q ${x2} ${y2} ${x2} ${y2 + r}`,
+      `L ${x2} ${y3}`,
+    ].join(" "),
+  );
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = String(len);
+  gsap.set(path, { "--ribbon-op": 1 });
+  tl.fromTo(
+    path,
+    { strokeDashoffset: len },
+    { strokeDashoffset: 0, duration: end - start, ease: "none" },
+    start,
+  );
+}
+
+// The purpose phrase: a selected Figma box types the sentence, then the cursor
+// clicks its emphasis word — a quick pink starburst collapsing into a small
+// shape that shifts red → purple as the word itself turns purple. The caret
+// stays at the end. Emphasis position is read from the DOM, so it follows the
+// language (`forma` / `shape`).
+function animatePurpose(
+  root: HTMLElement,
+  tl: gsap.core.Timeline,
+  start: number,
+  end: number,
+) {
+  const stageEl = root.querySelector<HTMLElement>(".home-purpose__stage");
+  const box = root.querySelector<HTMLElement>(".home-purpose__title");
+  const emph = box?.querySelector<HTMLElement>("[data-emphasis]") ?? null;
+  const spark = root.querySelector<HTMLElement>("[data-purpose-spark]");
+  const blob = root.querySelector<HTMLElement>("[data-purpose-blob]");
+  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--purpose");
+  if (!stageEl || !box || !cursor || !spark || !blob) return;
+  const span = end - start;
+
+  const base = stageEl.getBoundingClientRect();
+  const rel = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left - base.left + r.width / 2,
+      y: r.top - base.top + r.height / 2,
+    };
+  };
+  const hit = rel(emph ?? box);
+  const boxC = rel(box);
+
+  tl.fromTo(
+    box,
+    { autoAlpha: 0, y: 16, "--sel": 0, "--type": 0, "--emph": 0 },
+    { autoAlpha: 1, y: 0, "--sel": 1, duration: span * 0.08, ease: "power2.out" },
+    start,
+  );
+  tl.to(box, { "--type": 1, duration: span * 0.22, ease: "none" }, start + span * 0.09);
+
+  tl.fromTo(
+    cursor,
+    {
+      autoAlpha: 0,
+      x: boxC.x - base.width * 0.4,
+      y: boxC.y + base.height + 30,
+    },
+    { autoAlpha: 1, duration: span * 0.05 },
+    start + span * 0.34,
+  );
+  tl.to(
+    cursor,
+    { x: hit.x + 6, y: hit.y + 8, duration: span * 0.16, ease: "power2.inOut" },
+    start + span * 0.4,
+  );
+
+  tl.set([spark, blob], { x: hit.x, y: hit.y }, start);
+  tl.fromTo(
+    spark,
+    { autoAlpha: 0, scale: 0.2, rotate: -25 },
+    { autoAlpha: 1, scale: 1, rotate: 0, duration: span * 0.05, ease: "back.out(2)" },
+    start + span * 0.6,
+  );
+  tl.to(
+    spark,
+    { autoAlpha: 0, scale: 1.6, duration: span * 0.07, ease: "power1.in" },
+    start + span * 0.66,
+  );
+  tl.fromTo(
+    blob,
+    { autoAlpha: 0, scale: 0 },
+    { autoAlpha: 1, scale: 1, duration: span * 0.05, ease: "back.out(1.6)" },
+    start + span * 0.64,
+  );
+  tl.fromTo(
+    blob,
+    { "--blob-mix": 0 },
+    { "--blob-mix": 1, duration: span * 0.1, ease: "none" },
+    start + span * 0.7,
+  );
+  tl.to(
+    blob,
+    { autoAlpha: 0, scale: 0.5, duration: span * 0.08, ease: "power1.in" },
+    start + span * 0.84,
+  );
+  tl.fromTo(
+    box,
+    { "--emph": 0 },
+    { "--emph": 1, duration: span * 0.12, ease: "none" },
+    start + span * 0.7,
+  );
 }
 
 function animateBoard(
@@ -519,8 +765,14 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   let cancelled = false;
   let resizeTimer = 0;
   let hintTimer = 0;
+  // The idle nudge is the one autonomous timer allowed: if the greeting settles
+  // and the user does not scroll, the cursor bubble swaps to the idle question
+  // and then the scroll invite. Cleared on the next scroll and on dispose.
+  let idleA = 0;
+  let idleB = 0;
   let finishIntro = () => {};
   let refreshHint = () => {};
+  let refreshIdle = () => {};
   const save = () => {
     if (trigger)
       write(SAVED, JSON.stringify(snapshotAt(trigger.progress, bounds)));
@@ -530,6 +782,8 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
     signal.abort();
     clearTimeout(resizeTimer);
     clearTimeout(hintTimer);
+    clearTimeout(idleA);
+    clearTimeout(idleB);
     intro?.kill();
     context?.revert();
     root
@@ -549,6 +803,11 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
     new Promise((resolve) => setTimeout(resolve, 1800)),
   ]);
   if (cancelled || !root.isConnected) return;
+  // Narrative copy for the JS-driven bits (idle cursor bubble). Text still lives
+  // in the copy contract, keyed by the locale the component rendered with.
+  const copy: HomeCopy = homeCopy[(root.dataset.locale as Locale) in homeCopy
+    ? (root.dataset.locale as Locale)
+    : "es"];
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   // The pinned/scrubbed journey runs at every size that isn't asking for
   // reduced motion; phones get the same chapters and beats, only tighter
@@ -583,9 +842,6 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const main = gsap.timeline({ defaults: { ease: "none" } });
       main.to({}, { duration: 1 });
       const greeting = q('[data-scene-panel="greeting"]');
-      const greetingText = q(".greeting-line");
-      const greetingChars = q(".greeting-char") as HTMLElement[];
-      const typingCursors = q("[data-typing-cursor]") as HTMLElement[];
       const purpose = q('[data-scene-panel="purpose"]');
       const premise = q('[data-scene-panel="premise"]');
       const board = q('[data-scene-panel="board"]');
@@ -594,51 +850,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const ai = q('[data-scene-panel="ai"]');
       const manifesto = q('[data-scene-panel="manifesto"]');
       const identity = q('[data-scene-panel="identity"]');
-      const characterWidths = greetingChars.map(
-        (char) => char.getBoundingClientRect().width,
-      );
-      gsap.set(greetingChars, { width: 0, opacity: 0 });
-      gsap.set(typingCursors, { display: "none" });
-      // One set of phase marks so the greeting holds — fully visible, static —
-      // until the whole name is typed. Nothing scrolls or scatters mid-type.
-      const TYPE_AT = 0.025;
-      const TYPE_STEP = 0.006;
-      const typeEnd =
-        TYPE_AT + Math.max(0, greetingChars.length - 1) * TYPE_STEP;
-      const leaveAt = typeEnd + 0.06; // fully-typed dwell, then it may leave
-
-      // The typing cursor stays hidden through the intro; it only shows once the
-      // logo has finished moving left, i.e. from the start of the main slice.
-      main.set(typingCursors[0], { display: "inline-block" }, 0);
-      main.to(
-        greetingChars,
-        {
-          width: (index: number) => characterWidths[index],
-          opacity: 1,
-          duration: 0.001,
-          stagger: TYPE_STEP,
-          ease: "steps(1)",
-        },
-        TYPE_AT,
-      );
-      const lineEnds = greetingText
-        .map((line) => line.querySelectorAll(".greeting-char").length)
-        .reduce<number[]>(
-          (ends, length) => [...ends, length + (ends.at(-1) ?? 0)],
-          [],
-        );
-      lineEnds.slice(0, -1).forEach((end, index) => {
-        const at = TYPE_AT + end * TYPE_STEP;
-        main.set(typingCursors[index], { display: "none" }, at);
-        main.set(typingCursors[index + 1], { display: "inline-block" }, at);
-      });
       if (cinematic) {
         // Each chapter after the greeting: fade/slide in over ENTER, sit still
         // for `hold` (its own choreography fills that), then the caller slides
         // it out and advances the cursor. One running position drives them all,
         // so adding a chapter is appending a call — no scattered magic numbers.
         const ENTER = 0.09;
-        let at = leaveAt;
+        // `at` is the running insert position; the intro narrative below sets it
+        // explicitly before the first enter().
+        let at = 0;
         const enter = (
           panel: gsap.TweenTarget,
           hold: number,
@@ -669,14 +889,35 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           main.to(panel, v, pos);
         };
 
-        // 0 → 1 · the name has typed and held; cursor goes and the whole
-        // greeting + logo composition lifts away as one, uncovering purpose.
-        main.set(typingCursors, { display: "none" }, leaveAt);
-        leave(greeting, { autoAlpha: 0, y: -64, duration: 0.08 }, leaveAt);
+        // 0 · Intro narrative. Three Figma text boxes are typed and grouped
+        // (animateGreeting), a celeste→rosa ribbon carries the composition off
+        // and delivers the purpose phrase (animateTransition), which is typed
+        // and clicked on its emphasis word (animatePurpose). All scrubbed here.
+        const GREET = 1;
+        const TRANS = 0.42;
+        const PURPOSE_HOLD = 0.66;
+        const gStart = 0.03;
+        const gEnd = gStart + GREET;
+        const puStart = gEnd + TRANS;
 
-        const P = enter(purpose, 0.12, { y: 40 });
-        leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, P.outAt);
-        at = P.outAt + 0.05;
+        animateGreeting(root, main, gStart, GREET, copy);
+        leave(greeting, { autoAlpha: 0, y: -72, duration: TRANS * 0.72 }, gEnd);
+        animateTransition(root, main, gEnd, gEnd + TRANS);
+
+        main.fromTo(
+          purpose,
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.06 },
+          gEnd + TRANS * 0.55,
+        );
+        animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
+        leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, puStart + PURPOSE_HOLD);
+        main.to(
+          root.querySelector("[data-ribbon-path]"),
+          { "--ribbon-op": 0, duration: 0.1 },
+          puStart + PURPOSE_HOLD,
+        );
+        at = puStart + PURPOSE_HOLD + 0.05;
 
         // 1 → 2 · purpose to premise.
         const PR = enter(premise, 0.15, { y: 40 });
@@ -750,7 +991,9 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
 
         bounds = [
           0,
-          P.inAt + 0.02,
+          // greeting → purpose hand-off happens mid-ribbon, as the composition
+          // leaves and the phrase takes the stage.
+          gEnd + TRANS * 0.35,
           PR.inAt,
           BD.inAt,
           FG.inAt,
@@ -888,12 +1131,44 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         hintEl.dataset.hint = "show";
       };
       refreshHint = showHint;
+
+      // Idle nudge: the greeting cursor's bubble carries `cursorShort` normally;
+      // if the user stops in the settled greeting it becomes the idle question,
+      // then the scroll invite. Wall-clock text swap on an aria-hidden bubble —
+      // not part of the scrubbed state — cleared on the next scroll.
+      const idleMsgEl = root.querySelector<HTMLElement>(
+        ".narrative-cursor--greeting [data-cursor-msg]",
+      );
+      const clearIdle = () => {
+        clearTimeout(idleA);
+        clearTimeout(idleB);
+        if (idleMsgEl) idleMsgEl.textContent = copy.intro.cursorShort;
+      };
+      const armIdle = () => {
+        clearTimeout(idleA);
+        clearTimeout(idleB);
+        if (!idleMsgEl || !trigger || root.dataset.intro !== "done") return;
+        const st = snapshotAt(trigger.progress, bounds);
+        if (st.scene !== "greeting" || st.progress < 0.5) return;
+        idleA = window.setTimeout(() => {
+          idleMsgEl.textContent = copy.intro.idleQuestion;
+          idleB = window.setTimeout(() => {
+            idleMsgEl.textContent = copy.intro.scrollInvite;
+          }, 2600);
+        }, 3800);
+      };
+      refreshIdle = armIdle;
+
       const onHintScroll = () => {
         if (!hintArmed || !hintEl || root.dataset.intro !== "done") return;
         hasScrolled = true;
         hintEl.dataset.hint = "away";
+        clearIdle();
         clearTimeout(hintTimer);
-        hintTimer = window.setTimeout(showHint, 3000);
+        hintTimer = window.setTimeout(() => {
+          showHint();
+          armIdle();
+        }, 3000);
       };
       window.addEventListener("scroll", onHintScroll, {
         passive: true,
@@ -925,6 +1200,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           root.dataset.intro = "done";
           write(SEEN, "1");
           showHint();
+          armIdle();
         };
       } else if (!saved) {
         // Reloads and revisits open at the greeting with the UI already in.
@@ -934,6 +1210,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           ScrollTrigger.update();
         }
         showHint();
+        armIdle();
       }
     }, root);
     document.documentElement.classList.remove("home-boot");
@@ -945,6 +1222,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       });
       ScrollTrigger.update();
       refreshHint();
+      refreshIdle();
     }
     root.dataset.ready = "true";
   } catch (error) {

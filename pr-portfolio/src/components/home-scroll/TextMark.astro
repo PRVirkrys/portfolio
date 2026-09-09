@@ -1,0 +1,44 @@
+---
+import type { TextPart } from './home-copy';
+
+interface Props {
+  parts: TextPart[];
+  tone?: 'white' | 'purple';
+  selected?: boolean;
+  tag?: 'span' | 'h2';
+  id?: string;
+  class?: string;
+  motion?: string;
+}
+
+const {
+  parts,
+  tone = 'white',
+  selected = false,
+  tag = 'span',
+  id,
+  class: className,
+  motion,
+} = Astro.props;
+const Tag = tag as 'span' | 'h2';
+---
+<Tag
+  class:list={['text-mark', className]}
+  id={id}
+  data-text-mark
+  data-tone={tone}
+  data-motion={motion}
+  style={selected ? '--sel: 1' : undefined}
+>
+  <span class="text-mark__box">
+    <span class="text-mark__text" data-text-mark-text
+      >{parts.map((part) => (
+        <span class="text-mark__part" data-emphasis={part.emphasis ? '' : undefined}>{part.text}</span>
+      ))}</span
+    ><span class="text-mark__caret" data-text-mark-caret aria-hidden="true">|</span>
+  </span>
+  <span class="text-mark__handle text-mark__handle--is" aria-hidden="true"></span>
+  <span class="text-mark__handle text-mark__handle--ds" aria-hidden="true"></span>
+  <span class="text-mark__handle text-mark__handle--ib" aria-hidden="true"></span>
+  <span class="text-mark__handle text-mark__handle--db" aria-hidden="true"></span>
+</Tag>
