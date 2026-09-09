@@ -149,9 +149,9 @@ function animateGreeting(
     );
     const chars = glyphs[i];
     const w = widths[i];
-    tl.fromTo(
+    gsap.set(chars, { width: 0 });
+    tl.to(
       chars,
-      { width: 0 },
       {
         width: (k: number) => w[k],
         duration: 0.001,
@@ -351,9 +351,12 @@ function animatePurpose(
     { autoAlpha: 1, y: 0, "--sel": 1, duration: span * 0.08, ease: "power2.out" },
     start,
   );
-  tl.fromTo(
+  // A plain set + to (not fromTo): GSAP's lazy render can skip most targets of
+  // a long staggered fromTo, leaving them at full width — the phrase then just
+  // appears. The set writes width:0 to every glyph up front.
+  gsap.set(chars, { width: 0 });
+  tl.to(
     chars,
-    { width: 0 },
     {
       width: (k: number) => charW[k],
       duration: 0.001,
