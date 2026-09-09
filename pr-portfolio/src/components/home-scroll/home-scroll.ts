@@ -426,6 +426,9 @@ function animatePurpose(
   const drawDur = span * 0.32;
   const side = drawDur / 4;
 
+  // The cursor lets go of the text layer to draw on the word: the box's
+  // selection chrome (border, handles, caret) drops as it heads over.
+  tl.to(box, { "--sel": 0, duration: span * 0.04 }, start + span * 0.34);
   tl.to(
     cursor,
     { x: TL.x, y: TL.y, duration: span * 0.1, ease: "power2.inOut" },
