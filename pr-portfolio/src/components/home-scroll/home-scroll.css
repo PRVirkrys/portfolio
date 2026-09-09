@@ -120,15 +120,19 @@
 }
 /* The purpose phrase is now a TextMark box (h2). Keep the heading reset from
    the shared rule; the box owns its own size/leading. */
-.home-purpose__title {
+/* `.text-mark` is the h2 here; use the compound so `display: block` beats the
+   base `.text-mark { display: inline-block }` regardless of source order —
+   otherwise `width: 100%` on the box resolves against a shrink-wrapped h2. */
+.text-mark.home-purpose__title {
   display: block;
   max-width: 100%;
 }
-/* Fixed-width rectangle over the reserved stage; the phrase wraps inside it and
-   the box grows from one line to two as it is typed. */
+/* Grows with the text like the greeting boxes: hugs the typed glyphs until it
+   hits the reserved stage width, then wraps and grows downward. */
 .home-purpose__title .text-mark__box {
   display: block;
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
 }
 .home-purpose__title .text-mark__text {
   display: block;

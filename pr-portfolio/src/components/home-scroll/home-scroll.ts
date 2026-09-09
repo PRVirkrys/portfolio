@@ -339,18 +339,40 @@ function animatePurpose(
     };
   };
   const hit = rel(emph ?? box);
-  const boxC = rel(box);
+
+  // Box corners relative to the stage (the cursor's coordinate frame), at the
+  // phrase's full size.
+  const br = box.getBoundingClientRect();
+  const boxL = br.left - base.left;
+  const boxR = br.right - base.left;
+  const boxT = br.top - base.top;
+  const boxB = br.bottom - base.top;
+  const lineH = (parseFloat(getComputedStyle(box).fontSize) || 40) * 1.15;
+  const UNDER = 8;
+  // Same idea as the greeting boxes: the cursor drops to the box's start, then
+  // rides ~8px under its bottom edge as the glyphs fill in.
+  const startPt = { x: boxL - 6, y: boxT + lineH + UNDER };
+  const endPt = { x: boxR - 8, y: boxB + UNDER };
 
   // Glyphs typed one by one (box grows one line → two); caret rides the last.
   const chars = [...box.querySelectorAll<HTMLElement>(".text-mark__char")];
   const charW = chars.map((c) => c.getBoundingClientRect().width);
 
+  // 1 · the cursor appears and positions at the box's start …
+  tl.fromTo(
+    cursor,
+    { autoAlpha: 0, x: startPt.x + 44, y: startPt.y + 42 },
+    { autoAlpha: 1, x: startPt.x, y: startPt.y, duration: span * 0.05, ease: "power2.out" },
+    start,
+  );
+  // 2 · … then the selected box shows up …
   tl.fromTo(
     box,
     { autoAlpha: 0, y: 16, "--sel": 0, "--emph": 0 },
-    { autoAlpha: 1, y: 0, "--sel": 1, duration: span * 0.08, ease: "power2.out" },
-    start,
+    { autoAlpha: 1, y: 0, "--sel": 1, duration: span * 0.06, ease: "power2.out" },
+    start + span * 0.05,
   );
+  // 3 · … the phrase types in and the cursor rides the box's bottom edge.
   // A plain set + to (not fromTo): GSAP's lazy render can skip most targets of
   // a long staggered fromTo, leaving them at full width — the phrase then just
   // appears. The set writes width:0 to every glyph up front.
@@ -363,23 +385,18 @@ function animatePurpose(
       stagger: (span * 0.24) / Math.max(1, chars.length),
       ease: "steps(1)",
     },
-    start + span * 0.09,
-  );
-
-  tl.fromTo(
-    cursor,
-    {
-      autoAlpha: 0,
-      x: boxC.x - base.width * 0.4,
-      y: boxC.y + base.height + 30,
-    },
-    { autoAlpha: 1, duration: span * 0.05 },
-    start + span * 0.34,
+    start + span * 0.12,
   );
   tl.to(
     cursor,
-    { x: hit.x + 6, y: hit.y + 8, duration: span * 0.16, ease: "power2.inOut" },
-    start + span * 0.4,
+    { x: endPt.x, y: endPt.y, duration: span * 0.24, ease: "none" },
+    start + span * 0.12,
+  );
+  // 4 · then it travels to the emphasis word for the click.
+  tl.to(
+    cursor,
+    { x: hit.x + 6, y: hit.y + 8, duration: span * 0.12, ease: "power2.inOut" },
+    start + span * 0.42,
   );
 
   tl.set([spark, blob], { x: hit.x, y: hit.y }, start);
