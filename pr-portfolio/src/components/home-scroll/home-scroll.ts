@@ -344,30 +344,22 @@ function animateManifesto(
   );
 }
 
-// The closing split-flap: one panel turns through the seven roles (each a
-// scroll stop with a hinge fold), then "I AM A" becomes "I AM", the panel
-// reads the name, and the logo, line and CTAs settle. Fully reversible — every
-// word is its own layer, none of it depends on swapping text mid-scrub.
-// The closing split-flap. A single progress proxy drives a pure render of the
-// per-character plates (see split-flap.ts) — no autonomous tweens, so stopping
-// mid-flip leaves the plates at that exact angle and scrolling back replays it
-// in reverse. The logo/tag stay through both 8A2 and 8B2; only the body and
-// CTAs are revealed at the end, as ordinary timeline tweens.
-function animateIdentity(
-  root: HTMLElement,
-  tl: gsap.core.Timeline,
-  start: number,
-  end: number,
-) {
+// The closing split-flap — VARIANT: real-time playback instead of scrub.
+// A progress proxy drives the same pure per-character render (see split-flap.ts),
+// but on its own paused timeline. `update()` plays it while the identity scene is
+// on screen and pauses it — frozen at that exact frame — when the viewer scrolls
+// away, so it always resumes from where it stopped. The logo/tag arrive with the
+// panel's own fade; the body and CTAs tail this same timeline.
+function animateIdentity(root: HTMLElement): gsap.core.Timeline | null {
   const q = gsap.utils.selector(root);
-  const span = end - start;
-  const flapSpan = span * 0.74;
 
   const rowEl = root.querySelector<HTMLElement>("[data-flap-row]");
   const headA = root.querySelector<HTMLElement>('[data-motion="identity-head-a"]');
   const headB = root.querySelector<HTMLElement>('[data-motion="identity-head-b"]');
   const rolesList = root.querySelector<HTMLElement>('[data-motion="identity-roles"]');
   const liveEl = rowEl?.querySelector<HTMLElement>("[data-flap-live]") ?? null;
+
+  const flapTl = gsap.timeline({ paused: true });
 
   if (rowEl) {
     const plates = [...rowEl.querySelectorAll<HTMLElement>("[data-flap]")];
@@ -484,30 +476,34 @@ function animateIdentity(
     };
 
     renderRow(0);
+    // Real time, not scroll: ~SECONDS_PER_UNIT wall-clock seconds per reading
+    // unit. Handed back paused; the scene gate in `update()` runs and freezes it.
+    const SECONDS_PER_UNIT = 0.7;
     const proxy = { p: 0 };
-    tl.to(
-      proxy,
-      { p: 1, duration: flapSpan, ease: "none", onUpdate: () => renderRow(proxy.p) },
-      start,
-    );
+    flapTl.to(proxy, {
+      p: 1,
+      duration: unit * SECONDS_PER_UNIT,
+      ease: "none",
+      onUpdate: () => renderRow(proxy.p),
+    });
   }
 
-  // The logo and tag are part of both 8A2 and 8B2, so they arrive with the
-  // panel's own fade (enter()) — no separate reveal. Only the body and CTAs
-  // (8B2 only) come in after the flap settles.
-  const reveal = start + flapSpan + span * 0.04;
-  tl.fromTo(
+  // The body copy and CTAs settle in on the same timeline, right after the flap
+  // lands its close — so the whole identity close is one self-contained beat.
+  flapTl.fromTo(
     q('[data-motion="identity-text"]'),
     { autoAlpha: 0, y: 16 },
-    { autoAlpha: 1, y: 0, duration: span * 0.12 },
-    reveal,
+    { autoAlpha: 1, y: 0, duration: 0.5 },
+    ">-0.15",
   );
-  tl.fromTo(
+  flapTl.fromTo(
     q('[data-motion="identity-ctas"]'),
     { autoAlpha: 0, y: 14 },
-    { autoAlpha: 1, y: 0, duration: span * 0.14 },
-    reveal + span * 0.08,
+    { autoAlpha: 1, y: 0, duration: 0.6 },
+    "<0.12",
   );
+
+  return flapTl;
 }
 
 async function initialize(root: HTMLElement, restore?: Snapshot) {
@@ -582,6 +578,9 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       if (reduce.matches) return;
       const main = gsap.timeline({ defaults: { ease: "none" } });
       main.to({}, { duration: 1 });
+      // VARIANT: the identity split-flap is not on this scrubbed timeline; it
+      // runs on its own clock, gated by the scene state in `update()`.
+      let flapTl: gsap.core.Timeline | null = null;
       const greeting = q('[data-scene-panel="greeting"]');
       const greetingText = q(".greeting-line");
       const greetingChars = q(".greeting-char") as HTMLElement[];
@@ -745,7 +744,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // The split-flap needs room for nine readable states; give it the
         // widest hold of the journey.
         const ID = enter(identity, 0.82, { y: 36 });
-        animateIdentity(root, main, ID.restAt, ID.outAt);
+        flapTl = animateIdentity(root);
         at = ID.outAt;
 
         bounds = [
@@ -847,6 +846,13 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         root.dataset.scene = state.scene;
         root.dataset.sceneProgress = state.progress.toFixed(4);
         root.dataset.progress = self.progress.toFixed(4);
+        // VARIANT: run the split-flap on real time while its scene is on screen;
+        // freeze it in place the instant the viewer leaves, resume on return.
+        if (flapTl) {
+          const onScreen = state.scene === "identity";
+          if (onScreen && flapTl.paused()) flapTl.play();
+          else if (!onScreen && !flapTl.paused()) flapTl.pause();
+        }
         if (cinematic)
           panels.forEach((panel) => {
             const inactive = panel.dataset.scenePanel !== state.scene;
