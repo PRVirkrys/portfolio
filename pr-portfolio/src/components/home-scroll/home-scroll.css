@@ -123,8 +123,14 @@
   animation: greeting-cursor-blink 0.72s steps(1, end) infinite;
 }
 @keyframes greeting-cursor-blink {
-  0%, 48% { opacity: 1; }
-  49%, 100% { opacity: 0; }
+  0%,
+  48% {
+    opacity: 1;
+  }
+  49%,
+  100% {
+    opacity: 0;
+  }
 }
 .greeting-hello {
   color: var(--color-action-ghost-text);
@@ -353,9 +359,12 @@ html:not(.dark) .hero-logo {
 .figma-window__canvas {
   position: relative;
   padding: 24px;
-  background:
-    radial-gradient(circle, var(--hero-dot-color) 0.5px, transparent 1px) 0 0 /
-    18px 18px;
+  background: radial-gradient(
+      circle,
+      var(--hero-dot-color) 0.5px,
+      transparent 1px
+    )
+    0 0 / 18px 18px;
 }
 .figma-wire {
   display: flex;
@@ -480,9 +489,15 @@ html:not(.dark) .hero-logo {
   border-radius: 50%;
   background: var(--color-border-strong);
 }
-.code-window__dots i:first-child { background: #f41e50; }
-.code-window__dots i:nth-child(2) { background: #ffcd2b; }
-.code-window__dots i:last-child { background: var(--color-brand-green-500); }
+.code-window__dots i:first-child {
+  background: #f41e50;
+}
+.code-window__dots i:nth-child(2) {
+  background: #ffcd2b;
+}
+.code-window__dots i:last-child {
+  background: var(--color-brand-green-500);
+}
 .code-window__file {
   font-weight: 500;
   color: var(--color-text);
@@ -746,7 +761,11 @@ html:not(.dark) .hero-logo {
   padding: 5px 9px;
   border-radius: var(--radius-sm);
   border: 1px solid
-    color-mix(in srgb, var(--home-greeting-purple) calc(var(--ai-pick) * 100%), var(--color-border-strong));
+    color-mix(
+      in srgb,
+      var(--home-greeting-purple) calc(var(--ai-pick) * 100%),
+      var(--color-border-strong)
+    );
   color: var(--color-text-secondary);
   font-size: 12px;
 }
@@ -795,8 +814,12 @@ html:not(.dark) .hero-logo {
   border-radius: 3px;
   background: var(--color-border-strong);
 }
-.ai-artifact__preview i:nth-child(2) { width: 80%; }
-.ai-artifact__preview i:nth-child(3) { width: 60%; }
+.ai-artifact__preview i:nth-child(2) {
+  width: 80%;
+}
+.ai-artifact__preview i:nth-child(3) {
+  width: 60%;
+}
 .ai-artifact__preview b {
   margin-top: 4px;
   height: 20px;
@@ -915,13 +938,20 @@ html:not(.dark) .hero-logo {
   --flap-row-max: 620px;
   --flap-gap: 5px;
   --flap-n: 11;
-  --flap-w: clamp(24px, calc((var(--flap-row-max) - (var(--flap-n) - 1) * var(--flap-gap)) / var(--flap-n)), 44px);
+  --flap-w: clamp(
+    24px,
+    calc(
+      (var(--flap-row-max) - (var(--flap-n) - 1) * var(--flap-gap)) /
+        var(--flap-n)
+    ),
+    44px
+  );
   --flap-h: calc(var(--flap-w) * 1.41);
   position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--flap-gap);
   width: 100%;
   min-height: var(--flap-h);
@@ -1344,6 +1374,8 @@ html.home-boot
     --flap-row-max: min(92vw, 420px);
     --flap-w: clamp(18px, 6.4vw, 30px);
     min-height: calc(var(--flap-h) * 2 + 8px);
+    /* Left-aligned with the copy on desktop; centred with the rest on mobile. */
+    justify-content: center;
     align-content: center;
     row-gap: 8px;
   }
@@ -1446,18 +1478,27 @@ html.home-boot
   [data-home-scroll][data-mode="cinematic"] .home-board {
     gap: 18px;
   }
-  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai, .home-board) h2 {
+  [data-home-scroll][data-mode="cinematic"]
+    :is(.home-figma, .home-code, .home-ai, .home-board)
+    h2 {
     font-size: 24px;
     letter-spacing: -0.3px;
   }
-  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai) .home-copy {
+  [data-home-scroll][data-mode="cinematic"]
+    :is(.home-figma, .home-code, .home-ai)
+    .home-copy {
     gap: 8px;
   }
-  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai) .home-copy p {
+  [data-home-scroll][data-mode="cinematic"]
+    :is(.home-figma, .home-code, .home-ai)
+    .home-copy
+    p {
     font-size: 14px;
     line-height: 1.45;
   }
-  [data-home-scroll][data-mode="cinematic"] :is(.home-figma, .home-code, .home-ai, .home-board) .home-tags {
+  [data-home-scroll][data-mode="cinematic"]
+    :is(.home-figma, .home-code, .home-ai, .home-board)
+    .home-tags {
     display: none;
   }
   [data-home-scroll][data-mode="cinematic"] .home-board .home-copy p {
@@ -1500,7 +1541,14 @@ html.home-boot
     grid-template-columns: 92px minmax(0, 1fr);
     min-height: 200px;
   }
-  [data-home-scroll][data-mode="cinematic"] :is(.figma-window__panel, .figma-window__canvas, .code-window__explorer, .ai-window__context, .ai-window__chat) {
+  [data-home-scroll][data-mode="cinematic"]
+    :is(
+      .figma-window__panel,
+      .figma-window__canvas,
+      .code-window__explorer,
+      .ai-window__context,
+      .ai-window__chat
+    ) {
     padding: 12px;
   }
   [data-home-scroll][data-mode="cinematic"] .ai-window__chat {
