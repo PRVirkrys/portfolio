@@ -299,7 +299,7 @@
 .text-mark__caret {
   /* The `|` glyph itself is the caret (matches Figma's component) — no bar
      background, or the two would stack into a doubled cursor. */
-  font-weight: 400;
+  font-weight: 200;
   color: #fafafb;
   opacity: var(--sel, 0);
   animation: text-mark-caret-blink 1.06s steps(1, end) infinite;
@@ -358,20 +358,28 @@
 .greeting-mark .text-mark__text {
   white-space: nowrap;
 }
+/* The marquee/selection box: JS anchors it at the block's top-left and grows
+   its width/height during the drag-select, so it reads as being drawn by the
+   cursor. Border + faint fill match Figma node 16140:22495. */
 .greeting-group {
   position: absolute;
-  inset: -3px;
+  left: -4px;
+  top: -4px;
+  width: 0;
+  height: 0;
+  box-sizing: border-box;
   border: 1px solid var(--home-select-blue);
+  background: color-mix(in srgb, transparent, var(--home-select-blue) 7%);
   opacity: var(--group-sel, 0);
   pointer-events: none;
 }
 .greeting-group .text-mark__handle {
-  opacity: 1;
+  opacity: var(--group-handles, 0);
 }
 .greeting-group__tick {
   position: absolute;
-  right: 50%;
-  width: 22px;
+  right: -1px;
+  width: 20px;
   height: 2px;
   background: var(--home-select-blue);
   transform: translateX(100%);
