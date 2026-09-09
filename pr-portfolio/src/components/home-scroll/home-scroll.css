@@ -5,6 +5,11 @@
   --home-header-height: var(--component-header-height-desktop);
   --home-greeting-pink: #f41e50;
   --home-greeting-purple: #9d76fd;
+  /* One heading scale for the scene h2s: a working tier (board/figma/code/ai)
+     and a slightly larger statement tier (purpose/premise), both under the
+     64px hero. Fluid, so the per-breakpoint size overrides go away. */
+  --home-h2: clamp(1.9rem, 1.4vw + 1.4rem, 2.75rem);
+  --home-h2-statement: clamp(2.25rem, 2vw + 1.6rem, 3.375rem);
   overflow-x: clip;
 }
 .home-scroll {
@@ -41,11 +46,18 @@
   width: 100%;
   min-width: 0;
 }
-.home-copy h2 {
+/* Shared scene-heading style — coherent family, weight, leading and tracking
+   across purpose, premise, board, figma, code and ai. */
+.home-copy h2,
+.home-purpose__title,
+.home-premise h2 {
   margin: 0;
-  font: 400 60px/1.15 var(--font-heading);
-  letter-spacing: -0.5px;
-  max-width: 11ch;
+  font: 400 var(--home-h2) / 1.14 var(--font-heading);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.home-copy h2 {
+  max-width: 24ch;
 }
 .home-copy p {
   margin: 0;
@@ -67,18 +79,16 @@
   text-align: center;
 }
 .home-purpose__title {
-  margin: 0;
-  max-width: 15em;
-  font: 400 clamp(40px, 5.2vw, 68px) / 1.22 var(--font-heading);
-  letter-spacing: -0.5px;
+  max-width: 20ch;
+  font-size: var(--home-h2-statement);
   color: var(--color-text);
 }
 .home-premise .home-copy {
   max-width: 870px;
 }
 .home-premise h2 {
-  font-size: 80px;
-  max-width: 12ch;
+  font-size: var(--home-h2-statement);
+  max-width: 18ch;
 }
 .home-premise p {
   font-size: 25px;
@@ -1269,12 +1279,6 @@ html.home-boot
   .home-scene {
     padding-inline: 40px;
   }
-  .home-copy h2 {
-    font-size: 48px;
-  }
-  .home-premise h2 {
-    font-size: 64px;
-  }
   .home-board,
   .home-figma,
   .home-code,
@@ -1309,12 +1313,6 @@ html.home-boot
   }
   .home-copy {
     gap: 24px;
-  }
-  .home-copy h2 {
-    font-size: 40px;
-  }
-  .home-premise h2 {
-    font-size: 44px;
   }
   .home-copy p,
   .home-premise p {
@@ -1481,8 +1479,8 @@ html.home-boot
   [data-home-scroll][data-mode="cinematic"]
     :is(.home-figma, .home-code, .home-ai, .home-board)
     h2 {
-    font-size: 24px;
-    letter-spacing: -0.3px;
+    font-size: 1.5rem; /* fits the pinned phone viewport beside the shrunk window */
+    letter-spacing: -0.02em;
   }
   [data-home-scroll][data-mode="cinematic"]
     :is(.home-figma, .home-code, .home-ai)
