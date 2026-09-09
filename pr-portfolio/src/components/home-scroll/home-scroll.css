@@ -931,35 +931,25 @@ html:not(.dark) .hero-logo {
   right: 0;
 }
 
-/* Split-flap: one row of per-character plates. Sizes track the Figma 44×62
-   plate; --flap-n (the active message length) is set by the renderer and
-   drives the width down for the long roles so it stays one row on desktop. */
+/* Split-flap: a fixed 12 × 2 plate grid (24 plates). The plate size never
+   changes — long roles word-wrap across the two rows (done in the renderer),
+   never shrink. Left-aligned with the copy on desktop, centred on mobile
+   (the .identity-main flex alignment handles that). */
 .flap-row {
-  --flap-row-max: 620px;
-  --flap-gap: 5px;
-  --flap-n: 11;
-  --flap-w: clamp(
-    24px,
-    calc(
-      (var(--flap-row-max) - (var(--flap-n) - 1) * var(--flap-gap)) /
-        var(--flap-n)
-    ),
-    44px
-  );
-  --flap-h: calc(var(--flap-w) * 1.41);
+  --flap-cols: 12;
+  --flap-gap: 4px;
+  --flap-w: 39px;
+  --flap-h: calc(var(--flap-w) * 1.4);
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(var(--flap-cols), var(--flap-w));
   gap: var(--flap-gap);
-  width: 100%;
-  min-height: var(--flap-h);
+  width: max-content;
+  min-height: calc(var(--flap-h) * 2 + var(--flap-gap));
   perspective: 900px;
 }
 .flap {
   position: relative;
-  flex: 0 0 auto;
   width: var(--flap-w);
   height: var(--flap-h);
   border-radius: 6px;
@@ -967,11 +957,8 @@ html:not(.dark) .hero-logo {
   box-shadow: inset 0 0 0 1px var(--color-border-strong);
   overflow: hidden;
   transform-style: preserve-3d;
-  font: 600 calc(var(--flap-h) * 0.62) / 1 var(--font-heading);
+  font: 600 calc(var(--flap-h) * 0.64) / 1 var(--font-heading);
   color: #fafafb;
-}
-.flap.is-gap {
-  background: #0d0d16;
 }
 .flap__half,
 .flap__leaf {
@@ -1039,7 +1026,8 @@ html:not(.dark) .hero-logo {
   background: #00000088;
   z-index: 3;
 }
-/* The full role sequence as secondary text under the flap (8A2). */
+/* The role sequence under the flap (8A2). Each name is revealed by the renderer
+   (adds .is-in) as the flap settles on that role; it slides in a touch. */
 .identity-roles-list {
   display: flex;
   flex-wrap: wrap;
@@ -1051,10 +1039,26 @@ html:not(.dark) .hero-logo {
   letter-spacing: 0.04em;
   color: var(--home-greeting-purple);
 }
+.identity-roles-list li {
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 0.22s ease-out,
+    transform 0.22s ease-out;
+}
+.identity-roles-list li.is-in {
+  opacity: 1;
+  transform: none;
+}
 .identity-roles-list li + li::before {
   content: "·";
   margin-right: 6px;
   opacity: 0.6;
+}
+/* No pinned stage → no scrub to add .is-in; show the whole list. */
+.home-scroll:not([data-mode="cinematic"]) .identity-roles-list li {
+  opacity: 1;
+  transform: none;
 }
 .identity-text {
   max-width: 42ch;
@@ -1346,23 +1350,11 @@ html.home-boot
     justify-content: center;
     font-size: 12px;
   }
-  /* Two rows for the long roles: interior spaces become a word break; the row
-     keeps a stable two-line height so the CTAs below never jump. */
+  /* Same fixed 12 × 2 grid, smaller plates so 12 fit at 320px; .identity-main
+     centres it on mobile. */
   .flap-row {
-    --flap-row-max: min(92vw, 420px);
-    --flap-w: clamp(18px, 6.4vw, 30px);
-    min-height: calc(var(--flap-h) * 2 + 8px);
-    /* Left-aligned with the copy on desktop; centred with the rest on mobile. */
-    justify-content: center;
-    align-content: center;
-    row-gap: 8px;
-  }
-  .flap.is-gap {
-    flex-basis: 100%;
-    width: 0;
-    height: 0;
-    box-shadow: none;
-    background: none;
+    --flap-w: clamp(20px, 6.6vw, 30px);
+    --flap-gap: 3px;
   }
   .board-map {
     max-width: 560px;
@@ -1610,5 +1602,8 @@ html.home-boot
     padding-bottom: calc(
       var(--home-footer-height) + var(--home-bottom-nav) + 48px
     );
+  }
+  .identity-roles-list li {
+    transition: none;
   }
 }

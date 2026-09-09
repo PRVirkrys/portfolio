@@ -8,7 +8,7 @@ import {
   type Bounds,
   type Snapshot,
 } from "./home-progress";
-import { padMessage, splitFlapStateAt } from "./split-flap";
+import { splitFlapStateAt } from "./split-flap";
 
 gsap.registerPlugin(ScrollTrigger);
 const SEEN = "paula-home-intro-v1";
@@ -371,22 +371,26 @@ function animateIdentity(
 
   if (rowEl) {
     const plates = [...rowEl.querySelectorAll<HTMLElement>("[data-flap]")];
-    const messages: string[] = JSON.parse(rowEl.dataset.flapMessages || "[]");
+    // Each message is [row1, row2], every string `cols` chars — a fixed 12 × 2
+    // grid, so the plate size never changes.
+    const lines: string[][] = JSON.parse(rowEl.dataset.flapLines || "[]");
+    const cols = Number(rowEl.dataset.flapCols) || 12;
+    const slots = cols * 2;
     const prefixOpen = rowEl.dataset.flapPrefixOpen || "";
     const prefixClose = rowEl.dataset.flapPrefixClose || "";
-    const cols = plates.length;
-    const padded = messages.map((m) => padMessage(m, cols));
-    const bounds = padded.map((m) => ({
-      lo: m.search(/\S/),
-      hi: m.length - 1 - [...m].reverse().join("").search(/\S/),
-    }));
-    const M = messages.length;
-    // Reading holds dominate; each change is a quick left-to-right wave.
-    const HOLD = 1.5;
-    const CHANGE = 0.5;
+    const M = lines.length;
+    const roleItems = rolesList
+      ? [...rolesList.querySelectorAll<HTMLElement>("li")]
+      : [];
+
+    // Reading holds dominate; each change is a quick left-to-right wave. A wider
+    // hold gives every role its own readable "station".
+    const HOLD = 1.9;
+    const CHANGE = 0.45;
+    // A list item slides in a little way into its role's hold, not with the flip.
+    const REVEAL_OFFSET = 0.22;
     const unit = M * HOLD + (M - 1) * CHANGE;
 
-    // Phase table: hold(0), change(0→1), hold(1), … hold(M-1). Positions 0..1.
     type Phase = { kind: "hold" | "change"; msg: number; a: number; b: number };
     const phases: Phase[] = [];
     let acc = 0;
@@ -400,14 +404,19 @@ function animateIdentity(
     }
     const lastChange = phases.find((p) => p.kind === "change" && p.msg === M - 2)!;
 
+    const glyphAt = (msg: number, slot: number) => {
+      const row = slot < cols ? 0 : 1;
+      return lines[msg]?.[row]?.[slot % cols] ?? " ";
+    };
     const setGlyph = (plate: HTMLElement, sel: string, ch: string) => {
       const el = plate.querySelector(sel);
       if (!el) return;
       const g = ch === " " ? "" : ch;
       if (el.textContent !== g) el.textContent = g;
     };
+    const messageLabel = (msg: number) =>
+      `${(lines[msg][0] + " " + lines[msg][1]).replace(/\s+/g, " ").trim()}`;
 
-    let lastN = -1;
     let lastLive = "";
     const renderRow = (raw: number) => {
       const t = raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
@@ -416,52 +425,44 @@ function animateIdentity(
       // "I AM A" → "I AM" (and the roles list) cross-fade over the final change.
       let toClose = 0;
       if (t >= lastChange.b) toClose = 1;
-      else if (t > lastChange.a) toClose = (t - lastChange.a) / (lastChange.b - lastChange.a);
+      else if (t > lastChange.a)
+        toClose = (t - lastChange.a) / (lastChange.b - lastChange.a);
       if (headA) headA.style.opacity = String(1 - toClose);
       if (headB) headB.style.opacity = String(toClose);
       if (rolesList) rolesList.style.opacity = String(1 - toClose);
 
+      // Progressive sequence list: item i is in once we've settled into hold(i).
+      let reached = -1;
+      for (const p of phases) {
+        if (p.kind !== "hold") continue;
+        if (t >= p.a + (p.b - p.a) * REVEAL_OFFSET) reached = p.msg;
+      }
+      roleItems.forEach((li, i) => li.classList.toggle("is-in", i <= reached));
+
+      if (phase.kind === "hold" && liveEl) {
+        const label =
+          phase.msg === M - 1
+            ? `${prefixClose} ${messageLabel(M - 1)}`
+            : `${prefixOpen} ${messageLabel(phase.msg)}`;
+        if (label !== lastLive) {
+          liveEl.textContent = label;
+          lastLive = label;
+        }
+      }
+
       const nextMsg = phase.kind === "change" ? phase.msg + 1 : phase.msg;
-      const n = phase.kind === "change"
-        ? Math.max(messages[phase.msg].length, messages[nextMsg].length)
-        : messages[phase.msg].length;
-      if (n !== lastN) {
-        rowEl.style.setProperty("--flap-n", String(n));
-        lastN = n;
-      }
+      const tp =
+        phase.kind === "change" ? (t - phase.a) / (phase.b - phase.a) : 0;
 
-      if (phase.kind === "hold") {
-        const message = messages[phase.msg];
-        if (liveEl && message !== lastLive) {
-          const prefix = phase.msg === M - 1 ? prefixClose : prefixOpen;
-          liveEl.textContent = `${prefix} ${message}`;
-          lastLive = message;
-        }
-      }
-
-      const b0 = phase.kind === "change"
-        ? { lo: Math.min(bounds[phase.msg].lo, bounds[nextMsg].lo), hi: Math.max(bounds[phase.msg].hi, bounds[nextMsg].hi) }
-        : bounds[phase.msg];
-      const tp = phase.kind === "change" ? (t - phase.a) / (phase.b - phase.a) : 0;
-
-      for (let c = 0; c < cols; c += 1) {
+      for (let c = 0; c < slots; c += 1) {
         const plate = plates[c];
-        const a = padded[phase.msg][c];
-        const bch = padded[nextMsg][c];
-        const isChar = a !== " " || bch !== " ";
-        if (!isChar) {
-          const gap = c > b0.lo && c < b0.hi;
-          plate.hidden = !gap;
-          plate.classList.toggle("is-gap", gap);
-          if (gap) {
-            for (const sel of ["[data-flap-top]", "[data-flap-bottom]", "[data-flap-upper]", "[data-flap-lower]"])
-              setGlyph(plate, sel, " ");
-          }
-          continue;
-        }
-        plate.hidden = false;
-        plate.classList.remove("is-gap");
-        const st = splitFlapStateAt(a, bch, tp, c, cols);
+        const st = splitFlapStateAt(
+          glyphAt(phase.msg, c),
+          glyphAt(nextMsg, c),
+          tp,
+          c,
+          slots,
+        );
         const frac = st.angle / 180;
         setGlyph(plate, "[data-flap-top]", st.next);
         setGlyph(plate, "[data-flap-bottom]", frac < 0.5 ? st.current : st.next);
@@ -470,8 +471,14 @@ function animateIdentity(
         const s = plate.style;
         s.setProperty("--flap-upper-rot", `${-Math.min(st.angle, 90)}deg`);
         s.setProperty("--flap-lower-rot", `${180 - Math.max(st.angle, 90)}deg`);
-        s.setProperty("--flap-upper-op", st.angle < 85 ? "1" : st.angle > 95 ? "0" : String((95 - st.angle) / 10));
-        s.setProperty("--flap-lower-op", st.angle > 95 ? "1" : st.angle < 85 ? "0" : String((st.angle - 85) / 10));
+        s.setProperty(
+          "--flap-upper-op",
+          st.angle < 85 ? "1" : st.angle > 95 ? "0" : String((95 - st.angle) / 10),
+        );
+        s.setProperty(
+          "--flap-lower-op",
+          st.angle > 95 ? "1" : st.angle < 85 ? "0" : String((st.angle - 85) / 10),
+        );
         s.setProperty("--flap-shade", st.shadow.toFixed(3));
       }
     };

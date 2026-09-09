@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const mod = await import('../src/components/home-scroll/split-flap.ts');
-const { FLAP_CHARSET, buildCharacterSequence, columnWindow, splitFlapStateAt, padMessage } = mod;
+const { FLAP_CHARSET, buildCharacterSequence, columnWindow, splitFlapStateAt, layoutMessage } = mod;
 
 const norm = (ch) => {
   const u = (ch ?? ' ').toUpperCase();
@@ -62,26 +62,40 @@ test('spaces, hyphens and apostrophes are valid plates', () => {
 });
 
 test('every role transition resolves exactly onto its target copy', () => {
-  const messages = [
+  const COLS = 12;
+  const roles = [
     'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
-    'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER', 'PAULA RODAS',
+    'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER',
   ];
-  const width = Math.max(...messages.map((m) => m.length));
-  const padded = messages.map((m) => padMessage(m, width));
-  for (let i = 0; i < padded.length - 1; i += 1) {
-    const from = padded[i], to = padded[i + 1];
+  const pad = (s) => (s + ' '.repeat(COLS)).slice(0, COLS);
+  const lines = [...roles.map((r) => layoutMessage(r, COLS)), [pad('PAULA RODAS'), pad('DESIGNER')]];
+  for (let i = 0; i < lines.length - 1; i += 1) {
+    const from = lines[i][0] + lines[i][1];        // 24 slots
+    const to = lines[i + 1][0] + lines[i + 1][1];
     let landed = '';
-    for (let c = 0; c < width; c += 1) {
-      const s = splitFlapStateAt(from[c], to[c], 1, c, width);
-      assert.equal(s.current, norm(to[c]), `col ${c} of ${messages[i]}→${messages[i + 1]}`);
+    for (let c = 0; c < COLS * 2; c += 1) {
+      const s = splitFlapStateAt(from[c], to[c], 1, c, COLS * 2);
+      assert.equal(s.current, norm(to[c]), `slot ${c} of transition ${i}`);
       landed += s.current;
     }
-    assert.equal(landed.trim(), messages[i + 1]);
+    const [r1, r2] = [landed.slice(0, COLS).trim(), landed.slice(COLS).trim()];
+    assert.equal([r1, r2].filter(Boolean).join(' '), (i + 1 < roles.length ? roles[i + 1] : 'PAULA RODAS DESIGNER'));
   }
 });
 
-test('padMessage centres the text and never splits it', () => {
-  assert.equal(padMessage('PAULA RODAS', 20).trim(), 'PAULA RODAS');
-  assert.equal(padMessage('PAULA RODAS', 20).length, 20);
-  assert.equal(padMessage('BUILDER', 11), '  BUILDER  ');
+test('layoutMessage word-wraps into two padded rows, never splitting a word', () => {
+  assert.deepEqual(layoutMessage('UX DESIGNER', 12), ['UX DESIGNER ', '            ']);
+  assert.deepEqual(layoutMessage('FULL-STACK DEVELOPER', 12), ['FULL-STACK  ', 'DEVELOPER   ']);
+  assert.deepEqual(layoutMessage('PRODUCT DESIGNER', 12), ['PRODUCT     ', 'DESIGNER    ']);
+  assert.deepEqual(layoutMessage('BRAND DESIGNER', 12), ['BRAND       ', 'DESIGNER    ']);
+  assert.deepEqual(layoutMessage('BUILDER', 12), ['BUILDER     ', '            ']);
+  for (const role of ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER']) {
+    const [a, b] = layoutMessage(role, 12);
+    assert.equal(a.length, 12);
+    assert.equal(b.length, 12);
+    // Each row is a whole prefix of the role's words — no mid-word break.
+    const words = role.split(' ');
+    assert.ok(words.some((_, k) => a.trim() === words.slice(0, k + 1).join(' ')), `row 1 of "${role}" is a word boundary`);
+    if (b.trim()) assert.ok(role.trim().endsWith(b.trim()), `row 2 of "${role}" is a word tail`);
+  }
 });
