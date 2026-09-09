@@ -157,9 +157,12 @@
 /* ---- Transition ribbon: one continuous celeste → rosa stroke ------------- */
 .home-ribbon {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   z-index: 2;
   width: 100%;
+  /* JS raises this to a tall canvas (~1.9 viewports, Figma node 16140:20804) and
+     scrolls it up through the clipped stage; 100% is the no-JS fallback. */
   height: 100%;
   overflow: visible;
   pointer-events: none;
