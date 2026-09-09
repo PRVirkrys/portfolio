@@ -293,10 +293,11 @@ function animateTransition(
   const bx = box?.getBoundingClientRect();
   const boxLeft = bx ? bx.left - s.left : s.width * 0.08;
   const xLeft = Math.max(r + 8, boxLeft + 6);
-  // End a clear gap above the phrase's first line. The strip proxy scrolls the
-  // ribbon up by (RIBBON_SPAN-1)·h and the purpose stage from PURPOSE_DROP·h, so
-  // in this canvas the resting phrase top lands at (boxTop-s.top) + PURPOSE_DROP·h.
-  const gap = Math.max(30, s.height * 0.055);
+  // End a small gap above the phrase's first line — close enough that the line
+  // reads as arriving at the phrase. The strip proxy scrolls the ribbon up by
+  // (RIBBON_SPAN-1)·h and the purpose stage from PURPOSE_DROP·h, so in this
+  // canvas the resting phrase top lands at (boxTop-s.top) + PURPOSE_DROP·h.
+  const gap = Math.max(14, s.height * 0.024);
   const phraseTop = bx
     ? bx.top - s.top + PURPOSE_DROP * s.height
     : ch * 0.79;
@@ -380,18 +381,9 @@ function animatePurpose(
   // Glyphs typed one by one; caret rides the last.
   const chars = [...box.querySelectorAll<HTMLElement>(".text-mark__char")];
   const charW = chars.map((c) => c.getBoundingClientRect().width);
-
-  // Reserve the phrase's full wrapped height before the glyphs collapse. The
-  // purpose scene is bottom-anchored (align-items: flex-end), so without this
-  // the box would grow upward off its bottom edge as lines wrap in. Locked to
-  // the final height, it stays put and fills from the top down. Clamp to 6
-  // lines so a mid-reflow measurement can't reserve the whole viewport.
-  const textEl = box.querySelector<HTMLElement>("[data-text-mark-text]");
-  if (textEl) {
-    const lh = ((parseFloat(getComputedStyle(box).fontSize) || 29) * 1.15);
-    const full = textEl.getBoundingClientRect().height;
-    textEl.style.minHeight = `${Math.min(full, lh * 6)}px`;
-  }
+  // The phrase's wrapped height is reserved in CSS (.text-mark__text min-height)
+  // so the bottom-anchored box fills top-down as it types instead of growing
+  // upward — a build-time pixel measurement here raced the webfont swap.
 
   // 1 · the cursor appears and positions at the box's start …
   tl.fromTo(
