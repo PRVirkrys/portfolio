@@ -377,9 +377,21 @@ function animatePurpose(
   const startPt = { x: boxL - 6, y: boxT + lineH + UNDER };
   const endPt = { x: boxR - 8, y: boxB + UNDER };
 
-  // Glyphs typed one by one (box grows one line → two); caret rides the last.
+  // Glyphs typed one by one; caret rides the last.
   const chars = [...box.querySelectorAll<HTMLElement>(".text-mark__char")];
   const charW = chars.map((c) => c.getBoundingClientRect().width);
+
+  // Reserve the phrase's full wrapped height before the glyphs collapse. The
+  // purpose scene is bottom-anchored (align-items: flex-end), so without this
+  // the box would grow upward off its bottom edge as lines wrap in. Locked to
+  // the final height, it stays put and fills from the top down. Clamp to 6
+  // lines so a mid-reflow measurement can't reserve the whole viewport.
+  const textEl = box.querySelector<HTMLElement>("[data-text-mark-text]");
+  if (textEl) {
+    const lh = ((parseFloat(getComputedStyle(box).fontSize) || 29) * 1.15);
+    const full = textEl.getBoundingClientRect().height;
+    textEl.style.minHeight = `${Math.min(full, lh * 6)}px`;
+  }
 
   // 1 · the cursor appears and positions at the box's start …
   tl.fromTo(
