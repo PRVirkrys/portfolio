@@ -112,7 +112,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     identity: {
       tag: 'WHAT I DO',
       prefix: 'I AM A', closingPrefix: 'I AM',
-      roles: ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER'],
+      roles: ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DEV DESIGNER'],
       name: 'PAULA RODAS',
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
@@ -199,7 +199,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     identity: {
       tag: 'WHAT I DO',
       prefix: 'I AM A', closingPrefix: 'I AM',
-      roles: ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER'],
+      roles: ['UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER', 'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DEV DESIGNER'],
       name: 'PAULA RODAS',
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',

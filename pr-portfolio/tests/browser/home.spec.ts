@@ -45,7 +45,7 @@ async function flapText(page: Page): Promise<string> {
 
 const FLAP_MESSAGES = [
   'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
-  'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'PAULA RODAS DESIGNER',
+  'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'PAULA RODAS DEV DESIGNER',
 ] as const;
 
 // Scroll through the identity scene until the split-flap has settled on `word`.
@@ -87,7 +87,7 @@ test('static home is complete when JavaScript is unavailable', async ({ browser 
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
   // Identity close renders assembled: the name in plates + the roles list.
-  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS DESIGNER');
+  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS DEV DESIGNER');
   await expect(page.locator('[data-flap-row] [data-flap]').first()).toBeVisible();
   await expect(page.locator('.identity-roles-list')).toContainText('BUILDER');
   await expect(page.locator('.identity-roles-list')).toContainText('FULL-STACK DEVELOPER');
@@ -175,7 +175,7 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   await seekFlapWord(page, 'UX DESIGNER');                        // its opening hold
   await seekFlapWord(page, 'FULL-STACK DEVELOPER');               // wraps across the 2 rows
   await seekScene(page, 'identity', .95);
-  expect(await flapText(page)).toBe('PAULA RODAS DESIGNER');      // name / role close
+  expect(await flapText(page)).toBe('PAULA RODAS DEV DESIGNER');      // name / role close
   await expect(page.locator('[data-motion="identity-head-b"]')).toBeVisible();
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
@@ -236,7 +236,7 @@ test('phone runs the same pinned journey, its phone indicator, and never scrolls
   // The split-flap turns through the roles and still closes on the name.
   await seekFlapWord(page, 'UX DESIGNER');
   await seekScene(page, 'identity', .95);
-  expect(await flapText(page)).toBe('PAULA RODAS DESIGNER');
+  expect(await flapText(page)).toBe('PAULA RODAS DEV DESIGNER');
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
   // Reverse order on the way back up.
   for (const scene of ['manifesto', 'ai', 'code', 'figma', 'board', 'purpose', 'greeting'] as const) {
@@ -268,8 +268,8 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
   // The split-flap degrades to the name / role close plus a plain roles list.
-  expect(await flapText(page)).toBe('PAULA RODAS DESIGNER');
-  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS DESIGNER');
+  expect(await flapText(page)).toBe('PAULA RODAS DEV DESIGNER');
+  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS DEV DESIGNER');
   await expect(page.locator('.identity-roles-list')).toBeVisible();
   await expect(page.locator('.identity-roles-list li')).toHaveText([
     'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
