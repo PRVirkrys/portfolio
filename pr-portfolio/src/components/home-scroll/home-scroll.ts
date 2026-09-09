@@ -22,7 +22,11 @@ const INTRO = 0.14;
 // Scroll length of the pinned journey, in viewport heights. Tuned by feel; the
 // GSAP beat positions are proportions of the main timeline, not of this. Raised
 // with the longer intro narrative (text boxes → ribbon → purpose phrase).
-const SCREENS = 22;
+const SCREENS = 26;
+// The greeting → purpose transition is a tall strip (greeting · ribbon · phrase)
+// that scrolls up through the pinned viewport, so the ribbon keeps the height it
+// has in Figma node 16140:20804 (~1.9 viewports greeting-bottom to phrase-top).
+const RIBBON_SPAN = 1.9;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -253,9 +257,10 @@ function animateGreeting(
     );
 }
 
-// The transition ribbon: one continuous celeste → rosa stroke whose path is
-// built from the measured greeting block and purpose box (so it scales with the
-// viewport) and drawn with a single strokeDashoffset tween — reversible.
+// The transition ribbon: one continuous celeste → rosa stroke drawn on a canvas
+// ~RIBBON_SPAN viewports tall (so it keeps the height of Figma node 16140:20804);
+// the caller scrolls the greeting, this SVG and the purpose stage up together.
+// Descends in two steps — ↓ → ↓ ← ↓ — and draws with one strokeDashoffset tween.
 function animateTransition(
   root: HTMLElement,
   tl: gsap.core.Timeline,
@@ -266,26 +271,24 @@ function animateTransition(
   const path = root.querySelector<SVGPathElement>("[data-ribbon-path]");
   const stage = root.querySelector<HTMLElement>(".home-stage");
   const box = root.querySelector<HTMLElement>(".home-purpose__title");
-  if (!svg || !path || !stage || !box) return;
+  if (!svg || !path || !stage) return;
 
   const s = stage.getBoundingClientRect();
-  const p = box.getBoundingClientRect();
-  svg.setAttribute(
-    "viewBox",
-    `0 0 ${Math.round(s.width)} ${Math.round(s.height)}`,
-  );
-  // Descends in two steps — ↓ → ↓ ← ↓ — from just below the (shifted-up)
-  // greeting to just above the purpose box (Figma node 16140:20804 / Vector 3).
-  const r = Math.min(52, s.width * 0.045);
-  const pTop = p.top - s.top;
+  const ch = s.height * RIBBON_SPAN; // tall canvas
+  svg.setAttribute("viewBox", `0 0 ${Math.round(s.width)} ${Math.round(ch)}`);
+  svg.style.height = `${RIBBON_SPAN * 100}%`;
+
+  // Fractions of the tall canvas, matching the Figma section: greeting bottom
+  // ~0.34, ribbon 0.358→0.769, phrase top ~0.786.
+  const r = Math.min(56, s.width * 0.045);
   const x0 = s.width * 0.31;
-  const y0 = s.height * 0.32;
-  const yStep1 = y0 + s.height * 0.07;
+  const y0 = ch * 0.358;
+  const yStep1 = y0 + s.height * 0.09;
   const xRight = s.width - Math.max(44, s.width * 0.07);
-  // Turn back left well above the phrase, then a clear vertical drop onto it.
-  const yStep2 = Math.max(yStep1 + 2 * r + 12, pTop - Math.max(64, s.height * 0.11));
-  const xLeft = Math.max(r + 8, p.left - s.left + 8);
-  const yEnd = Math.max(yStep2 + r + 6, pTop - 14);
+  const yStep2 = ch * 0.63;
+  const boxLeft = box ? box.getBoundingClientRect().left - s.left : s.width * 0.08;
+  const xLeft = Math.max(r + 8, boxLeft + 6);
+  const yEnd = ch * 0.762;
   path.setAttribute(
     "d",
     [
@@ -1045,41 +1048,47 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // and delivers the purpose phrase (animateTransition), which is typed
         // and clicked on its emphasis word (animatePurpose). All scrubbed here.
         const GREET = 1.3;
-        const TRANS = 0.42;
+        // Longer now: the transition is a ~1.9-viewport scroll-through.
+        const TRANS = 1;
         const PURPOSE_HOLD = 0.66;
         const gStart = 0.03;
         const gEnd = gStart + GREET;
         const puStart = gEnd + TRANS;
 
         animateGreeting(root, main, gStart, GREET, copy);
-        // The greeting stays on screen — it just eases up toward the top while
-        // the ribbon draws down to deliver the purpose phrase below it
-        // (Figma node 16140:20804).
+
+        // The greeting, ribbon and purpose stage are one tall strip that scrolls
+        // up through the pinned viewport, so the ribbon keeps its Figma height
+        // (node 16140:20804). One proxy translates all three at the same rate.
         const greetLayout = q(".home-greeting__layout");
+        const ribbonSvg = q("[data-ribbon]");
+        const purposeStage = q(".home-purpose__stage");
+        const D = RIBBON_SPAN - 1;
+        const strip = { p: 0 };
         main.to(
-          greetLayout,
-          { y: () => -innerHeight * 0.28, duration: TRANS * 0.6, ease: "power2.inOut" },
+          strip,
+          {
+            p: 1,
+            duration: TRANS,
+            ease: "none",
+            onUpdate: () => {
+              const h = innerHeight;
+              const up = -D * strip.p * h;
+              gsap.set([greetLayout, ribbonSvg], { y: up });
+              gsap.set(purposeStage, { y: (0.82 - D * strip.p) * h });
+            },
+          },
           gEnd,
         );
         animateTransition(root, main, gEnd, gEnd + TRANS);
+        main.fromTo(purpose, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, gEnd);
 
-        main.fromTo(
-          purpose,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.06 },
-          gEnd + TRANS * 0.45,
-        );
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
         // Greeting, ribbon and phrase clear together into premise.
         leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, puStart + PURPOSE_HOLD);
         main.to(
-          greetLayout,
-          { autoAlpha: 0, y: () => -innerHeight * 0.5, duration: 0.1 },
-          puStart + PURPOSE_HOLD,
-        );
-        main.to(
-          root.querySelector("[data-ribbon-path]"),
-          { "--ribbon-op": 0, duration: 0.1 },
+          [greetLayout, ribbonSvg],
+          { autoAlpha: 0, duration: 0.1 },
           puStart + PURPOSE_HOLD,
         );
         at = puStart + PURPOSE_HOLD + 0.05;
