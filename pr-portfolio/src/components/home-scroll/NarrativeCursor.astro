@@ -10,5 +10,8 @@ const { label, class: className } = Astro.props;
 <div class:list={['narrative-cursor', className]} data-narrative-cursor aria-hidden="true">
   <span class="narrative-cursor__pointer" set:html={cursor} />
   <span class="narrative-cursor__label">{label}</span>
-  <span class="narrative-cursor__msg" data-cursor-msg></span>
+  <span class="narrative-cursor__msg" data-cursor-msg
+    ><span class="narrative-cursor__msg-inner" data-cursor-msg-text></span
+    ><span class="narrative-cursor__msg-caret" aria-hidden="true">|</span></span
+  >
 </div>
