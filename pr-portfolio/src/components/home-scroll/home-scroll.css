@@ -138,50 +138,20 @@
   display: block;
   white-space: normal;
 }
-/* Click impact on the emphasis word: a quick pink starburst that collapses
-   into a small shape shifting red → purple. Placed by JS at the word centre. */
-.purpose-spark {
+/* The emphasis word gets boxed in: the cursor draws a pink rounded rectangle
+   around it (stroke-dashoffset), then the corners round to 12px. JS sizes the
+   SVG and rect over the word (Figma node 16141:24701). */
+.purpose-mark {
   position: absolute;
   left: 0;
   top: 0;
-  width: 92px;
-  height: 92px;
-  margin: -46px 0 0 -46px;
-  opacity: 0;
-  transform: scale(0.2);
-  will-change: transform, opacity;
+  overflow: visible;
+  pointer-events: none;
+  opacity: var(--mark-op, 0);
 }
-.purpose-spark svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  fill: var(--home-greeting-pink);
-}
-.purpose-blob {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 34px;
-  height: 34px;
-  margin: -17px 0 0 -17px;
-  clip-path: polygon(
-    30% 0,
-    70% 0,
-    100% 30%,
-    100% 70%,
-    70% 100%,
-    30% 100%,
-    0 70%,
-    0 30%
-  );
-  background: color-mix(
-    in srgb,
-    var(--home-greeting-pink),
-    var(--home-greeting-purple) calc(var(--blob-mix, 0) * 100%)
-  );
-  opacity: 0;
-  transform: scale(0);
-  will-change: transform, opacity;
+.purpose-mark [data-purpose-mark-rect] {
+  stroke: var(--home-greeting-pink);
+  stroke-width: 2;
 }
 
 /* ---- Transition ribbon: one continuous celeste → rosa stroke ------------- */
@@ -218,8 +188,7 @@
 .home-scroll:not([data-mode="cinematic"]) .greeting-group,
 .home-scroll:not([data-mode="cinematic"]) .text-mark__caret,
 .home-scroll:not([data-mode="cinematic"]) .text-mark__handle,
-.home-scroll:not([data-mode="cinematic"]) .purpose-spark,
-.home-scroll:not([data-mode="cinematic"]) .purpose-blob {
+.home-scroll:not([data-mode="cinematic"]) .purpose-mark {
   display: none;
 }
 .home-scroll:not([data-mode="cinematic"]) .text-mark__box {

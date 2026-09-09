@@ -324,21 +324,22 @@ function animatePurpose(
   const stageEl = root.querySelector<HTMLElement>(".home-purpose__stage");
   const box = root.querySelector<HTMLElement>(".home-purpose__title");
   const emph = box?.querySelector<HTMLElement>("[data-emphasis]") ?? null;
-  const spark = root.querySelector<HTMLElement>("[data-purpose-spark]");
-  const blob = root.querySelector<HTMLElement>("[data-purpose-blob]");
+  const markSvg = root.querySelector<SVGSVGElement>("[data-purpose-mark]");
+  const markRect = root.querySelector<SVGRectElement>("[data-purpose-mark-rect]");
   const cursor = root.querySelector<HTMLElement>(".narrative-cursor--purpose");
-  if (!stageEl || !box || !cursor || !spark || !blob) return;
+  if (!stageEl || !box || !cursor || !emph || !markSvg || !markRect) return;
   const span = end - start;
 
   const base = stageEl.getBoundingClientRect();
-  const rel = (el: Element) => {
-    const r = el.getBoundingClientRect();
-    return {
-      x: r.left - base.left + r.width / 2,
-      y: r.top - base.top + r.height / 2,
-    };
+  // The emphasis word's box (full size — measured now, before the glyphs are
+  // collapsed for the typing reveal), relative to the stage.
+  const er = emph.getBoundingClientRect();
+  const forma = {
+    x: er.left - base.left,
+    y: er.top - base.top,
+    w: er.width,
+    h: er.height,
   };
-  const hit = rel(emph ?? box);
 
   // Box corners relative to the stage (the cursor's coordinate frame), at the
   // phrase's full size.
@@ -392,47 +393,75 @@ function animatePurpose(
     { x: endPt.x, y: endPt.y, duration: span * 0.24, ease: "none" },
     start + span * 0.12,
   );
-  // 4 · then it travels to the emphasis word for the click.
+  // 4 · the cursor boxes the emphasis word in: it draws a pink rectangle side
+  // by side around it (stroke-dashoffset), the corners round to 12px, then the
+  // word turns purple. Replaces the old starburst. (Figma node 16141:24701.)
+  // Tighter vertical padding so the box never bleeds into the lines above and
+  // below (the phrase is set close-leaded).
+  const PADX = 8;
+  const PADY = Math.max(2, Math.round(forma.h * 0.1));
+  const B = 4; // svg breathing room so the round stroke never clips
+  const mx = forma.x - PADX;
+  const my = forma.y - PADY;
+  const mw = forma.w + PADX * 2;
+  const mh = forma.h + PADY * 2;
+  markSvg.setAttribute("width", String(mw + B * 2));
+  markSvg.setAttribute("height", String(mh + B * 2));
+  markSvg.setAttribute("viewBox", `0 0 ${mw + B * 2} ${mh + B * 2}`);
+  markRect.setAttribute("x", String(B));
+  markRect.setAttribute("y", String(B));
+  markRect.setAttribute("width", String(mw));
+  markRect.setAttribute("height", String(mh));
+  markRect.setAttribute("rx", "0");
+  gsap.set(markSvg, { x: mx - B, y: my - B });
+  const perim = 2 * (mw + mh);
+  markRect.style.strokeDasharray = String(perim);
+
+  // Rect corners in stage coords; the stroke draws clockwise from the top-left.
+  const TL = { x: mx, y: my };
+  const TR = { x: mx + mw, y: my };
+  const BR = { x: mx + mw, y: my + mh };
+  const BL = { x: mx, y: my + mh };
+  const drawAt = start + span * 0.44;
+  const drawDur = span * 0.32;
+  const side = drawDur / 4;
+
   tl.to(
     cursor,
-    { x: hit.x + 6, y: hit.y + 8, duration: span * 0.12, ease: "power2.inOut" },
-    start + span * 0.42,
+    { x: TL.x, y: TL.y, duration: span * 0.1, ease: "power2.inOut" },
+    start + span * 0.34,
   );
+  tl.fromTo(
+    markSvg,
+    { "--mark-op": 0 },
+    { "--mark-op": 1, duration: 0.001 },
+    drawAt,
+  );
+  tl.fromTo(
+    markRect,
+    { strokeDashoffset: perim },
+    { strokeDashoffset: 0, duration: drawDur, ease: "none" },
+    drawAt,
+  );
+  tl.to(cursor, { x: TR.x, y: TR.y, duration: side, ease: "none" }, drawAt);
+  tl.to(cursor, { x: BR.x, y: BR.y, duration: side, ease: "none" }, drawAt + side);
+  tl.to(cursor, { x: BL.x, y: BL.y, duration: side, ease: "none" }, drawAt + side * 2);
+  tl.to(cursor, { x: TL.x, y: TL.y, duration: side, ease: "none" }, drawAt + side * 3);
 
-  tl.set([spark, blob], { x: hit.x, y: hit.y }, start);
-  tl.fromTo(
-    spark,
-    { autoAlpha: 0, scale: 0.2, rotate: -25 },
-    { autoAlpha: 1, scale: 1, rotate: 0, duration: span * 0.05, ease: "back.out(2)" },
-    start + span * 0.6,
-  );
-  tl.to(
-    spark,
-    { autoAlpha: 0, scale: 1.6, duration: span * 0.07, ease: "power1.in" },
-    start + span * 0.66,
-  );
-  tl.fromTo(
-    blob,
-    { autoAlpha: 0, scale: 0 },
-    { autoAlpha: 1, scale: 1, duration: span * 0.05, ease: "back.out(1.6)" },
-    start + span * 0.64,
-  );
-  tl.fromTo(
-    blob,
-    { "--blob-mix": 0 },
-    { "--blob-mix": 1, duration: span * 0.1, ease: "none" },
-    start + span * 0.7,
-  );
-  tl.to(
-    blob,
-    { autoAlpha: 0, scale: 0.5, duration: span * 0.08, ease: "power1.in" },
-    start + span * 0.84,
-  );
+  // Corners round once the rectangle is closed …
+  tl.to(markRect, { attr: { rx: 12 }, duration: span * 0.06, ease: "power2.out" }, drawAt + drawDur);
+  // … the word turns purple as the box lands …
   tl.fromTo(
     box,
     { "--emph": 0 },
-    { "--emph": 1, duration: span * 0.12, ease: "none" },
-    start + span * 0.7,
+    { "--emph": 1, duration: span * 0.1, ease: "none" },
+    drawAt + drawDur * 0.7,
+  );
+  // … and the cursor settles just off the bottom-right corner.
+  tl.to(
+    cursor,
+    { x: BR.x + 6, y: BR.y + 6, duration: span * 0.07, ease: "power2.inOut" },
+    drawAt + drawDur + span * 0.03,
   );
 }
 
