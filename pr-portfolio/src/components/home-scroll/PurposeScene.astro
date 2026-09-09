@@ -15,14 +15,9 @@ const { copy } = Astro.props;
       parts={copy.purpose.parts}
       selected={false}
     />
-    <span class="purpose-spark" data-purpose-spark aria-hidden="true">
-      <svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M0,-46 8,-15 30,-36 15,-9 46,-13 17,0 46,13 15,9 30,36 8,15 0,46 -8,15 -30,36 -15,9 -46,13 -17,0 -46,-13 -15,-9 -30,-36 -8,-15Z"
-        />
-      </svg>
-    </span>
-    <span class="purpose-blob" data-purpose-blob aria-hidden="true"></span>
+    <svg class="purpose-mark" data-purpose-mark aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <rect data-purpose-mark-rect fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
     <NarrativeCursor label={copy.intro.cursorLabel} class="narrative-cursor--purpose" />
   </div>
 </section>
