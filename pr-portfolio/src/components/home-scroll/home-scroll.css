@@ -10,6 +10,12 @@
      64px hero. Fluid, so the per-breakpoint size overrides go away. */
   --home-h2: clamp(1.9rem, 1.4vw + 1.4rem, 2.75rem);
   --home-h2-statement: clamp(2.25rem, 2vw + 1.6rem, 3.375rem);
+  /* Two body tiers under the h2: the lead paragraph and the supporting one,
+     one clear notch apart at every width. */
+  --home-lead: clamp(1.125rem, 0.5vw + 1rem, 1.375rem); /* 18 → 22px */
+  --home-body: clamp(1rem, 0.35vw + 0.9rem, 1.1875rem); /* 16 → 19px */
+  --home-body-lh: 1.6;
+  --home-measure: 62ch;
   overflow-x: clip;
 }
 .home-scroll {
@@ -59,10 +65,24 @@
 .home-copy h2 {
   max-width: 24ch;
 }
-.home-copy p {
+/* Lead paragraph under the h2 (premise's bajada, and the *message* line of
+   board/figma/code/ai — the __message classes just inherit this now). */
+.home-copy p,
+.home-premise p {
   margin: 0;
-  font: 400 24px/1.55 var(--font-sans);
+  font: 400 var(--home-lead) / var(--home-body-lh) var(--font-sans);
   letter-spacing: 0;
+  max-width: var(--home-measure);
+  color: var(--color-text);
+}
+/* Supporting paragraph — one notch down, secondary colour. Scoped through
+   .home-copy so it outweighs the lead rule above. */
+.home-copy .home-board__support,
+.home-copy .home-figma__support,
+.home-copy .home-code__support,
+.home-copy .home-ai__support {
+  font-size: var(--home-body);
+  color: var(--color-text-secondary);
 }
 .home-tags {
   display: flex;
@@ -89,10 +109,6 @@
 .home-premise h2 {
   font-size: var(--home-h2-statement);
   max-width: 18ch;
-}
-.home-premise p {
-  font-size: 25px;
-  max-width: 825px;
 }
 .home-greeting__layout {
   display: flex;
@@ -198,10 +214,6 @@ html:not(.dark) .hero-logo {
   grid-template-columns: minmax(0, 548px) minmax(0, 560px);
   gap: clamp(32px, 4vw, 64px);
 }
-.home-board .home-board__support {
-  color: var(--color-text-secondary);
-  font-size: 20px;
-}
 .board-map {
   position: relative;
   width: 100%;
@@ -293,13 +305,6 @@ html:not(.dark) .hero-logo {
   display: grid;
   grid-template-columns: minmax(0, 548px) minmax(0, 580px);
   gap: clamp(32px, 4vw, 64px);
-}
-.home-figma__message {
-  font-size: 22px;
-}
-.home-figma__support {
-  color: var(--color-text-secondary);
-  font-size: 20px;
 }
 .figma-window {
   align-self: center;
@@ -464,13 +469,6 @@ html:not(.dark) .hero-logo {
   display: grid;
   grid-template-columns: minmax(0, 500px) minmax(0, 620px);
   gap: clamp(32px, 4vw, 64px);
-}
-.home-code__message {
-  font-size: 22px;
-}
-.home-code__support {
-  color: var(--color-text-secondary);
-  font-size: 20px;
 }
 .code-window {
   align-self: center;
@@ -658,13 +656,6 @@ html:not(.dark) .hero-logo {
   display: grid;
   grid-template-columns: minmax(0, 500px) minmax(0, 620px);
   gap: clamp(32px, 4vw, 64px);
-}
-.home-ai__message {
-  font-size: 22px;
-}
-.home-ai__support {
-  color: var(--color-text-secondary);
-  font-size: 20px;
 }
 .ai-window {
   align-self: center;
@@ -1285,9 +1276,6 @@ html.home-boot
   .home-ai {
     gap: 32px;
   }
-  .home-copy p {
-    font-size: 20px;
-  }
 }
 @media (max-width: 839px) {
   .home-page {
@@ -1313,13 +1301,6 @@ html.home-boot
   }
   .home-copy {
     gap: 24px;
-  }
-  .home-copy p,
-  .home-premise p {
-    font-size: 18px;
-  }
-  .home-board .home-board__support {
-    font-size: 16px;
   }
   .home-board,
   .home-figma,
@@ -1493,6 +1474,12 @@ html.home-boot
     p {
     font-size: 14px;
     line-height: 1.45;
+  }
+  [data-home-scroll][data-mode="cinematic"]
+    :is(.home-figma, .home-code, .home-ai)
+    .home-copy
+    :is(.home-figma__support, .home-code__support, .home-ai__support) {
+    font-size: 13px;
   }
   [data-home-scroll][data-mode="cinematic"]
     :is(.home-figma, .home-code, .home-ai, .home-board)
