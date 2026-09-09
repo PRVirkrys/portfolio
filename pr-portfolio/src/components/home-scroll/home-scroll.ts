@@ -143,17 +143,11 @@ function animateGreeting(
   const msgInner =
     cursor?.querySelector<HTMLElement>("[data-cursor-msg-text]") ?? null;
   if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor) return;
-  // The resting bubble text, as per-glyph spans so it types in letter by letter
-  // (bubble grows with it, caret rides the last). The idle controller rebuilds
-  // these and retypes them after its own swaps.
-  let msgChars: HTMLElement[] = [];
-  let msgCharW: number[] = [];
+  // Seed the bubble with `cursorShort` as per-glyph spans, collapsed to width 0
+  // — `revealBubble` (fired from the timeline) types them in letter by letter,
+  // and the idle controller rebuilds them for its own nudges.
   if (msgInner) {
-    ({ chars: msgChars, widths: msgCharW } = glyphFill(
-      msgInner,
-      copy.intro.cursorShort,
-    ));
-    gsap.set(msgChars, { width: 0 });
+    gsap.set(glyphFill(msgInner, copy.intro.cursorShort).chars, { width: 0 });
   }
 
   const base = layoutEl.getBoundingClientRect();
@@ -308,12 +302,19 @@ function animateGreeting(
   // playhead reaches the settled greeting — so every letter is seen landing
   // regardless of how fast the user scrolls, and it replays if they scrub back
   // and forward. Idle swaps use the same standalone-tween mechanism.
-  if (msgChars.length) {
+  if (msgInner) {
     const revealBubble = () => {
-      gsap.killTweensOf(msgChars);
-      gsap.set(msgChars, { width: 0 });
-      gsap.to(msgChars, {
-        width: (k: number) => msgCharW[k],
+      // Always the resting greeting text: a scrub back past this point and
+      // forward again should retype `cursorShort` fresh, clearing any idle
+      // nudge (and its scroll-hidden state) that was up.
+      msgInner
+        .closest("[data-cursor-msg]")
+        ?.removeAttribute("data-idle-hidden");
+      const { chars, widths } = glyphFill(msgInner, copy.intro.cursorShort);
+      gsap.killTweensOf(chars);
+      gsap.set(chars, { width: 0 });
+      gsap.to(chars, {
+        width: (k: number) => widths[k],
         duration: 0.001,
         stagger: 0.05,
         ease: "steps(1)",
@@ -1003,6 +1004,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   // and then the scroll invite. Cleared on the next scroll and on dispose.
   let idleA = 0;
   let idleB = 0;
+  let idleC = 0;
   let finishIntro = () => {};
   let refreshHint = () => {};
   let refreshIdle = () => {};
@@ -1017,6 +1019,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
     clearTimeout(hintTimer);
     clearTimeout(idleA);
     clearTimeout(idleB);
+    clearTimeout(idleC);
     intro?.kill();
     context?.revert();
     root
@@ -1427,17 +1430,21 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const clearIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
+        clearTimeout(idleC);
         if (!idleSwapped) return;
+        // The user scrolled while an idle nudge was up: hide it. It returns with
+        // the next nudge once they stop (armIdle → idleA below clears the flag).
         idleSwapped = false;
-        typeBubble(copy.intro.cursorShort, true);
+        idleBubble?.setAttribute("data-idle-hidden", "");
       };
-      // While the user rests on the settled greeting, the bubble goes
-      // `cursorShort` → "¿Continuamos…?" → "Vamos, haz scroll…". Armed on every
-      // scroll-stop; only fires once the greeting choreography is done and the
-      // bubble is on screen.
+      // While the user rests on the settled greeting the bubble escalates
+      // through the three idle nudges (idleQuestion → scrollInvite → idlePing).
+      // Armed on every scroll-stop; only fires once the greeting choreography is
+      // done and the bubble is on screen.
       const armIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
+        clearTimeout(idleC);
         if (!idleMsgEl || !idleBubble || !trigger || root.dataset.intro !== "done")
           return;
         // Fire once the greeting is done and its bubble is actually on screen —
@@ -1451,9 +1458,13 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           return;
         idleA = window.setTimeout(() => {
           idleSwapped = true;
+          idleBubble.removeAttribute("data-idle-hidden");
           typeBubble(copy.intro.idleQuestion);
           idleB = window.setTimeout(() => {
             typeBubble(copy.intro.scrollInvite);
+            idleC = window.setTimeout(() => {
+              typeBubble(copy.intro.idlePing);
+            }, 3400);
           }, 2400);
         }, 2800);
       };

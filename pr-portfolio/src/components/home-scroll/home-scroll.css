@@ -434,6 +434,12 @@
   background: var(--color-brand-cyan-500);
   color: #10101f;
   opacity: var(--cursor-msg, 0);
+  transition: opacity 0.18s ease;
+}
+/* The idle controller hides the bubble while the user is scrolling (JS toggles
+   the attribute); it comes back with the next idle nudge once they stop. */
+.narrative-cursor__msg[data-idle-hidden] {
+  opacity: 0;
 }
 /* The text types in glyph by glyph (each `.text-mark__char` grows from width 0)
    and the bubble hugs it, so it grows as the letters appear — same mechanism as
