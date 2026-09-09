@@ -414,14 +414,14 @@ function animateIdentity(root: HTMLElement): gsap.core.Timeline | null {
       const t = raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
       const phase = phases.find((p) => t <= p.b) ?? phases[phases.length - 1];
 
-      // "I AM A" → "I AM" (and the roles list) cross-fade over the final change.
+      // "I AM A" → "I AM" cross-fades over the final change. The sequence list
+      // stays put — it's the running record of the roles and holds to the end.
       let toClose = 0;
       if (t >= lastChange.b) toClose = 1;
       else if (t > lastChange.a)
         toClose = (t - lastChange.a) / (lastChange.b - lastChange.a);
       if (headA) headA.style.opacity = String(1 - toClose);
       if (headB) headB.style.opacity = String(toClose);
-      if (rolesList) rolesList.style.opacity = String(1 - toClose);
 
       // Progressive sequence list: item i is in once we've settled into hold(i).
       let reached = -1;
