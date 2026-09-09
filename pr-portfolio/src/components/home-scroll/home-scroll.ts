@@ -109,15 +109,19 @@ function animateGreeting(
     return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height };
   };
   const m = marks.map(rel);
-  const tip = (i: number) => ({ x: m[i].x + m[i].w - 2, y: m[i].y + m[i].h * 0.5 });
+  // The cursor sits at a box's start when its typing begins, then rides to the
+  // end as the glyphs fill in — as if a person were typing into it.
+  const head = (i: number) => ({ x: m[i].x - 5, y: m[i].y + m[i].h * 0.5 });
+  const tail = (i: number) => ({ x: m[i].x + m[i].w - 6, y: m[i].y + m[i].h * 0.5 });
   const lowerLeft = { x: m[2].x - 10, y: m[2].y + m[2].h + 16 };
   const A = (f: number) => start + f * span;
   const D = (f: number) => f * span;
+  const TYPE = 0.11;
 
   tl.fromTo(
     cursor,
-    { autoAlpha: 0, x: tip(0).x + 60, y: tip(0).y + 52 },
-    { autoAlpha: 1, x: tip(0).x, y: tip(0).y, duration: D(0.06), ease: "power2.out" },
+    { autoAlpha: 0, x: head(0).x + 54, y: head(0).y + 48 },
+    { autoAlpha: 1, x: head(0).x, y: head(0).y, duration: D(0.06), ease: "power2.out" },
     A(0),
   );
 
@@ -134,6 +138,13 @@ function animateGreeting(
       { autoAlpha: 1, "--sel": 1, duration: D(0.03) },
       A(appearAt),
     );
+    // Snap the cursor to the box's start just before typing, then let it ride
+    // rightward with the glyphs over the same window.
+    tl.to(
+      cursor,
+      { x: head(i).x, y: head(i).y, duration: D(0.03), ease: "power1.inOut" },
+      A(typeAt - 0.03),
+    );
     const chars = glyphs[i];
     const w = widths[i];
     tl.fromTo(
@@ -142,18 +153,17 @@ function animateGreeting(
       {
         width: (k: number) => w[k],
         duration: 0.001,
-        stagger: D(0.11) / Math.max(1, chars.length),
+        stagger: D(TYPE) / Math.max(1, chars.length),
         ease: "steps(1)",
       },
       A(typeAt),
     );
+    tl.to(
+      cursor,
+      { x: tail(i).x, y: tail(i).y, duration: D(TYPE), ease: "none" },
+      A(typeAt),
+    );
     tl.to(marks[i], { "--sel": 0, duration: D(0.03) }, A(offAt));
-    if (i < 2)
-      tl.to(
-        cursor,
-        { x: tip(i + 1).x, y: tip(i + 1).y, duration: D(0.05), ease: "power1.inOut" },
-        A(offAt + 0.01),
-      );
   };
   line(0, 0.04, 0.07, 0.2);
   line(1, 0.24, 0.27, 0.4);
