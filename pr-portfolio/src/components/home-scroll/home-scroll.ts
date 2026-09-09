@@ -302,19 +302,25 @@ function animateGreeting(
       msgEl,
       { "--cursor-msg": 0 },
       { "--cursor-msg": 1, duration: D(0.03) },
-      A(0.99),
+      A(0.985),
     );
-  if (msgChars.length)
-    tl.to(
-      msgChars,
-      {
+  // The bubble types itself in over wall-clock time (not scrubbed) once the
+  // playhead reaches the settled greeting — so every letter is seen landing
+  // regardless of how fast the user scrolls, and it replays if they scrub back
+  // and forward. Idle swaps use the same standalone-tween mechanism.
+  if (msgChars.length) {
+    const revealBubble = () => {
+      gsap.killTweensOf(msgChars);
+      gsap.set(msgChars, { width: 0 });
+      gsap.to(msgChars, {
         width: (k: number) => msgCharW[k],
         duration: 0.001,
-        stagger: D(0.09) / msgChars.length,
+        stagger: 0.05,
         ease: "steps(1)",
-      },
-      A(0.99),
-    );
+      });
+    };
+    tl.call(revealBubble, undefined, A(0.985));
+  }
 }
 
 // The transition ribbon: one continuous celeste → rosa stroke drawn on a canvas
@@ -1405,9 +1411,17 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           ease: "steps(1)",
         });
       };
+      // The scrubbed greeting timeline owns the bubble's `cursorShort` reveal
+      // (typed glyph by glyph as you scroll). The idle controller only takes
+      // over once it has actually swapped in one of its own messages — otherwise
+      // rebuilding the glyph spans here would detach the timeline's targets and
+      // the bubble would just appear already-written.
+      let idleSwapped = false;
       const clearIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
+        if (!idleSwapped) return;
+        idleSwapped = false;
         typeBubble(copy.intro.cursorShort, true);
       };
       const armIdle = () => {
@@ -1420,6 +1434,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // idle swap-and-retype below doesn't fight it.
         if (st.scene !== "greeting" || st.progress < 0.9) return;
         idleA = window.setTimeout(() => {
+          idleSwapped = true;
           typeBubble(copy.intro.idleQuestion);
           idleB = window.setTimeout(() => {
             typeBubble(copy.intro.scrollInvite);
