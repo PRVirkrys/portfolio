@@ -425,19 +425,26 @@
      nearest the cursor left square (all others 8px). */
   display: flex;
   align-items: baseline;
+  /* Hug the content (grows as the glyphs type in) rather than being squeezed
+     narrow by the zero-width .narrative-cursor it's positioned against — which
+     would stack every word on its own line. */
+  width: max-content;
   padding: 4px 8px;
   border-radius: 0 8px 8px 8px;
   background: var(--color-brand-cyan-500);
   color: #10101f;
   opacity: var(--cursor-msg, 0);
 }
-/* The text types in (JS animates max-width in `steps()`) and the bubble hugs
-   it, so it grows as the glyphs appear — same read as the TextMark boxes. */
+/* The text types in glyph by glyph (each `.text-mark__char` grows from width 0)
+   and the bubble hugs it, so it grows as the letters appear — same mechanism as
+   the TextMark boxes. */
 .narrative-cursor__msg-inner {
   display: inline-block;
-  max-width: 46vw;
-  overflow: hidden;
-  white-space: nowrap;
+  /* Follow the bubble: one growing line on desktop, wrapping at the <wbr>s
+     between words on the narrow mobile bubble. min-width:0 lets the flex item
+     shrink enough for those breaks to take. */
+  min-width: 0;
+  white-space: inherit;
   vertical-align: bottom;
 }
 .narrative-cursor__msg-caret {

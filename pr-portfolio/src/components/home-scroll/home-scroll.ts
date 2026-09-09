@@ -87,6 +87,38 @@ function measureConnections(root: HTMLElement) {
   }
 }
 
+// Fill `el` with one `.text-mark__char` span per glyph (spaces included, words
+// wrapped so they only break at the <wbr>s) — the same structure TextMark.astro
+// renders at build. Returns the glyph spans and their natural widths so a caller
+// can reveal them from width 0 for a letter-by-letter type-in.
+function glyphFill(el: HTMLElement, text: string) {
+  el.textContent = "";
+  const frag = document.createDocumentFragment();
+  for (const tok of text.split(/(\s+)/)) {
+    if (!tok) continue;
+    if (/^\s+$/.test(tok)) {
+      const s = document.createElement("span");
+      s.className = "text-mark__char text-mark__char--space";
+      s.textContent = tok;
+      frag.appendChild(s);
+      continue;
+    }
+    frag.appendChild(document.createElement("wbr"));
+    const word = document.createElement("span");
+    word.className = "text-mark__word";
+    for (const ch of tok) {
+      const c = document.createElement("span");
+      c.className = "text-mark__char";
+      c.textContent = ch;
+      word.appendChild(c);
+    }
+    frag.appendChild(word);
+  }
+  el.appendChild(frag);
+  const chars = [...el.querySelectorAll<HTMLElement>(".text-mark__char")];
+  return { chars, widths: chars.map((c) => c.getBoundingClientRect().width) };
+}
+
 // The greeting: three Figma "Container text mark" boxes appear and are typed
 // glyph by glyph (each `.text-mark__char` grows from width 0, so the box grows
 // and the blinking caret rides the last glyph), then the three are selected
@@ -111,15 +143,17 @@ function animateGreeting(
   const msgInner =
     cursor?.querySelector<HTMLElement>("[data-cursor-msg-text]") ?? null;
   if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor) return;
-  // The resting bubble text; it types in with the bubble growing to fit (see the
-  // reveal near the end). The idle controller retypes it after its own swaps.
-  let shortLen = 1;
-  let shortW = 0;
+  // The resting bubble text, as per-glyph spans so it types in letter by letter
+  // (bubble grows with it, caret rides the last). The idle controller rebuilds
+  // these and retypes them after its own swaps.
+  let msgChars: HTMLElement[] = [];
+  let msgCharW: number[] = [];
   if (msgInner) {
-    msgInner.textContent = copy.intro.cursorShort;
-    shortLen = Math.max(1, copy.intro.cursorShort.length);
-    shortW = msgInner.scrollWidth + 1;
-    gsap.set(msgInner, { maxWidth: 0 });
+    ({ chars: msgChars, widths: msgCharW } = glyphFill(
+      msgInner,
+      copy.intro.cursorShort,
+    ));
+    gsap.set(msgChars, { width: 0 });
   }
 
   const base = layoutEl.getBoundingClientRect();
@@ -267,14 +301,18 @@ function animateGreeting(
     tl.fromTo(
       msgEl,
       { "--cursor-msg": 0 },
-      { "--cursor-msg": 1, duration: D(0.04) },
+      { "--cursor-msg": 1, duration: D(0.03) },
       A(0.99),
     );
-  if (msgInner)
-    tl.fromTo(
-      msgInner,
-      { maxWidth: 0 },
-      { maxWidth: shortW, duration: D(0.07), ease: `steps(${shortLen})` },
+  if (msgChars.length)
+    tl.to(
+      msgChars,
+      {
+        width: (k: number) => msgCharW[k],
+        duration: 0.001,
+        stagger: D(0.09) / msgChars.length,
+        ease: "steps(1)",
+      },
       A(0.99),
     );
 }
@@ -1347,26 +1385,25 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const idleMsgEl = root.querySelector<HTMLElement>(
         ".narrative-cursor--greeting [data-cursor-msg-text]",
       );
-      // Swap + type the bubble text, letting the bubble grow to fit. A one-off
-      // GSAP tween (not a timer, not on the scrubbed timeline) so it never
-      // fights the greeting timeline over the bubble's glyph nodes.
+      // Swap the bubble text and type it in letter by letter (per-glyph spans,
+      // bubble grows with it). A one-off GSAP tween — not a timer, not on the
+      // scrubbed timeline — so it never fights the greeting timeline over the
+      // bubble's glyph nodes.
       const typeBubble = (text: string, instant?: boolean) => {
         if (!idleMsgEl) return;
-        idleMsgEl.textContent = text;
-        const w = idleMsgEl.scrollWidth + 1;
+        const { chars, widths } = glyphFill(idleMsgEl, text);
+        if (!chars.length) return;
         if (instant) {
-          gsap.set(idleMsgEl, { maxWidth: w });
+          gsap.set(chars, { width: (k) => widths[k] });
           return;
         }
-        gsap.fromTo(
-          idleMsgEl,
-          { maxWidth: 0 },
-          {
-            maxWidth: w,
-            duration: Math.max(0.3, text.length * 0.032),
-            ease: `steps(${Math.max(1, text.length)})`,
-          },
-        );
+        gsap.set(chars, { width: 0 });
+        gsap.to(chars, {
+          width: (k: number) => widths[k],
+          duration: 0.001,
+          stagger: Math.max(0.3, text.length * 0.03) / chars.length,
+          ease: "steps(1)",
+        });
       };
       const clearIdle = () => {
         clearTimeout(idleA);
