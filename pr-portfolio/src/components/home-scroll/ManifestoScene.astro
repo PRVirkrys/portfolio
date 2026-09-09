@@ -1,7 +1,6 @@
 ---
 import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
-import { ArrowRight } from '@lucide/astro';
 import type { HomeCopy } from './home-copy';
 import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
@@ -14,6 +13,6 @@ const m = copy.manifesto;
     <h2 id="manifesto-title" class="home-manifesto__lead" data-motion="manifesto-line">{m.lines[0]}</h2>
     <p class="home-manifesto__accent" data-motion="manifesto-line">{m.lines[1]}</p>
     <p class="home-manifesto__coda" data-motion="manifesto-line">{m.lines[2]}</p>
-    <TextLink href={withBase('/work')} showIcon={false}>{m.cta}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+    <TextLink href={withBase('/work')} size="lg">{m.cta}</TextLink>
   </div>
 </section>

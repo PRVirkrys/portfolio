@@ -25,6 +25,10 @@
   padding: 0;
   outline: none;
   background: var(--color-bg);
+  /* The DS TextLink renders at the 0.8 UI scale (~13px) — too small next to
+     the 16px support text on these large scenes. Redefine the token it reads
+     so every home CTA sits with the support line. */
+  --typography-ui-link-lg-font-size: var(--home-body);
 }
 .home-stage {
   background-image: radial-gradient(
@@ -89,11 +93,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-}
-.home-link-arrow {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 8px;
 }
 .home-purpose {
   text-align: center;

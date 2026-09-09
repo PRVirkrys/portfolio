@@ -10,7 +10,6 @@ import IdentityScene from './IdentityScene.astro';
 import ScrollIndicator from './ScrollIndicator.astro';
 import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
-import { ArrowRight } from '@lucide/astro';
 import { homeCopy, type Locale } from './home-copy';
 import { withBase } from '../../lib/url';
 import './home-scroll.css';
@@ -51,7 +50,7 @@ const chars = (value: string) => Array.from(value);
         <div class="home-tags"><Tag size="sm" category="Strategy">{copy.premise.tag}</Tag></div>
         <h2 id="premise-title">{copy.premise.title}</h2>
         <p>{copy.premise.body}</p>
-        <TextLink href={withBase('/work')} showIcon={false}>{copy.relatedProjects}<ArrowRight class="home-link-arrow" size={16} /></TextLink>
+        <TextLink href={withBase('/work')} size="lg">{copy.relatedProjects}</TextLink>
       </div>
     </section>
     <BoardScene copy={copy} />
