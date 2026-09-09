@@ -12,15 +12,6 @@ import { iconUrl } from '../lib/icons';
 import { withBase } from '../lib/url';
 import { MousePointer2, Hand, MessageCircle, Type, Menu, X, Mail } from '@lucide/astro';
 
-export interface Props {
-	/** Home is the only page with its own hero background right under the
-	 * fixed header, so it's the only one that wants the header transparent
-	 * over it. Every other page gets a solid header matching the body bg. */
-	transparent?: boolean;
-}
-
-const { transparent = false } = Astro.props;
-
 const selectorItems = [
 	{ label: 'Puntero', Icon: MousePointer2, active: true },
 	{ label: 'Mano', Icon: Hand },
@@ -30,7 +21,7 @@ const selectorItems = [
 ---
 
 
-<header class="header" data-transparent={transparent || undefined}>
+<header class="header">
 	<Tag category="Neutral" size="md" class="header__identity">PAULA RODAS · DEV DESIGNER</Tag>
 	<nav class="header__selector" aria-label="Herramientas de diseño">
 		{selectorItems.map(({ label, Icon, active }) => (
@@ -96,7 +87,6 @@ const selectorItems = [
 	   That keeps the sidebar's brand divider and this bar's bottom border on
 	   the same line regardless of either side's content. */
 	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
-	.header[data-transparent] { background: transparent; }
 	/* The mobile menu panel is a child of .header, which is itself a
 	   stacking context — its z-index can't out-rank SidebarNavigation
 	   (z-index 40) from inside there, so bump .header's own z-index instead
