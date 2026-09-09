@@ -109,7 +109,12 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   await expect(marks.nth(1)).toContainText('Yo soy');
   await expect(marks.nth(2)).toContainText('Paula Rodas');
   await expect(marks.nth(2)).toHaveAttribute('data-tone', 'purple');
-  const nameType = () => marks.nth(2).evaluate(el => Number(getComputedStyle(el).getPropertyValue('--type')) || 0);
+  // Fraction of the box's glyphs that have been typed in (each grows from width 0).
+  const typedFrac = (i: number) => marks.nth(i).evaluate(el => {
+    const cs = [...el.querySelectorAll('.text-mark__char')];
+    return cs.length ? cs.filter(c => c.getBoundingClientRect().width > 0.5).length / cs.length : 1;
+  });
+  const nameType = () => typedFrac(2);
   const nameShown = () => marks.nth(2).evaluate(el => Number(getComputedStyle(el).opacity));
   const groupShown = () => page.locator('[data-greeting-group]').evaluate(el => Number(getComputedStyle(el).opacity));
   const headerOpacity = () => page.locator('.header').first().evaluate(el => Number(getComputedStyle(el).opacity));
@@ -227,8 +232,10 @@ test('the approved intro is frozen: 3px white line, logo reveal, typed name boxe
   await expect(page.locator('.header').first()).toHaveCSS('opacity', '1');
   const marks = page.locator('[data-greeting-marks] .greeting-mark');
   await expect(marks).toHaveCount(3);
-  const typeOf = (i: number) =>
-    marks.nth(i).evaluate(el => Number(getComputedStyle(el).getPropertyValue('--type')) || 0);
+  const typeOf = (i: number) => marks.nth(i).evaluate(el => {
+    const cs = [...el.querySelectorAll('.text-mark__char')];
+    return cs.length ? cs.filter(c => c.getBoundingClientRect().width > 0.5).length / cs.length : 1;
+  });
   // The three boxes are typed in order, not all at once.
   await seekScene(page, 'greeting', .22);
   expect(await typeOf(0)).toBeGreaterThan(0.5);
