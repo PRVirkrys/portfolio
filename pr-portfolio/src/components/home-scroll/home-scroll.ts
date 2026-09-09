@@ -108,8 +108,19 @@ function animateGreeting(
   const group = root.querySelector<HTMLElement>("[data-greeting-group]");
   const cursor = root.querySelector<HTMLElement>(".narrative-cursor--greeting");
   const msgEl = cursor?.querySelector<HTMLElement>("[data-cursor-msg]") ?? null;
+  const msgInner =
+    cursor?.querySelector<HTMLElement>("[data-cursor-msg-text]") ?? null;
   if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor) return;
-  if (msgEl) msgEl.textContent = copy.intro.cursorShort;
+  // The resting bubble text; it types in with the bubble growing to fit (see the
+  // reveal near the end). The idle controller retypes it after its own swaps.
+  let shortLen = 1;
+  let shortW = 0;
+  if (msgInner) {
+    msgInner.textContent = copy.intro.cursorShort;
+    shortLen = Math.max(1, copy.intro.cursorShort.length);
+    shortW = msgInner.scrollWidth + 1;
+    gsap.set(msgInner, { maxWidth: 0 });
+  }
 
   const base = layoutEl.getBoundingClientRect();
   const rel = (el: Element) => {
@@ -257,6 +268,13 @@ function animateGreeting(
       msgEl,
       { "--cursor-msg": 0 },
       { "--cursor-msg": 1, duration: D(0.04) },
+      A(0.99),
+    );
+  if (msgInner)
+    tl.fromTo(
+      msgInner,
+      { maxWidth: 0 },
+      { maxWidth: shortW, duration: D(0.07), ease: `steps(${shortLen})` },
       A(0.99),
     );
 }
@@ -1327,23 +1345,47 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       // then the scroll invite. Wall-clock text swap on an aria-hidden bubble —
       // not part of the scrubbed state — cleared on the next scroll.
       const idleMsgEl = root.querySelector<HTMLElement>(
-        ".narrative-cursor--greeting [data-cursor-msg]",
+        ".narrative-cursor--greeting [data-cursor-msg-text]",
       );
+      // Swap + type the bubble text, letting the bubble grow to fit. A one-off
+      // GSAP tween (not a timer, not on the scrubbed timeline) so it never
+      // fights the greeting timeline over the bubble's glyph nodes.
+      const typeBubble = (text: string, instant?: boolean) => {
+        if (!idleMsgEl) return;
+        idleMsgEl.textContent = text;
+        const w = idleMsgEl.scrollWidth + 1;
+        if (instant) {
+          gsap.set(idleMsgEl, { maxWidth: w });
+          return;
+        }
+        gsap.fromTo(
+          idleMsgEl,
+          { maxWidth: 0 },
+          {
+            maxWidth: w,
+            duration: Math.max(0.3, text.length * 0.032),
+            ease: `steps(${Math.max(1, text.length)})`,
+          },
+        );
+      };
       const clearIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
-        if (idleMsgEl) idleMsgEl.textContent = copy.intro.cursorShort;
+        typeBubble(copy.intro.cursorShort, true);
       };
       const armIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
         if (!idleMsgEl || !trigger || root.dataset.intro !== "done") return;
         const st = snapshotAt(trigger.progress, bounds);
-        if (st.scene !== "greeting" || st.progress < 0.5) return;
+        // Only once the greeting has fully settled — past the point where the
+        // scrubbed timeline still governs the bubble's typed-in width, so the
+        // idle swap-and-retype below doesn't fight it.
+        if (st.scene !== "greeting" || st.progress < 0.9) return;
         idleA = window.setTimeout(() => {
-          idleMsgEl.textContent = copy.intro.idleQuestion;
+          typeBubble(copy.intro.idleQuestion);
           idleB = window.setTimeout(() => {
-            idleMsgEl.textContent = copy.intro.scrollInvite;
+            typeBubble(copy.intro.scrollInvite);
           }, 2600);
         }, 3800);
       };

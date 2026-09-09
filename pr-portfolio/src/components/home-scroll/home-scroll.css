@@ -423,13 +423,30 @@
   top: 41px;
   /* Figma node 16138:105150 — celeste chat bubble, dark ink, and the corner
      nearest the cursor left square (all others 8px). */
+  display: flex;
+  align-items: baseline;
   padding: 4px 8px;
   border-radius: 0 8px 8px 8px;
   background: var(--color-brand-cyan-500);
   color: #10101f;
   opacity: var(--cursor-msg, 0);
 }
-.narrative-cursor__msg:empty {
+/* The text types in (JS animates max-width in `steps()`) and the bubble hugs
+   it, so it grows as the glyphs appear — same read as the TextMark boxes. */
+.narrative-cursor__msg-inner {
+  display: inline-block;
+  max-width: 46vw;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+.narrative-cursor__msg-caret {
+  flex: none;
+  margin-left: 1px;
+  font-weight: 400;
+  animation: text-mark-caret-blink 1.06s steps(1, end) infinite;
+}
+.narrative-cursor__msg:has(.narrative-cursor__msg-inner:empty) {
   display: none;
 }
 html:not(.dark) .home-page {
