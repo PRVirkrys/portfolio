@@ -294,6 +294,9 @@
   display: inline-block;
   width: auto;
   overflow: hidden;
+  /* Keep a lone space glyph from collapsing so it can be typed in like a
+     letter, which keeps the caret glued to the last typed glyph. */
+  white-space: pre;
   vertical-align: bottom;
 }
 /* Inline bar that flows after the last revealed glyph, so it advances as the

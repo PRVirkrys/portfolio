@@ -21,10 +21,11 @@ const {
   motion,
 } = Astro.props;
 const Tag = tag as 'span' | 'h2';
-// Split into words and whitespace runs: each word keeps its glyphs together
-// (nowrap) while the whitespace between them stays a real break opportunity, so
-// a wrapping phrase never splits a word. Glyphs are per-character spans so the
-// animation reveals them one by one and the box grows with them.
+// Split into words and whitespace runs. Every glyph — spaces included — is a
+// per-character span so the typing reveal (width 0 → natural) keeps the caret
+// glued to the last typed glyph and the box grows with it. Line breaks happen
+// only at the <wbr> before each word (there are no real whitespace text nodes),
+// while `.text-mark__word` keeps a word's glyphs from breaking mid-word.
 const tokenize = (text: string) => text.split(/(\s+)/).filter((t) => t.length > 0);
 const isSpace = (t: string) => /^\s+$/.test(t);
 ---
@@ -41,8 +42,10 @@ const isSpace = (t: string) => /^\s+$/.test(t);
       >{parts.map((part) => (
         <span class="text-mark__part" data-emphasis={part.emphasis ? '' : undefined}
           >{tokenize(part.text).map((tok) =>
-            isSpace(tok) ? tok : (
-              <span class="text-mark__word">{Array.from(tok).map((ch) => <span class="text-mark__char">{ch}</span>)}</span>
+            isSpace(tok) ? (
+              <span class="text-mark__char text-mark__char--space">{tok}</span>
+            ) : (
+              <Fragment><wbr /><span class="text-mark__word">{Array.from(tok).map((ch) => <span class="text-mark__char">{ch}</span>)}</span></Fragment>
             ),
           )}</span
         >
