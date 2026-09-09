@@ -22,7 +22,7 @@ const INTRO = 0.14;
 // Scroll length of the pinned journey, in viewport heights. Tuned by feel; the
 // GSAP beat positions are proportions of the main timeline, not of this. Raised
 // with the longer intro narrative (text boxes → ribbon → purpose phrase).
-const SCREENS = 26;
+const SCREENS = 27;
 // The greeting → purpose transition is a tall strip (greeting · ribbon · phrase)
 // that scrolls up through the pinned viewport, so the ribbon keeps the height it
 // has in Figma node 16140:20804 (~1.9 viewports greeting-bottom to phrase-top).
@@ -1126,11 +1126,16 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         // and delivers the purpose phrase (animateTransition), which is typed
         // and clicked on its emphasis word (animatePurpose). All scrubbed here.
         const GREET = 1.3;
+        // A settled plateau after the greeting choreography: the composition is
+        // fully assembled and nothing moves, so a user who pauses here sees the
+        // cursor bubble go from "Hey! Hola…" to the idle nudge before the ribbon
+        // carries everything away.
+        const GREET_HOLD = 0.5;
         // Longer now: the transition is a ~1.9-viewport scroll-through.
         const TRANS = 1;
         const PURPOSE_HOLD = 0.66;
         const gStart = 0.03;
-        const gEnd = gStart + GREET;
+        const gEnd = gStart + GREET + GREET_HOLD;
         const puStart = gEnd + TRANS;
 
         animateGreeting(root, main, gStart, GREET, copy);
@@ -1391,6 +1396,9 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       const idleMsgEl = root.querySelector<HTMLElement>(
         ".narrative-cursor--greeting [data-cursor-msg-text]",
       );
+      const idleBubble = root.querySelector<HTMLElement>(
+        ".narrative-cursor--greeting [data-cursor-msg]",
+      );
       // Swap the bubble text and type it in letter by letter (per-glyph spans,
       // bubble grows with it). A one-off GSAP tween — not a timer, not on the
       // scrubbed timeline — so it never fights the greeting timeline over the
@@ -1411,11 +1419,10 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           ease: "steps(1)",
         });
       };
-      // The scrubbed greeting timeline owns the bubble's `cursorShort` reveal
-      // (typed glyph by glyph as you scroll). The idle controller only takes
-      // over once it has actually swapped in one of its own messages — otherwise
-      // rebuilding the glyph spans here would detach the timeline's targets and
-      // the bubble would just appear already-written.
+      // The greeting bubble types in `cursorShort` on its own (wall-clock, fired
+      // from the timeline). The idle controller only takes over once it has
+      // actually swapped in one of its own messages — otherwise rebuilding the
+      // glyph spans here would restart that reveal from nothing.
       let idleSwapped = false;
       const clearIdle = () => {
         clearTimeout(idleA);
@@ -1424,22 +1431,31 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         idleSwapped = false;
         typeBubble(copy.intro.cursorShort, true);
       };
+      // While the user rests on the settled greeting, the bubble goes
+      // `cursorShort` → "¿Continuamos…?" → "Vamos, haz scroll…". Armed on every
+      // scroll-stop; only fires once the greeting choreography is done and the
+      // bubble is on screen.
       const armIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
-        if (!idleMsgEl || !trigger || root.dataset.intro !== "done") return;
-        const st = snapshotAt(trigger.progress, bounds);
-        // Only once the greeting has fully settled — past the point where the
-        // scrubbed timeline still governs the bubble's typed-in width, so the
-        // idle swap-and-retype below doesn't fight it.
-        if (st.scene !== "greeting" || st.progress < 0.9) return;
+        if (!idleMsgEl || !idleBubble || !trigger || root.dataset.intro !== "done")
+          return;
+        // Fire once the greeting is done and its bubble is actually on screen —
+        // read straight off the opacity gate the timeline drives, so there is no
+        // brittle progress threshold to keep in sync.
+        const shown =
+          parseFloat(
+            getComputedStyle(idleBubble).getPropertyValue("--cursor-msg") || "0",
+          ) > 0.9;
+        if (!shown || snapshotAt(trigger.progress, bounds).scene !== "greeting")
+          return;
         idleA = window.setTimeout(() => {
           idleSwapped = true;
           typeBubble(copy.intro.idleQuestion);
           idleB = window.setTimeout(() => {
             typeBubble(copy.intro.scrollInvite);
-          }, 2600);
-        }, 3800);
+          }, 2400);
+        }, 2800);
       };
       refreshIdle = armIdle;
 
@@ -1448,10 +1464,12 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         hasScrolled = true;
         hintEl.dataset.hint = "away";
         clearIdle();
+        // Re-arm the idle bubble from this scroll-stop, independent of the
+        // slower hint timer below.
+        armIdle();
         clearTimeout(hintTimer);
         hintTimer = window.setTimeout(() => {
           showHint();
-          armIdle();
         }, 3000);
       };
       window.addEventListener("scroll", onHintScroll, {
