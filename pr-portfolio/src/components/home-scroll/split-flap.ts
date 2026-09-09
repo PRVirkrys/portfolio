@@ -90,11 +90,24 @@ export function splitFlapStateAt(
   };
 }
 
-// Centre a message inside `width` plates; extra space splits left/right (left
-// takes the floor). Long messages are clipped, never wrapped here.
-export function padMessage(message: string, width: number): string {
-  const text = message.slice(0, width);
-  const pad = width - text.length;
-  const left = Math.floor(pad / 2);
-  return " ".repeat(left) + text + " ".repeat(pad - left);
+// Lay a message across a `cols`-wide × 2-row plate grid: greedy word wrap into
+// at most two left-aligned lines of `cols`, never splitting a word. Each line is
+// space-padded to exactly `cols`. A lone word longer than `cols` is clipped.
+// Interior spaces stay in place (they become blank plates).
+export function layoutMessage(message: string, cols: number): [string, string] {
+  const words = message.trim().split(/\s+/).filter(Boolean);
+  let line1 = "";
+  let cut = 0;
+  for (; cut < words.length; cut += 1) {
+    const candidate = line1 ? `${line1} ${words[cut]}` : words[cut];
+    if (candidate.length > cols) break;
+    line1 = candidate;
+  }
+  if (!line1) {
+    line1 = (words[0] ?? "").slice(0, cols);
+    cut = 1;
+  }
+  const line2 = words.slice(cut).join(" ").slice(0, cols);
+  const pad = (s: string) => (s + " ".repeat(cols)).slice(0, cols);
+  return [pad(line1), pad(line2)];
 }

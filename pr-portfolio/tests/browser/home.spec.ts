@@ -28,23 +28,24 @@ async function seekScene(page: Page, scene: SceneName, local = 0.5) {
   await page.waitForTimeout(300);
 }
 
-// The word the split-flap has resolved to: the resting glyph of every shown
-// plate (interior gaps count as a space).
+// The message the split-flap has resolved to: the 12 × 2 plate grid read as
+// row 1 then row 2, each trimmed, joined with a space.
 async function flapText(page: Page): Promise<string> {
   return page.evaluate(() => {
     const row = document.querySelector('[data-flap-row]');
     if (!row) return '';
-    return [...row.querySelectorAll<HTMLElement>('[data-flap]')]
-      .filter(f => !f.hidden)
-      .map(f => f.classList.contains('is-gap') ? ' ' : (f.querySelector('[data-flap-bottom]')?.textContent ?? ''))
-      .join('')
-      .trim();
+    const cols = Number(row.getAttribute('data-flap-cols')) || 12;
+    const glyphs = [...row.querySelectorAll<HTMLElement>('[data-flap]')]
+      .map(f => f.querySelector('[data-flap-bottom]')?.textContent || ' ');
+    const r1 = glyphs.slice(0, cols).join('').trim();
+    const r2 = glyphs.slice(cols).join('').trim();
+    return [r1, r2].filter(Boolean).join(' ');
   });
 }
 
 const FLAP_MESSAGES = [
   'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
-  'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER', 'PAULA RODAS',
+  'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'PAULA RODAS DESIGNER',
 ] as const;
 
 // Scroll through the identity scene until the split-flap has settled on `word`.
@@ -86,13 +87,13 @@ test('static home is complete when JavaScript is unavailable', async ({ browser 
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
   // Identity close renders assembled: the name in plates + the roles list.
-  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS');
-  await expect(page.locator('[data-flap-row] [data-flap]:not([hidden])').first()).toBeVisible();
+  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS DESIGNER');
+  await expect(page.locator('[data-flap-row] [data-flap]').first()).toBeVisible();
   await expect(page.locator('.identity-roles-list')).toContainText('BUILDER');
   await expect(page.locator('.identity-roles-list')).toContainText('FULL-STACK DEVELOPER');
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '/contacto');
-  await expect(page.getByRole('link', { name: 'Explorar proyectos relacionados' }).first()).toHaveAttribute('href', '/work');
-  await expect(page.getByRole('link', { name: 'Explore my work' }).first()).toHaveAttribute('href', '/work');
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
+  await expect(page.getByRole('link', { name: 'Explorar proyectos relacionados' }).first()).toHaveAttribute('href', /\/work$/);
+  await expect(page.getByRole('link', { name: 'Explore my work' }).first()).toHaveAttribute('href', /\/work$/);
   await context.close();
 });
 
@@ -171,14 +172,15 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   await expect(page.locator('[data-flap-row] [data-flap]')).not.toHaveCount(1);
   await seekScene(page, 'identity', .04);
   await expect(page.locator('[data-motion="identity-ctas"]')).toBeHidden();
-  await seekFlapWord(page, 'UX DESIGNER');                     // its opening hold
-  await seekFlapWord(page, 'FULL-STACK DEVELOPER');            // roles turn in order
+  await seekFlapWord(page, 'UX DESIGNER');                        // its opening hold
+  await seekFlapWord(page, 'FULL-STACK DEVELOPER');               // wraps across the 2 rows
   await seekScene(page, 'identity', .95);
-  expect(await flapText(page)).toBe('PAULA RODAS');
+  expect(await flapText(page)).toBe('PAULA RODAS DESIGNER');      // name / role close
   await expect(page.locator('[data-motion="identity-head-b"]')).toBeVisible();
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '/contacto');
-  await seekFlapWord(page, 'DESIGNER');                        // back up → previous role
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
+  await expect(page.locator('.identity-roles-list li.is-in')).toHaveCount(7);
+  await seekFlapWord(page, 'BRAND DESIGNER');                     // back up → previous role
   await seekScene(page, 'identity', .95);
   await page.reload();
   await expect(root).toHaveAttribute('data-ready', 'true');
@@ -234,7 +236,7 @@ test('phone runs the same pinned journey, its phone indicator, and never scrolls
   // The split-flap turns through the roles and still closes on the name.
   await seekFlapWord(page, 'UX DESIGNER');
   await seekScene(page, 'identity', .95);
-  expect(await flapText(page)).toBe('PAULA RODAS');
+  expect(await flapText(page)).toBe('PAULA RODAS DESIGNER');
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
   // Reverse order on the way back up.
   for (const scene of ['manifesto', 'ai', 'code', 'figma', 'board', 'purpose', 'greeting'] as const) {
@@ -265,16 +267,16 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
   await expect(page.getByRole('heading', { name: 'Diseñar también es construir.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ampliar lo posible.' })).toBeVisible();
   await expect(page.getByText('Las personas le damos sentido.')).toBeVisible();
-  // The split-flap degrades to the name (resting) plus a plain roles list.
-  expect(await flapText(page)).toBe('PAULA RODAS');
-  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS');
+  // The split-flap degrades to the name / role close plus a plain roles list.
+  expect(await flapText(page)).toBe('PAULA RODAS DESIGNER');
+  await expect(page.locator('#identity-title')).toHaveText('I AM PAULA RODAS DESIGNER');
   await expect(page.locator('.identity-roles-list')).toBeVisible();
   await expect(page.locator('.identity-roles-list li')).toHaveText([
     'UX DESIGNER', 'UI DESIGNER', 'PRODUCT DESIGNER', 'UX ENGINEER',
-    'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER', 'DESIGNER',
+    'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER',
   ]);
   await expect(page.locator('.identity-ctas .button')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '/contacto');
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
   // Decorative tool windows stay out of the accessibility tree.
   for (const w of ['.figma-window', '.code-window', '.ai-window'])
     await expect(page.locator(w)).toHaveAttribute('aria-hidden', 'true');

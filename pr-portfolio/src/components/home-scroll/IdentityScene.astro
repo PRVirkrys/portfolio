@@ -11,9 +11,11 @@ import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 const id = copy.identity;
-// The split-flap turns through the roles, then the name (8A2 → 8B2).
-const messages = [...id.roles, id.name];
-const PLATES = 20; // "FULL-STACK DEVELOPER" is the widest
+// The split-flap turns through the first seven roles, then closes on the name
+// (row 1) over the last role (row 2): "PAULA RODAS" / "DESIGNER".
+const flapRoles = id.roles.slice(0, -1);
+const closingRole = id.roles[id.roles.length - 1];
+const COLS = 12; // fixed 12 × 2 grid
 ---
 <section class="home-scene home-identity" data-scene-panel="identity" aria-labelledby="identity-title">
   <div class="identity-logo" data-motion="identity-logo" aria-hidden="true">
@@ -28,14 +30,15 @@ const PLATES = 20; // "FULL-STACK DEVELOPER" is the widest
       <span class="identity-head__b" data-motion="identity-head-b">{id.closingPrefix}</span>
     </p>
     <SplitFlapDisplay
-      messages={messages}
-      plates={PLATES}
+      roles={flapRoles}
+      name={id.name}
+      closingRole={closingRole}
+      cols={COLS}
       prefixOpen={id.prefix}
       prefixClose={id.closingPrefix}
-      name={id.name}
     />
     <ul class="identity-roles-list" data-motion="identity-roles" aria-hidden="true">
-      {id.roles.map(role => <li>{role}</li>)}
+      {flapRoles.map(role => <li>{role}</li>)}
     </ul>
     <p class="identity-text" data-motion="identity-text">{id.text}</p>
     <div class="identity-ctas" data-motion="identity-ctas">
