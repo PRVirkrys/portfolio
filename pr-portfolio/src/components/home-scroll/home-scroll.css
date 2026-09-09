@@ -421,7 +421,11 @@
 }
 .narrative-cursor__msg {
   top: 41px;
-  background: #fafafb;
+  /* Figma node 16138:105150 — celeste chat bubble, dark ink, and the corner
+     nearest the cursor left square (all others 8px). */
+  padding: 4px 8px;
+  border-radius: 0 8px 8px 8px;
+  background: var(--color-brand-cyan-500);
   color: #10101f;
   opacity: var(--cursor-msg, 0);
 }
