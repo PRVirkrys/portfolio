@@ -27,6 +27,10 @@ const SCREENS = 26;
 // that scrolls up through the pinned viewport, so the ribbon keeps the height it
 // has in Figma node 16140:20804 (~1.9 viewports greeting-bottom to phrase-top).
 const RIBBON_SPAN = 1.9;
+// How far below the resting layout the purpose stage starts (in viewport
+// heights) before the strip scrolls it up. Shared by the caller's strip proxy
+// and animateTransition so the ribbon can end a clean gap above the phrase.
+const PURPOSE_DROP = 0.82;
 const read = (key: string) => {
   try {
     return sessionStorage.getItem(key);
@@ -286,9 +290,17 @@ function animateTransition(
   const yStep1 = y0 + s.height * 0.09;
   const xRight = s.width - Math.max(44, s.width * 0.07);
   const yStep2 = ch * 0.63;
-  const boxLeft = box ? box.getBoundingClientRect().left - s.left : s.width * 0.08;
+  const bx = box?.getBoundingClientRect();
+  const boxLeft = bx ? bx.left - s.left : s.width * 0.08;
   const xLeft = Math.max(r + 8, boxLeft + 6);
-  const yEnd = ch * 0.762;
+  // End a clear gap above the phrase's first line. The strip proxy scrolls the
+  // ribbon up by (RIBBON_SPAN-1)·h and the purpose stage from PURPOSE_DROP·h, so
+  // in this canvas the resting phrase top lands at (boxTop-s.top) + PURPOSE_DROP·h.
+  const gap = Math.max(30, s.height * 0.055);
+  const phraseTop = bx
+    ? bx.top - s.top + PURPOSE_DROP * s.height
+    : ch * 0.79;
+  const yEnd = Math.max(yStep2 + r + 40, phraseTop - gap);
   path.setAttribute(
     "d",
     [
@@ -1075,7 +1087,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
               const h = innerHeight;
               const up = -D * strip.p * h;
               gsap.set([greetLayout, ribbonSvg], { y: up });
-              gsap.set(purposeStage, { y: (0.82 - D * strip.p) * h });
+              gsap.set(purposeStage, { y: (PURPOSE_DROP - D * strip.p) * h });
             },
           },
           gEnd,
