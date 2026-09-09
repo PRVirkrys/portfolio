@@ -4,8 +4,9 @@ export type HomeCopy = {
   intro: {
     greeting: string; prefix: string; name: string;
     // Narrative cursor: label is a proper noun (never translated); the rest is
-    // the cursor bubble copy — short greeting, then the two idle nudges.
-    cursorLabel: string; cursorShort: string; idleQuestion: string; scrollInvite: string;
+    // the cursor bubble copy — short greeting, then the escalating idle nudges.
+    cursorLabel: string; cursorShort: string;
+    idleQuestion: string; scrollInvite: string; idlePing: string;
   };
   // `title` is the plain sentence (screen-reader label + static fallback).
   // `parts` is the same sentence split for the animation; concatenating the
@@ -46,6 +47,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       greeting: '¡Hola!', prefix: 'Yo soy', name: 'Paula Rodas',
       cursorLabel: 'Paula', cursorShort: 'Hey! Hola...',
       idleQuestion: '¿Continuamos...?', scrollInvite: 'Vamos, haz scroll...',
+      idlePing: 'Hey, ¿sigues ahí?',
     },
     purpose: {
       title: 'Diseño para darle forma a lo que todavía no está claro.',
@@ -144,6 +146,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       greeting: 'Hi!', prefix: 'I’m', name: 'Paula Rodas',
       cursorLabel: 'Paula', cursorShort: 'Hey! Hi...',
       idleQuestion: 'Shall we continue?', scrollInvite: 'Go ahead, scroll...',
+      idlePing: 'Hey, still there?',
     },
     purpose: {
       title: 'Design gives shape to what is not clear yet.',

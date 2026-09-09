@@ -6,7 +6,7 @@ const { homeCopy } = await import('../src/components/home-scroll/home-copy.ts');
 const LOCALES = ['es', 'en'];
 const INTRO_KEYS = [
   'greeting', 'prefix', 'name',
-  'cursorLabel', 'cursorShort', 'idleQuestion', 'scrollInvite',
+  'cursorLabel', 'cursorShort', 'idleQuestion', 'scrollInvite', 'idlePing',
 ];
 
 test('both locales carry the full intro + purpose contract', () => {
@@ -66,7 +66,7 @@ test('new narrative strings are not hardcoded in the GSAP logic', () => {
     // emphasis part legitimately collide with tokens such as "transform".
     for (const s of [
       c.intro.cursorShort, c.intro.idleQuestion, c.intro.scrollInvite,
-      c.purpose.title,
+      c.intro.idlePing, c.purpose.title,
     ]) {
       assert.ok(!src.includes(s), `"${s}" must come from copy, not home-scroll.ts`);
     }
