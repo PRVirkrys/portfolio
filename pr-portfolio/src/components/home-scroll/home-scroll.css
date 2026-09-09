@@ -105,18 +105,30 @@
 .home-purpose {
   text-align: center;
 }
+/* Reserve the phrase's full width so the box can grow with its typing without
+   the stage re-centring under it; the text stays left-aligned inside. */
 .home-purpose__stage {
   position: relative;
-  display: inline-block;
+  display: block;
+  width: min(90vw, 24ch);
   max-width: 100%;
+  margin-inline: auto;
+  text-align: left;
 }
 /* The purpose phrase is now a TextMark box (h2). Keep the heading reset from
    the shared rule; the box owns its own size/leading. */
 .home-purpose__title {
-  max-width: min(90vw, 24ch);
-  text-wrap: balance;
+  display: block;
+  max-width: 100%;
+}
+/* Fixed-width rectangle over the reserved stage; the phrase wraps inside it and
+   the box grows from one line to two as it is typed. */
+.home-purpose__title .text-mark__box {
+  display: block;
+  width: 100%;
 }
 .home-purpose__title .text-mark__text {
+  display: block;
   white-space: normal;
 }
 /* Click impact on the emphasis word: a quick pink starburst that collapses
@@ -232,8 +244,9 @@
 /* One reusable box (TextMark.astro) for the greeting lines and the purpose
    phrase. `--sel` (0..1) drives the whole selected look at once — blue border,
    corner handles, caret — so GSAP toggles it with a single tween and it
-   reverses cleanly. `--type` (0..1) is the left-to-right typing reveal.
-   `--emph` (0..1) turns the marked fragment to the semantic purple. */
+   reverses cleanly. The typing reveal animates each `.text-mark__char` from
+   width 0, so the box grows and the caret advances with the text. `--emph`
+   (0..1) turns the marked fragment to the semantic purple. */
 .text-mark {
   --text-mark-color: #fafafb;
   position: relative;
@@ -259,7 +272,6 @@
 .text-mark__text {
   display: inline-block;
   max-width: 100%;
-  clip-path: inset(-30% calc((1 - var(--type, 1)) * 100%) -30% -2%);
 }
 .text-mark__part {
   color: var(--text-mark-color);
@@ -271,17 +283,38 @@
     var(--home-greeting-purple) calc(var(--emph, 1) * 100%)
   );
 }
+/* A word never breaks mid-glyph; the whitespace between words still can. */
+.text-mark__word {
+  white-space: nowrap;
+}
+.text-mark__char {
+  display: inline-block;
+  width: auto;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+/* Inline bar that flows after the last revealed glyph, so it advances as the
+   text is typed. `--sel` gates it on; the blink runs on `visibility` so it
+   never overrides the gate and leak onto a deselected box. */
 .text-mark__caret {
-  position: absolute;
-  right: calc(var(--text-mark-pad) * 0.15);
-  top: 50%;
-  width: 0.05em;
-  height: 0.84em;
-  transform: translateY(-50%);
+  display: inline-block;
+  width: 0.06em;
+  height: 0.82em;
+  margin-left: 0.04em;
+  vertical-align: -0.06em;
   background: currentColor;
-  /* Gated by --sel only; a CSS blink animation would override this opacity and
-     leak a caret onto deselected boxes. */
   opacity: var(--sel, 0);
+  animation: text-mark-caret-blink 1.06s steps(1, end) infinite;
+}
+@keyframes text-mark-caret-blink {
+  0%,
+  50% {
+    visibility: visible;
+  }
+  50.01%,
+  100% {
+    visibility: hidden;
+  }
 }
 .text-mark__handle {
   position: absolute;
@@ -314,7 +347,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-width: 7.1em;
+  /* Reserve the widest line's width so the composition does not re-centre as
+     each box grows with its typing. */
+  min-width: 8.6em;
   /* Loose while typing, then tightened to a flush stack (Figma "Achica el gap").
      Stays >= 0 — a negative gap would just clamp. */
   gap: calc(var(--text-mark-size) * 0.26 * (1 - var(--gap-close, 0)));
@@ -337,7 +372,7 @@
 }
 .greeting-group__tick {
   position: absolute;
-  right: -1px;
+  right: 50%;
   width: 22px;
   height: 2px;
   background: var(--home-select-blue);
@@ -1837,8 +1872,11 @@ html.home-boot
   .scroll-indicator {
     display: none;
   }
-  .text-mark__text {
-    clip-path: none;
+  .text-mark__char {
+    width: auto !important;
+  }
+  .text-mark__caret {
+    animation: none;
   }
   .narrative-cursor,
   .home-ribbon {

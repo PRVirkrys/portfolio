@@ -79,12 +79,12 @@ function measureConnections(root: HTMLElement) {
   }
 }
 
-// The greeting: three Figma "Container text mark" boxes appear and are typed,
-// selected together, their line gap is tightened, then the selection clears.
-// Every state is a CSS variable (--type / --sel / --group-sel / --gap-close /
-// --cursor-msg) tweened on `main`, so scrubbing backwards replays it exactly —
-// no textContent is swapped. Cursor rest points are measured from the laid-out
-// composition, so they follow the language and viewport.
+// The greeting: three Figma "Container text mark" boxes appear and are typed
+// glyph by glyph (each `.text-mark__char` grows from width 0, so the box grows
+// and the blinking caret rides the last glyph), then the three are selected
+// together, their gap is tightened, and the selection clears. Every state is a
+// tween on `main`, so scrubbing backwards replays it exactly — no textContent
+// is swapped. Cursor rest points are measured from the laid-out composition.
 function animateGreeting(
   root: HTMLElement,
   tl: gsap.core.Timeline,
@@ -121,14 +121,32 @@ function animateGreeting(
     A(0),
   );
 
+  // Natural glyph widths, measured before anything is hidden.
+  const glyphsOf = (mk: HTMLElement) =>
+    [...mk.querySelectorAll<HTMLElement>(".text-mark__char")];
+  const glyphs = marks.map(glyphsOf);
+  const widths = glyphs.map((els) => els.map((e) => e.getBoundingClientRect().width));
+
   const line = (i: number, appearAt: number, typeAt: number, offAt: number) => {
     tl.fromTo(
       marks[i],
-      { autoAlpha: 0, "--sel": 0, "--type": 0 },
+      { autoAlpha: 0, "--sel": 0 },
       { autoAlpha: 1, "--sel": 1, duration: D(0.03) },
       A(appearAt),
     );
-    tl.to(marks[i], { "--type": 1, duration: D(0.09), ease: "none" }, A(typeAt));
+    const chars = glyphs[i];
+    const w = widths[i];
+    tl.fromTo(
+      chars,
+      { width: 0 },
+      {
+        width: (k: number) => w[k],
+        duration: 0.001,
+        stagger: D(0.11) / Math.max(1, chars.length),
+        ease: "steps(1)",
+      },
+      A(typeAt),
+    );
     tl.to(marks[i], { "--sel": 0, duration: D(0.03) }, A(offAt));
     if (i < 2)
       tl.to(
@@ -137,9 +155,9 @@ function animateGreeting(
         A(offAt + 0.01),
       );
   };
-  line(0, 0.05, 0.09, 0.21);
-  line(1, 0.27, 0.31, 0.41);
-  line(2, 0.47, 0.51, 0.63);
+  line(0, 0.04, 0.07, 0.2);
+  line(1, 0.24, 0.27, 0.4);
+  line(2, 0.44, 0.47, 0.61);
 
   // Select the three as a group, tighten the gap, move the cursor away, clear.
   tl.fromTo(
@@ -262,13 +280,27 @@ function animatePurpose(
   const hit = rel(emph ?? box);
   const boxC = rel(box);
 
+  // Glyphs typed one by one (box grows one line → two); caret rides the last.
+  const chars = [...box.querySelectorAll<HTMLElement>(".text-mark__char")];
+  const charW = chars.map((c) => c.getBoundingClientRect().width);
+
   tl.fromTo(
     box,
-    { autoAlpha: 0, y: 16, "--sel": 0, "--type": 0, "--emph": 0 },
+    { autoAlpha: 0, y: 16, "--sel": 0, "--emph": 0 },
     { autoAlpha: 1, y: 0, "--sel": 1, duration: span * 0.08, ease: "power2.out" },
     start,
   );
-  tl.to(box, { "--type": 1, duration: span * 0.22, ease: "none" }, start + span * 0.09);
+  tl.fromTo(
+    chars,
+    { width: 0 },
+    {
+      width: (k: number) => charW[k],
+      duration: 0.001,
+      stagger: (span * 0.24) / Math.max(1, chars.length),
+      ease: "steps(1)",
+    },
+    start + span * 0.09,
+  );
 
   tl.fromTo(
     cursor,
