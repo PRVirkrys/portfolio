@@ -138,6 +138,13 @@
   display: block;
   white-space: normal;
 }
+/* Reserve the phrase's wrapped height so the box fills top-down as it types
+   instead of growing upward off the bottom-anchored purpose stage. The phrase
+   sets in 3 lines at the shared box size; only the narrowest phones push it to
+   4 (see the 359px block). `em` tracks --text-mark-size. */
+.home-scroll[data-mode='cinematic'] .home-purpose__title .text-mark__text {
+  min-height: calc(1.15em * 3);
+}
 /* The emphasis word gets boxed in: the cursor draws a pink rounded rectangle
    around it (stroke-dashoffset), then the corners round to 12px. JS sizes the
    SVG and rect over the word (Figma node 16141:24701). */
@@ -1855,6 +1862,10 @@ html.home-boot
   }
   .home-page {
     --text-mark-size: clamp(19px, 6.6vw, 24px);
+  }
+  /* The phrase wraps to a 4th line at this width. */
+  .home-scroll[data-mode='cinematic'] .home-purpose__title .text-mark__text {
+    min-height: calc(1.15em * 4);
   }
   .board-card {
     padding: 12px 8px;
