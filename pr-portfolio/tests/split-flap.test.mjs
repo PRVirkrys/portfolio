@@ -68,7 +68,7 @@ test('every role transition resolves exactly onto its target copy', () => {
     'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER',
   ];
   const pad = (s) => (s + ' '.repeat(COLS)).slice(0, COLS);
-  const lines = [...roles.map((r) => layoutMessage(r, COLS)), [pad('PAULA RODAS'), pad('DESIGNER')]];
+  const lines = [...roles.map((r) => layoutMessage(r, COLS)), [pad('PAULA RODAS'), pad('DEV DESIGNER')]];
   for (let i = 0; i < lines.length - 1; i += 1) {
     const from = lines[i][0] + lines[i][1];        // 24 slots
     const to = lines[i + 1][0] + lines[i + 1][1];
@@ -79,7 +79,7 @@ test('every role transition resolves exactly onto its target copy', () => {
       landed += s.current;
     }
     const [r1, r2] = [landed.slice(0, COLS).trim(), landed.slice(COLS).trim()];
-    assert.equal([r1, r2].filter(Boolean).join(' '), (i + 1 < roles.length ? roles[i + 1] : 'PAULA RODAS DESIGNER'));
+    assert.equal([r1, r2].filter(Boolean).join(' '), (i + 1 < roles.length ? roles[i + 1] : 'PAULA RODAS DEV DESIGNER'));
   }
 });
 
