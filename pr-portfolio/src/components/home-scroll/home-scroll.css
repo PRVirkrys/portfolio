@@ -378,11 +378,11 @@
 }
 .greeting-group__tick {
   position: absolute;
-  right: -1px;
+  left: 50%;
   width: 20px;
   height: 2px;
   background: var(--home-select-blue);
-  transform: translateX(100%);
+  transform: translateX(-50%);
   opacity: var(--group-tick, 0);
 }
 .greeting-group__tick--1 {
