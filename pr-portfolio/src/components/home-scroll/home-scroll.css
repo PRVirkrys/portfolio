@@ -297,12 +297,10 @@
    text is typed. `--sel` gates it on; the blink runs on `visibility` so it
    never overrides the gate and leak onto a deselected box. */
 .text-mark__caret {
-  display: inline-block;
-  width: 0.06em;
-  height: 0.82em;
-  margin-left: 0.04em;
-  vertical-align: -0.06em;
-  background: currentColor;
+  /* The `|` glyph itself is the caret (matches Figma's component) — no bar
+     background, or the two would stack into a doubled cursor. */
+  font-weight: 400;
+  color: #fafafb;
   opacity: var(--sel, 0);
   animation: text-mark-caret-blink 1.06s steps(1, end) infinite;
 }
