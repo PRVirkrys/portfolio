@@ -110,7 +110,10 @@
 .home-purpose__stage {
   position: relative;
   display: block;
-  width: min(90vw, 24ch);
+  /* Sized off the box font so the phrase reads in ~2 lines on desktop and
+     wraps cleanly on narrow viewports. `ch`/`em` on the bare div would resolve
+     against the inherited body font, not the 48px box. */
+  width: min(92vw, calc(var(--text-mark-size) * 14));
   max-width: 100%;
   margin-inline: auto;
   text-align: left;
@@ -1572,9 +1575,6 @@ html.home-boot
   }
   .greeting-marks {
     min-width: 0;
-  }
-  .home-purpose__title {
-    max-width: min(88vw, 20ch);
   }
   .narrative-cursor__label,
   .narrative-cursor__msg {
