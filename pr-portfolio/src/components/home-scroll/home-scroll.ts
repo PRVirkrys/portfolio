@@ -265,43 +265,50 @@ function animateTransition(
   const svg = root.querySelector<SVGSVGElement>("[data-ribbon]");
   const path = root.querySelector<SVGPathElement>("[data-ribbon-path]");
   const stage = root.querySelector<HTMLElement>(".home-stage");
-  const greet = root.querySelector<HTMLElement>(".home-greeting__layout");
   const box = root.querySelector<HTMLElement>(".home-purpose__title");
-  if (!svg || !path || !stage || !greet || !box) return;
+  if (!svg || !path || !stage || !box) return;
 
   const s = stage.getBoundingClientRect();
-  const g = greet.getBoundingClientRect();
   const p = box.getBoundingClientRect();
   svg.setAttribute(
     "viewBox",
     `0 0 ${Math.round(s.width)} ${Math.round(s.height)}`,
   );
-  const r = Math.min(64, s.width * 0.05);
-  const x0 = Math.max(r + 4, g.left - s.left + g.width * 0.26);
-  const y0 = g.bottom - s.top + 10;
-  const y1 = Math.min(s.height - r - 8, y0 + s.height * 0.3);
-  const x1 = s.width - Math.max(40, s.width * 0.06);
-  const y2 = Math.max(r + 8, s.height * 0.16);
-  const x2 = Math.min(x1 - 2 * r - 4, p.left - s.left + p.width * 0.42);
-  const y3 = Math.max(y2 + r, p.top - s.top - 14);
+  // Descends in two steps — ↓ → ↓ ← ↓ — from just below the (shifted-up)
+  // greeting to just above the purpose box (Figma node 16140:20804 / Vector 3).
+  const r = Math.min(52, s.width * 0.045);
+  const pTop = p.top - s.top;
+  const x0 = s.width * 0.31;
+  const y0 = s.height * 0.32;
+  const yStep1 = y0 + s.height * 0.07;
+  const xRight = s.width - Math.max(44, s.width * 0.07);
+  // Turn back left well above the phrase, then a clear vertical drop onto it.
+  const yStep2 = Math.max(yStep1 + 2 * r + 12, pTop - Math.max(64, s.height * 0.11));
+  const xLeft = Math.max(r + 8, p.left - s.left + 8);
+  const yEnd = Math.max(yStep2 + r + 6, pTop - 14);
   path.setAttribute(
     "d",
     [
       `M ${x0} ${y0}`,
-      `L ${x0} ${y1 - r}`,
-      `Q ${x0} ${y1} ${x0 + r} ${y1}`,
-      `L ${x1 - r} ${y1}`,
-      `Q ${x1} ${y1} ${x1} ${y1 - r}`,
-      `L ${x1} ${y2 + r}`,
-      `Q ${x1} ${y2} ${x1 - r} ${y2}`,
-      `L ${x2 + r} ${y2}`,
-      `Q ${x2} ${y2} ${x2} ${y2 + r}`,
-      `L ${x2} ${y3}`,
+      `L ${x0} ${yStep1 - r}`,
+      `Q ${x0} ${yStep1} ${x0 + r} ${yStep1}`,
+      `L ${xRight - r} ${yStep1}`,
+      `Q ${xRight} ${yStep1} ${xRight} ${yStep1 + r}`,
+      `L ${xRight} ${yStep2 - r}`,
+      `Q ${xRight} ${yStep2} ${xRight - r} ${yStep2}`,
+      `L ${xLeft + r} ${yStep2}`,
+      `Q ${xLeft} ${yStep2} ${xLeft} ${yStep2 + r}`,
+      `L ${xLeft} ${yEnd}`,
     ].join(" "),
   );
   const len = path.getTotalLength();
   path.style.strokeDasharray = String(len);
-  gsap.set(path, { "--ribbon-op": 1 });
+  tl.fromTo(
+    path,
+    { "--ribbon-op": 0 },
+    { "--ribbon-op": 1, duration: (end - start) * 0.04 },
+    start,
+  );
   tl.fromTo(
     path,
     { strokeDashoffset: len },
@@ -986,7 +993,6 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       if (reduce.matches) return;
       const main = gsap.timeline({ defaults: { ease: "none" } });
       main.to({}, { duration: 1 });
-      const greeting = q('[data-scene-panel="greeting"]');
       const purpose = q('[data-scene-panel="purpose"]');
       const premise = q('[data-scene-panel="premise"]');
       const board = q('[data-scene-panel="board"]');
@@ -1046,17 +1052,31 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         const puStart = gEnd + TRANS;
 
         animateGreeting(root, main, gStart, GREET, copy);
-        leave(greeting, { autoAlpha: 0, y: -72, duration: TRANS * 0.72 }, gEnd);
+        // The greeting stays on screen — it just eases up toward the top while
+        // the ribbon draws down to deliver the purpose phrase below it
+        // (Figma node 16140:20804).
+        const greetLayout = q(".home-greeting__layout");
+        main.to(
+          greetLayout,
+          { y: () => -innerHeight * 0.28, duration: TRANS * 0.6, ease: "power2.inOut" },
+          gEnd,
+        );
         animateTransition(root, main, gEnd, gEnd + TRANS);
 
         main.fromTo(
           purpose,
           { autoAlpha: 0 },
           { autoAlpha: 1, duration: 0.06 },
-          gEnd + TRANS * 0.55,
+          gEnd + TRANS * 0.45,
         );
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
+        // Greeting, ribbon and phrase clear together into premise.
         leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, puStart + PURPOSE_HOLD);
+        main.to(
+          greetLayout,
+          { autoAlpha: 0, y: () => -innerHeight * 0.5, duration: 0.1 },
+          puStart + PURPOSE_HOLD,
+        );
         main.to(
           root.querySelector("[data-ribbon-path]"),
           { "--ribbon-op": 0, duration: 0.1 },

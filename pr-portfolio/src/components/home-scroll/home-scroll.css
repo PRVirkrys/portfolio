@@ -1473,6 +1473,14 @@ html:not(.dark) .hero-logo {
   height: 100%;
   min-height: 0;
 }
+/* The greeting keeps its place and eases toward the top; the purpose phrase is
+   delivered lower down so the transition ribbon has room to descend between
+   them (Figma node 16140:20804). Compound selector so it beats the mobile
+   `.home-scene { align-items: flex-start }` override. */
+.home-scroll[data-mode="cinematic"] .home-scene.home-purpose {
+  align-items: flex-end;
+  padding-bottom: calc(var(--home-footer-height) + var(--home-bottom-nav) + 96px);
+}
 .home-intro {
   position: fixed;
   inset: 0;
