@@ -185,37 +185,53 @@ function animateGreeting(
   const boxHTight = Math.max(0, boxH - 2 * gap0);
   const topLeft = { x: bx0 - 8, y: by0 - 10 };
   const botRight = { x: bx1 + 4, y: by1 + 6 };
+  // The lower gap tick sits at 66% of the box height, centred horizontally.
+  // The cursor grabs it and drags up to close the gap.
+  const groupTop = by0 - 4;
+  const tick2 = { x: bx0 - 4 + boxW / 2, y: groupTop + boxH * 0.66 };
+  const tick2Tight = { x: tick2.x, y: groupTop + boxHTight * 0.66 };
 
   gsap.set(group, { left: -4, top: -4 });
 
   tl.to(
     cursor,
-    { x: topLeft.x, y: topLeft.y, duration: D(0.05), ease: "power2.inOut" },
+    { x: topLeft.x, y: topLeft.y, duration: D(0.04), ease: "power2.inOut" },
     A(0.55),
   );
   tl.fromTo(
     group,
     { autoAlpha: 0, "--group-sel": 1, "--group-handles": 0, "--group-tick": 0, width: 0, height: 0 },
-    { autoAlpha: 1, width: boxW, height: boxH, duration: D(0.13), ease: "none" },
-    A(0.61),
+    { autoAlpha: 1, width: boxW, height: boxH, duration: D(0.12), ease: "none" },
+    A(0.6),
   );
   tl.to(
     cursor,
-    { x: botRight.x, y: botRight.y, duration: D(0.13), ease: "none" },
-    A(0.61),
+    { x: botRight.x, y: botRight.y, duration: D(0.12), ease: "none" },
+    A(0.6),
   );
-  tl.to(group, { "--group-handles": 1, "--group-tick": 1, duration: D(0.05) }, A(0.76));
+  tl.to(group, { "--group-handles": 1, "--group-tick": 1, duration: D(0.04) }, A(0.73));
+  // Cursor moves onto the lower tick, then drags it up while the gap closes.
+  tl.to(
+    cursor,
+    { x: tick2.x - 2, y: tick2.y - 2, duration: D(0.05), ease: "power2.inOut" },
+    A(0.78),
+  );
   tl.fromTo(
     marksWrap,
     { "--gap-close": 0 },
     { "--gap-close": 1, duration: D(0.12), ease: "power2.inOut" },
-    A(0.78),
+    A(0.85),
   );
-  tl.to(group, { height: boxHTight, duration: D(0.12), ease: "power2.inOut" }, A(0.78));
+  tl.to(group, { height: boxHTight, duration: D(0.12), ease: "power2.inOut" }, A(0.85));
   tl.to(
     cursor,
-    { x: lowerLeft.x, y: lowerLeft.y, duration: D(0.09), ease: "power1.inOut" },
-    A(0.92),
+    { x: tick2Tight.x - 2, y: tick2Tight.y - 2, duration: D(0.12), ease: "power2.inOut" },
+    A(0.85),
+  );
+  tl.to(
+    cursor,
+    { x: lowerLeft.x, y: lowerLeft.y, duration: D(0.07), ease: "power1.inOut" },
+    A(0.98),
   );
   tl.to(
     group,
