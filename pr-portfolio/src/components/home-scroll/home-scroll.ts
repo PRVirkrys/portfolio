@@ -109,10 +109,12 @@ function animateGreeting(
     return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height };
   };
   const m = marks.map(rel);
-  // The cursor sits at a box's start when its typing begins, then rides to the
-  // end as the glyphs fill in — as if a person were typing into it.
-  const head = (i: number) => ({ x: m[i].x - 5, y: m[i].y + m[i].h * 0.5 });
-  const tail = (i: number) => ({ x: m[i].x + m[i].w - 6, y: m[i].y + m[i].h * 0.5 });
+  // The cursor rides along ~8px under the box's bottom edge: it drops to the
+  // start when a box's typing begins, then travels to the end as the glyphs
+  // fill in — as if a person were typing into it.
+  const UNDER = 8;
+  const head = (i: number) => ({ x: m[i].x + 2, y: m[i].y + m[i].h + UNDER });
+  const tail = (i: number) => ({ x: m[i].x + m[i].w - 4, y: m[i].y + m[i].h + UNDER });
   const lowerLeft = { x: m[2].x - 10, y: m[2].y + m[2].h + 16 };
   const A = (f: number) => start + f * span;
   const D = (f: number) => f * span;
