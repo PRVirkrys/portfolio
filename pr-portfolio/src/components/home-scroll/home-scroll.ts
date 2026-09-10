@@ -138,11 +138,13 @@ function animateGreeting(
     ? [...marksWrap.querySelectorAll<HTMLElement>(".greeting-mark")]
     : [];
   const group = root.querySelector<HTMLElement>("[data-greeting-group]");
-  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--greeting");
+  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--travel");
+  const stageEl = root.querySelector<HTMLElement>(".home-stage");
   const msgEl = cursor?.querySelector<HTMLElement>("[data-cursor-msg]") ?? null;
   const msgInner =
     cursor?.querySelector<HTMLElement>("[data-cursor-msg-text]") ?? null;
-  if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor) return;
+  if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor || !stageEl)
+    return;
   // Seed the bubble with `cursorShort` as per-glyph spans, collapsed to width 0
   // — `revealBubble` (fired from the timeline) types them in letter by letter,
   // and the idle controller rebuilds them for its own nudges.
@@ -156,13 +158,20 @@ function animateGreeting(
     return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height };
   };
   const m = marks.map(rel);
+  // The cursor now lives at `.home-stage` level, not inside the greeting layout,
+  // so every rest point (measured in layout space for the box-draw maths) is
+  // lifted into stage space before it reaches the cursor. The greeting plays
+  // before the strip proxy translates the layout, so this offset is constant.
+  const stageBox = stageEl.getBoundingClientRect();
+  const off = { x: base.left - stageBox.left, y: base.top - stageBox.top };
+  const C = (p: { x: number; y: number }) => ({ x: p.x + off.x, y: p.y + off.y });
   // The cursor rides along ~8px under the box's bottom edge: it drops to the
   // start when a box's typing begins, then travels to the end as the glyphs
   // fill in — as if a person were typing into it.
   const UNDER = 8;
-  const head = (i: number) => ({ x: m[i].x + 2, y: m[i].y + m[i].h + UNDER });
-  const tail = (i: number) => ({ x: m[i].x + m[i].w - 4, y: m[i].y + m[i].h + UNDER });
-  const lowerLeft = { x: m[2].x - 10, y: m[2].y + m[2].h + 16 };
+  const head = (i: number) => C({ x: m[i].x + 2, y: m[i].y + m[i].h + UNDER });
+  const tail = (i: number) => C({ x: m[i].x + m[i].w - 4, y: m[i].y + m[i].h + UNDER });
+  const lowerLeft = C({ x: m[2].x - 10, y: m[2].y + m[2].h + 16 });
   const A = (f: number) => start + f * span;
   const D = (f: number) => f * span;
   const TYPE = 0.11;
@@ -230,13 +239,14 @@ function animateGreeting(
   const boxW = bx1 - bx0 + 8;
   const boxH = by1 - by0 + 8;
   const boxHTight = Math.max(0, boxH - 2 * gap0);
-  const topLeft = { x: bx0 - 8, y: by0 - 10 };
-  const botRight = { x: bx1 + 4, y: by1 + 6 };
+  const topLeft = C({ x: bx0 - 8, y: by0 - 10 });
+  const botRight = C({ x: bx1 + 4, y: by1 + 6 });
   // The lower gap tick sits at 66% of the box height, centred horizontally.
   // The cursor grabs it and drags up to close the gap.
   const groupTop = by0 - 4;
-  const tick2 = { x: bx0 - 4 + boxW / 2, y: groupTop + boxH * 0.66 };
-  const tick2Tight = { x: tick2.x, y: groupTop + boxHTight * 0.66 };
+  const tick2Raw = { x: bx0 - 4 + boxW / 2, y: groupTop + boxH * 0.66 };
+  const tick2 = C(tick2Raw);
+  const tick2Tight = C({ x: tick2Raw.x, y: groupTop + boxHTight * 0.66 });
 
   gsap.set(group, { left: -4, top: -4 });
 
@@ -418,13 +428,30 @@ function animatePurpose(
   const emph = box?.querySelector<HTMLElement>("[data-emphasis]") ?? null;
   const markSvg = root.querySelector<SVGSVGElement>("[data-purpose-mark]");
   const markRect = root.querySelector<SVGRectElement>("[data-purpose-mark-rect]");
-  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--purpose");
-  if (!stageEl || !box || !cursor || !emph || !markSvg || !markRect) return;
+  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--travel");
+  const homeStage = root.querySelector<HTMLElement>(".home-stage");
+  if (!stageEl || !box || !cursor || !emph || !markSvg || !markRect || !homeStage)
+    return;
   const span = end - start;
 
   const base = stageEl.getBoundingClientRect();
+  // The cursor sits at `.home-stage` level, so its targets are lifted from
+  // purpose-stage space into stage space. `.home-purpose__stage` is left
+  // translated up by (PURPOSE_DROP - (RIBBON_SPAN - 1))·vh by the strip proxy
+  // once the transition has run, and the cursor is not under that translate —
+  // fold that residual in too. The purpose mark svg IS inside the purpose stage,
+  // so its own geometry (`forma`, `mx`/`my`…) stays in the un-offset frame.
+  const stageBox = homeStage.getBoundingClientRect();
+  const off = {
+    x: base.left - stageBox.left,
+    y:
+      base.top -
+      stageBox.top +
+      (PURPOSE_DROP - (RIBBON_SPAN - 1)) * window.innerHeight,
+  };
+  const C = (p: { x: number; y: number }) => ({ x: p.x + off.x, y: p.y + off.y });
   // The emphasis word's box (full size — measured now, before the glyphs are
-  // collapsed for the typing reveal), relative to the stage.
+  // collapsed for the typing reveal), relative to the purpose stage.
   const er = emph.getBoundingClientRect();
   const forma = {
     x: er.left - base.left,
@@ -444,8 +471,8 @@ function animatePurpose(
   const UNDER = 8;
   // Same idea as the greeting boxes: the cursor drops to the box's start, then
   // rides ~8px under its bottom edge as the glyphs fill in.
-  const startPt = { x: boxL - 6, y: boxT + lineH + UNDER };
-  const endPt = { x: boxR - 8, y: boxB + UNDER };
+  const startPt = C({ x: boxL - 6, y: boxT + lineH + UNDER });
+  const endPt = C({ x: boxR - 8, y: boxB + UNDER });
 
   // Glyphs typed one by one; caret rides the last.
   const chars = [...box.querySelectorAll<HTMLElement>(".text-mark__char")];
@@ -512,11 +539,12 @@ function animatePurpose(
   const perim = 2 * (mw + mh);
   markRect.style.strokeDasharray = String(perim);
 
-  // Rect corners in stage coords; the stroke draws clockwise from the top-left.
-  const TL = { x: mx, y: my };
-  const TR = { x: mx + mw, y: my };
-  const BR = { x: mx + mw, y: my + mh };
-  const BL = { x: mx, y: my + mh };
+  // Rect corners the cursor traces, lifted into stage space; the stroke draws
+  // clockwise from the top-left.
+  const TL = C({ x: mx, y: my });
+  const TR = C({ x: mx + mw, y: my });
+  const BR = C({ x: mx + mw, y: my + mh });
+  const BL = C({ x: mx, y: my + mh });
   const drawAt = start + span * 0.44;
   const drawDur = span * 0.32;
   const side = drawDur / 4;
@@ -1177,6 +1205,15 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           gEnd,
         );
         main.fromTo(purpose, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, gEnd);
+        // The one cursor used to ride away inside the greeting layout; now it is
+        // stage-level, so hide it across the ribbon transition. P2b replaces this
+        // with the cursor following the ribbon draw. `animatePurpose` fades it
+        // back in at the phrase.
+        main.to(
+          root.querySelector(".narrative-cursor--travel"),
+          { autoAlpha: 0, duration: 0.04 },
+          gEnd,
+        );
 
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
         // Greeting, ribbon and phrase clear together into premise.
@@ -1406,10 +1443,10 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       // then the scroll invite. Wall-clock text swap on an aria-hidden bubble —
       // not part of the scrubbed state — cleared on the next scroll.
       const idleMsgEl = root.querySelector<HTMLElement>(
-        ".narrative-cursor--greeting [data-cursor-msg-text]",
+        ".narrative-cursor--travel [data-cursor-msg-text]",
       );
       const idleBubble = root.querySelector<HTMLElement>(
-        ".narrative-cursor--greeting [data-cursor-msg]",
+        ".narrative-cursor--travel [data-cursor-msg]",
       );
       // Swap the bubble text and type it in letter by letter (per-glyph spans,
       // bubble grows with it). A one-off GSAP tween — not a timer, not on the
