@@ -1188,6 +1188,18 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         const ribbonSvg = q("[data-ribbon]");
         const purposeStage = q(".home-purpose__stage");
         const D = RIBBON_SPAN - 1;
+        // The one cursor rides the ribbon as it draws: `getPointAtLength` walks
+        // the path (viewBox ≈ stage px, origin = stage top-left) and the same
+        // upward `y` the strip proxy applies to the ribbon svg is added, since
+        // the stage-level cursor is not under that translate.
+        const travelCursor = root.querySelector<HTMLElement>(
+          ".narrative-cursor--travel",
+        );
+        const ribbonPath = root.querySelector<SVGPathElement>("[data-ribbon-path]");
+        const ribbonLen =
+          ribbonPath && ribbonPath.getAttribute("d")
+            ? ribbonPath.getTotalLength()
+            : 0;
         const strip = { p: 0 };
         main.to(
           strip,
@@ -1200,29 +1212,39 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
               const up = -D * strip.p * h;
               gsap.set([greetLayout, ribbonSvg], { y: up });
               gsap.set(purposeStage, { y: (PURPOSE_DROP - D * strip.p) * h });
+              if (travelCursor && ribbonLen) {
+                const pt = ribbonPath!.getPointAtLength(ribbonLen * strip.p);
+                gsap.set(travelCursor, { x: pt.x, y: pt.y + up });
+              }
             },
           },
           gEnd,
         );
         main.fromTo(purpose, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, gEnd);
-        // The one cursor used to ride away inside the greeting layout; now it is
-        // stage-level, so hide it across the ribbon transition. P2b replaces this
-        // with the cursor following the ribbon draw. `animatePurpose` fades it
-        // back in at the phrase.
-        main.to(
-          root.querySelector(".narrative-cursor--travel"),
-          { autoAlpha: 0, duration: 0.04 },
+        // The bubble's greeting line is put away as the ribbon takes over; P2c
+        // brings it back mid-draw with "Hey, ¡espérame!".
+        main.set(
+          root.querySelector(".narrative-cursor--travel [data-cursor-msg]"),
+          { "--cursor-msg": 0 },
           gEnd,
         );
 
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
-        // Greeting, ribbon and phrase clear together into premise.
+        // Greeting, ribbon and phrase clear together into premise. The travel
+        // cursor is stage-level (not inside the purpose section), so fade it out
+        // explicitly here — the scene cursors take over from board onward.
         leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, puStart + PURPOSE_HOLD);
         main.to(
           [greetLayout, ribbonSvg],
           { autoAlpha: 0, duration: 0.1 },
           puStart + PURPOSE_HOLD,
         );
+        if (travelCursor)
+          main.to(
+            travelCursor,
+            { autoAlpha: 0, duration: 0.08 },
+            puStart + PURPOSE_HOLD,
+          );
         at = puStart + PURPOSE_HOLD + 0.05;
 
         // 1 → 2 · purpose to premise.
