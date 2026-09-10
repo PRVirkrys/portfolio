@@ -38,6 +38,20 @@ export type HomeCopy = {
     tag: string; prefix: string; closingPrefix: string; roles: string[]; name: string;
     text: string; ctaPrimary: string; ctaSecondary: string;
   };
+  // First-person lines Paula "says" as the scrub reaches a point on the pinned
+  // timeline — a beat: driven by scroll, reverts when scrubbed back. One phrase
+  // per beat for now; an array so a beat can grow. Scene keys are optional and
+  // tolerant: a scene with no entry just means the cursor parks there silently.
+  narration: {
+    transition: { say: string }[];
+    premise?: { say: string }[];
+    board?: { say: string }[];
+    figma?: { say: string }[];
+    code?: { say: string }[];
+    ai?: { say: string }[];
+    manifesto?: { say: string }[];
+    identity?: { say: string }[];
+  };
   relatedProjects: string; scroll: string; skip: string;
 };
 // Stable content contract; JSON and language routing can replace this adapter later.
@@ -139,6 +153,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
     },
+    narration: { transition: [{ say: 'Hey, ¡espérame!' }] },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
@@ -238,6 +253,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
     },
+    narration: { transition: [{ say: 'Hey, wait for me!' }] },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',
   },
 };

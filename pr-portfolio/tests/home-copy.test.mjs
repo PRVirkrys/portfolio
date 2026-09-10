@@ -30,6 +30,22 @@ test('es and en expose the same keys', () => {
     Object.keys(homeCopy.es.purpose).sort(),
     Object.keys(homeCopy.en.purpose).sort(),
   );
+  assert.deepEqual(
+    Object.keys(homeCopy.es.narration).sort(),
+    Object.keys(homeCopy.en.narration).sort(),
+  );
+});
+
+test('narration beats carry a first-person phrase in both locales', () => {
+  for (const loc of LOCALES) {
+    for (const [scene, lines] of Object.entries(homeCopy[loc].narration)) {
+      assert.ok(Array.isArray(lines) && lines.length > 0, `${loc}.narration.${scene} is a non-empty array`);
+      assert.ok(
+        lines.every((l) => typeof l.say === 'string' && l.say.length > 0),
+        `${loc}.narration.${scene} entries each have a non-empty say`,
+      );
+    }
+  }
 });
 
 test('the cursor label is the proper noun, never translated', () => {
@@ -67,6 +83,7 @@ test('new narrative strings are not hardcoded in the GSAP logic', () => {
     for (const s of [
       c.intro.cursorShort, c.intro.idleQuestion, c.intro.scrollInvite,
       c.intro.idlePing, c.purpose.title,
+      ...Object.values(c.narration).flat().map((l) => l.say),
     ]) {
       assert.ok(!src.includes(s), `"${s}" must come from copy, not home-scroll.ts`);
     }
