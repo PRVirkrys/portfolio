@@ -609,7 +609,7 @@ function animateBoard(
     { opacity: 1, scale: 1, duration: span * 0.16 },
     start + span * 0.82,
   );
-  const cursor = q('[data-motion="board-cursor"]');
+  const cursor = q(".narrative-cursor--board");
   tl.fromTo(
     cursor,
     { opacity: 0, x: small ? -90 : -230, y: -170 },
@@ -663,7 +663,7 @@ function animateFigma(
     { autoAlpha: 1, x: 0, duration: span * 0.1, stagger: span * 0.03 },
     start + span * 0.5,
   );
-  const cursor = q('[data-motion="figma-cursor"]');
+  const cursor = q(".narrative-cursor--figma");
   tl.fromTo(
     cursor,
     { autoAlpha: 0, x: 70, y: 60 },
@@ -716,7 +716,7 @@ function animateCode(
     { "--code-hl": "1", duration: span * 0.12 },
     start + span * 0.52,
   );
-  const cursor = q('[data-motion="code-cursor"]');
+  const cursor = q(".narrative-cursor--code");
   tl.fromTo(
     cursor,
     { autoAlpha: 0, x: 40, y: -30 },
@@ -797,7 +797,7 @@ function animateAI(
     { autoAlpha: 1, y: 0, duration: span * 0.07, stagger: span * 0.035 },
     start + span * 0.74,
   );
-  const cursor = q('[data-motion="ai-cursor"]');
+  const cursor = q(".narrative-cursor--ai");
   tl.fromTo(
     cursor,
     { autoAlpha: 0, x: 40, y: 30 },
