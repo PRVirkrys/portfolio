@@ -345,11 +345,15 @@ function animateTransition(
   svg.setAttribute("viewBox", `0 0 ${Math.round(s.width)} ${Math.round(ch)}`);
   svg.style.height = `${RIBBON_SPAN * 100}%`;
 
-  // Fractions of the tall canvas, matching the Figma section: greeting bottom
-  // ~0.34, ribbon 0.358→0.769, phrase top ~0.786.
+  // The line is born at the centre of the hero logo (the R), measured live so it
+  // holds at every resolution. The svg (preserveAspectRatio="none", viewBox in
+  // stage px, origin = stage top-left) and the logo's layout are scrolled up
+  // together by the strip proxy, so this anchor stays glued to the R.
+  const logo = root.querySelector<HTMLElement>('[data-motion="hero-logo"]');
+  const lr = logo?.getBoundingClientRect();
   const r = Math.min(56, s.width * 0.045);
-  const x0 = s.width * 0.31;
-  const y0 = ch * 0.358;
+  const x0 = lr ? lr.left + lr.width / 2 - s.left : s.width * 0.31;
+  const y0 = lr ? lr.top + lr.height / 2 - s.top : ch * 0.358;
   const yStep1 = y0 + s.height * 0.09;
   const xRight = s.width - Math.max(44, s.width * 0.07);
   const yStep2 = ch * 0.63;
@@ -1141,6 +1145,10 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         const gEnd = gStart + GREET + GREET_HOLD;
         const puStart = gEnd + TRANS;
 
+        // Build the ribbon first: it measures the hero logo for its start point,
+        // and animateGreeting collapses the greeting glyphs to width 0 at build
+        // (which recentres the flex row and shifts the logo).
+        animateTransition(root, main, gEnd, gEnd + TRANS);
         animateGreeting(root, main, gStart, GREET, copy);
 
         // The greeting, ribbon and purpose stage are one tall strip that scrolls
@@ -1166,7 +1174,6 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           },
           gEnd,
         );
-        animateTransition(root, main, gEnd, gEnd + TRANS);
         main.fromTo(purpose, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, gEnd);
 
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
