@@ -345,15 +345,17 @@ function animateTransition(
   svg.setAttribute("viewBox", `0 0 ${Math.round(s.width)} ${Math.round(ch)}`);
   svg.style.height = `${RIBBON_SPAN * 100}%`;
 
-  // The line is born at the centre of the hero logo (the R), measured live so it
-  // holds at every resolution. The svg (preserveAspectRatio="none", viewBox in
-  // stage px, origin = stage top-left) and the logo's layout are scrolled up
+  // The line is born under the hero logo (the R): horizontally centred on it,
+  // starting 16px below its bottom edge — never overlapping it. Measured live so
+  // it holds at every resolution; the svg (preserveAspectRatio="none", viewBox
+  // in stage px, origin = stage top-left) and the logo's layout are scrolled up
   // together by the strip proxy, so this anchor stays glued to the R.
   const logo = root.querySelector<HTMLElement>('[data-motion="hero-logo"]');
   const lr = logo?.getBoundingClientRect();
+  const sw = parseFloat(getComputedStyle(path).strokeWidth) || 10;
   const r = Math.min(56, s.width * 0.045);
   const x0 = lr ? lr.left + lr.width / 2 - s.left : s.width * 0.31;
-  const y0 = lr ? lr.top + lr.height / 2 - s.top : ch * 0.358;
+  const y0 = lr ? lr.bottom - s.top + 16 + sw / 2 : ch * 0.358;
   const yStep1 = y0 + s.height * 0.09;
   const xRight = s.width - Math.max(44, s.width * 0.07);
   const yStep2 = ch * 0.63;
