@@ -25,6 +25,9 @@ const copy = homeCopy[locale];
     <div class="home-intro" data-intro-overlay aria-hidden="true">
       <span class="home-intro__line" data-intro-line></span>
     </div>
+    <!-- One cursor for the whole home journey, in stage space. The greeting and
+         purpose choreography drive it; from P2b it also follows the ribbon draw. -->
+    <NarrativeCursor label={copy.intro.cursorLabel} class="narrative-cursor--travel" />
     <section class="home-scene home-greeting" data-scene-panel="greeting" aria-labelledby="greeting-title">
       <div class="home-greeting__layout">
         <AnimatedHeroLogo />
@@ -44,7 +47,6 @@ const copy = homeCopy[locale];
             </span>
           </span>
         </h1>
-        <NarrativeCursor label={copy.intro.cursorLabel} class="narrative-cursor--greeting" />
       </div>
     </section>
     <PurposeScene copy={copy} />

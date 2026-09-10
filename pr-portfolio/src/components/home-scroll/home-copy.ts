@@ -3,10 +3,9 @@ export type TextPart = { text: string; emphasis?: boolean };
 export type HomeCopy = {
   intro: {
     greeting: string; prefix: string; name: string;
-    // Narrative cursor: label is a proper noun (never translated); the rest is
-    // the cursor bubble copy — short greeting, then the escalating idle nudges.
+    // Narrative cursor: label is a proper noun (never translated); `cursorShort`
+    // is the resting bubble line. The idle nudges live in `idle` below.
     cursorLabel: string; cursorShort: string;
-    idleQuestion: string; scrollInvite: string; idlePing: string;
   };
   // `title` is the plain sentence (screen-reader label + static fallback).
   // `parts` is the same sentence split for the animation; concatenating the
@@ -38,6 +37,34 @@ export type HomeCopy = {
     tag: string; prefix: string; closingPrefix: string; roles: string[]; name: string;
     text: string; ctaPrimary: string; ctaSecondary: string;
   };
+  // First-person lines Paula "says" as the scrub reaches a point on the pinned
+  // timeline — a beat: driven by scroll, reverts when scrubbed back. One phrase
+  // per beat for now; an array so a beat can grow. Scene keys are optional and
+  // tolerant: a scene with no entry just means the cursor parks there silently.
+  narration: {
+    transition: { say: string }[];
+    premise?: { say: string }[];
+    board?: { say: string }[];
+    figma?: { say: string }[];
+    code?: { say: string }[];
+    ai?: { say: string }[];
+    manifesto?: { say: string }[];
+    identity?: { say: string }[];
+  };
+  // Idle nudges (wall-clock, fired when the user stops). `greeting` escalates
+  // through its three; every other section shows one soft line — its own key if
+  // present, otherwise `_default`. A section with no cursor yet just stays quiet.
+  idle: {
+    greeting: [string, string, string];
+    _default: string[];
+    premise?: string[];
+    board?: string[];
+    figma?: string[];
+    code?: string[];
+    ai?: string[];
+    manifesto?: string[];
+    identity?: string[];
+  };
   relatedProjects: string; scroll: string; skip: string;
 };
 // Stable content contract; JSON and language routing can replace this adapter later.
@@ -46,8 +73,10 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     intro: {
       greeting: '¡Hola!', prefix: 'Yo soy', name: 'Paula Rodas',
       cursorLabel: 'Paula', cursorShort: 'Hey! Hola...',
-      idleQuestion: '¿Continuamos...?', scrollInvite: 'Vamos, haz scroll...',
-      idlePing: 'Hey, ¿sigues ahí?',
+    },
+    idle: {
+      greeting: ['¿Continuamos...?', 'Vamos, haz scroll...', 'Hey, ¿sigues ahí?'],
+      _default: ['Sigo aquí. Cuando quieras, seguimos.'],
     },
     purpose: {
       title: 'Diseño para darle forma a lo que todavía no está claro.',
@@ -139,14 +168,17 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
     },
+    narration: { transition: [{ say: 'Hey, ¡espérame!' }] },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
   en: {
     intro: {
       greeting: 'Hi!', prefix: 'I’m', name: 'Paula Rodas',
       cursorLabel: 'Paula', cursorShort: 'Hey! Hi...',
-      idleQuestion: 'Shall we continue?', scrollInvite: 'Go ahead, scroll...',
-      idlePing: 'Hey, still there?',
+    },
+    idle: {
+      greeting: ['Shall we continue?', 'Go ahead, scroll...', 'Hey, still there?'],
+      _default: ["Still here. Whenever you're ready."],
     },
     purpose: {
       title: 'Design gives shape to what is not clear yet.',
@@ -238,6 +270,7 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
     },
+    narration: { transition: [{ say: 'Hey, wait for me!' }] },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',
   },
 };

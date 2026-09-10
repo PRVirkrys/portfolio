@@ -2,7 +2,7 @@
 import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
 import { ArrowUp } from '@lucide/astro';
-import cursor from '../../assets/home-scroll/cursor.svg';
+import NarrativeCursor from './NarrativeCursor.astro';
 import type { HomeCopy } from './home-copy';
 import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
@@ -57,10 +57,7 @@ const win = ai.window;
               <span class="ai-artifact__meta" data-motion="ai-artifact-el">{win.artifactNote}</span>
             </div>
           </div>
-          <div class="ai-cursor" data-motion="ai-cursor">
-            <img src={cursor.src} width="24" height="28" alt="" />
-            <span>{copy.board.cursor}</span>
-          </div>
+          <NarrativeCursor label="Paula" class="narrative-cursor--ai" />
         </div>
       </div>
     </div>

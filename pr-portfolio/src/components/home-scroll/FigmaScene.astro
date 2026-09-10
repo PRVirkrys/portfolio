@@ -1,7 +1,7 @@
 ---
 import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
-import cursor from '../../assets/home-scroll/cursor.svg';
+import NarrativeCursor from './NarrativeCursor.astro';
 import type { HomeCopy } from './home-copy';
 import { withBase } from '../../lib/url';
 interface Props { copy: HomeCopy }
@@ -39,10 +39,7 @@ const categories = ['UX Design', 'UI Design', 'Design Systems'] as const;
           <div class="figma-wire__cta" data-motion="figma-block"></div>
         </div>
         <div class="figma-feedback" data-motion="figma-feedback">{figma.window.feedback}</div>
-        <div class="figma-cursor" data-motion="figma-cursor">
-          <img src={cursor.src} width="24" height="28" alt="" />
-          <span>{copy.board.cursor}</span>
-        </div>
+        <NarrativeCursor label="Paula" class="narrative-cursor--figma" />
       </div>
       <aside class="figma-window__panel figma-window__props">
         <p class="figma-window__panel-title">{figma.window.propsTitle}</p>
