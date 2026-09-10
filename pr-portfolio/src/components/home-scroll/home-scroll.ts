@@ -482,10 +482,12 @@ function animatePurpose(
   // so the bottom-anchored box fills top-down as it types instead of growing
   // upward — a build-time pixel measurement here raced the webfont swap.
 
-  // 1 · the cursor appears and positions at the box's start …
+  // 1 · the cursor eases to the box's start. It arrives here already on screen
+  // (riding the ribbon), so this only nudges position — no autoAlpha:0 in the
+  // `from`, or scrubbing back out of purpose would strand it invisible.
   tl.fromTo(
     cursor,
-    { autoAlpha: 0, x: startPt.x + 44, y: startPt.y + 42 },
+    { x: startPt.x + 44, y: startPt.y + 42 },
     { autoAlpha: 1, x: startPt.x, y: startPt.y, duration: span * 0.05, ease: "power2.out" },
     start,
   );
@@ -1215,7 +1217,10 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
               gsap.set(purposeStage, { y: (PURPOSE_DROP - D * strip.p) * h });
               if (travelCursor && ribbonLen) {
                 const pt = ribbonPath!.getPointAtLength(ribbonLen * strip.p);
-                gsap.set(travelCursor, { x: pt.x, y: pt.y + up });
+                // autoAlpha every frame so the cursor is on screen for the whole
+                // ribbon zone in both directions — scrubbing back out of purpose
+                // leaves animatePurpose's entrance tween at autoAlpha 0.
+                gsap.set(travelCursor, { x: pt.x, y: pt.y + up, autoAlpha: 1 });
               }
             },
           },
