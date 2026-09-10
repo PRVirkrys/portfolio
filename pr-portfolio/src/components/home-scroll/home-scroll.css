@@ -462,6 +462,32 @@
 .narrative-cursor__msg:has(.narrative-cursor__msg-inner:empty) {
   display: none;
 }
+/* Per-scene resting spot for the shared cursor. The 80×54 box reproduces the
+   anchor geometry the old ad-hoc `.{scene}-cursor` divs had, so the GSAP
+   entrances (which settle the cursor at x:0/y:0) land where they used to. */
+.narrative-cursor--board,
+.narrative-cursor--figma,
+.narrative-cursor--code,
+.narrative-cursor--ai {
+  width: 80px;
+  height: 54px;
+}
+.narrative-cursor--board {
+  left: 87%;
+  top: 80%;
+}
+.narrative-cursor--figma {
+  right: 18%;
+  bottom: 14%;
+}
+.narrative-cursor--code {
+  left: 58%;
+  top: 42%;
+}
+.narrative-cursor--ai {
+  right: 8%;
+  bottom: -6px;
+}
 html:not(.dark) .home-page {
   --home-greeting-pink: #bd1640;
   --home-greeting-purple: #7b2cbf;
@@ -563,31 +589,6 @@ html:not(.dark) .hero-logo {
 }
 .board-map__connections [data-edge="draft"] {
   opacity: 0;
-}
-.board-cursor {
-  position: absolute;
-  left: 87%;
-  top: 80%;
-  width: 80px;
-  height: 54px;
-}
-.board-cursor img {
-  display: block;
-  width: 24px;
-  height: 28px;
-  margin: 0;
-  border-radius: 0;
-}
-.board-cursor span {
-  position: absolute;
-  top: 23px;
-  left: 20px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  color: #fafafb;
-  background: var(--home-greeting-purple);
-  font: 400 14px/1.15 var(--font-heading);
-  white-space: nowrap;
 }
 /* Ideation / prototyping — a design-tool window rebuilt with real nodes, not a
    screenshot. Scoped to .home-figma; blocks start visible so the no-JS and
@@ -729,31 +730,6 @@ html:not(.dark) .hero-logo {
 .figma-feedback::before {
   content: "✓ ";
 }
-.figma-cursor {
-  position: absolute;
-  right: 18%;
-  bottom: 14%;
-  width: 80px;
-  height: 54px;
-}
-.figma-cursor img {
-  display: block;
-  width: 24px;
-  height: 28px;
-  margin: 0;
-  border-radius: 0;
-}
-.figma-cursor span {
-  position: absolute;
-  top: 23px;
-  left: 20px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  color: #fafafb;
-  background: var(--home-greeting-purple);
-  font: 400 14px/1.15 var(--font-heading);
-  white-space: nowrap;
-}
 /* Implementation — an editor rebuilt with real nodes. Same fallback rule: the
    assembled window shows without JS and in reduced motion. */
 .home-code {
@@ -879,30 +855,6 @@ html:not(.dark) .hero-logo {
 }
 .code-line[data-active] code {
   color: var(--home-greeting-purple);
-}
-.code-cursor {
-  position: absolute;
-  left: 58%;
-  top: 42%;
-  width: 80px;
-  height: 54px;
-}
-.code-cursor img {
-  display: block;
-  width: 24px;
-  height: 28px;
-  margin: 0;
-}
-.code-cursor span {
-  position: absolute;
-  top: 23px;
-  left: 20px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  color: #fafafb;
-  background: var(--home-greeting-purple);
-  font: 400 14px/1.15 var(--font-heading);
-  white-space: nowrap;
 }
 .code-preview {
   margin: 16px 20px 4px;
@@ -1131,30 +1083,6 @@ html:not(.dark) .hero-logo {
 .ai-artifact__meta {
   font-size: 12px;
   color: var(--color-text-secondary);
-}
-.ai-cursor {
-  position: absolute;
-  right: 8%;
-  bottom: -6px;
-  width: 80px;
-  height: 54px;
-}
-.ai-cursor img {
-  display: block;
-  width: 24px;
-  height: 28px;
-  margin: 0;
-}
-.ai-cursor span {
-  position: absolute;
-  top: 23px;
-  left: 20px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  color: #fafafb;
-  background: var(--home-greeting-purple);
-  font: 400 14px/1.15 var(--font-heading);
-  white-space: nowrap;
 }
 /* Manifesto — deliberately low density: a tag, three statements, a CTA. */
 .home-manifesto__inner {
@@ -1645,7 +1573,7 @@ html.home-boot
   .code-window__body {
     grid-template-columns: 116px minmax(0, 1fr);
   }
-  .code-cursor {
+  .narrative-cursor--code {
     left: auto;
     right: 12%;
   }
@@ -1704,7 +1632,7 @@ html.home-boot
   .board-map__selection {
     inset: 3% -1.5% 2%;
   }
-  .board-cursor {
+  .narrative-cursor--board {
     left: 70%;
     top: 86%;
   }

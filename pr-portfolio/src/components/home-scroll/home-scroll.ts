@@ -6,6 +6,7 @@ import {
   progressFor,
   snapshotAt,
   type Bounds,
+  type Scene,
   type Snapshot,
 } from "./home-progress";
 import { homeCopy, type HomeCopy, type Locale } from "./home-copy";
@@ -138,11 +139,13 @@ function animateGreeting(
     ? [...marksWrap.querySelectorAll<HTMLElement>(".greeting-mark")]
     : [];
   const group = root.querySelector<HTMLElement>("[data-greeting-group]");
-  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--greeting");
+  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--travel");
+  const stageEl = root.querySelector<HTMLElement>(".home-stage");
   const msgEl = cursor?.querySelector<HTMLElement>("[data-cursor-msg]") ?? null;
   const msgInner =
     cursor?.querySelector<HTMLElement>("[data-cursor-msg-text]") ?? null;
-  if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor) return;
+  if (!layoutEl || !marksWrap || marks.length < 3 || !group || !cursor || !stageEl)
+    return;
   // Seed the bubble with `cursorShort` as per-glyph spans, collapsed to width 0
   // — `revealBubble` (fired from the timeline) types them in letter by letter,
   // and the idle controller rebuilds them for its own nudges.
@@ -156,13 +159,20 @@ function animateGreeting(
     return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height };
   };
   const m = marks.map(rel);
+  // The cursor now lives at `.home-stage` level, not inside the greeting layout,
+  // so every rest point (measured in layout space for the box-draw maths) is
+  // lifted into stage space before it reaches the cursor. The greeting plays
+  // before the strip proxy translates the layout, so this offset is constant.
+  const stageBox = stageEl.getBoundingClientRect();
+  const off = { x: base.left - stageBox.left, y: base.top - stageBox.top };
+  const C = (p: { x: number; y: number }) => ({ x: p.x + off.x, y: p.y + off.y });
   // The cursor rides along ~8px under the box's bottom edge: it drops to the
   // start when a box's typing begins, then travels to the end as the glyphs
   // fill in — as if a person were typing into it.
   const UNDER = 8;
-  const head = (i: number) => ({ x: m[i].x + 2, y: m[i].y + m[i].h + UNDER });
-  const tail = (i: number) => ({ x: m[i].x + m[i].w - 4, y: m[i].y + m[i].h + UNDER });
-  const lowerLeft = { x: m[2].x - 10, y: m[2].y + m[2].h + 16 };
+  const head = (i: number) => C({ x: m[i].x + 2, y: m[i].y + m[i].h + UNDER });
+  const tail = (i: number) => C({ x: m[i].x + m[i].w - 4, y: m[i].y + m[i].h + UNDER });
+  const lowerLeft = C({ x: m[2].x - 10, y: m[2].y + m[2].h + 16 });
   const A = (f: number) => start + f * span;
   const D = (f: number) => f * span;
   const TYPE = 0.11;
@@ -230,13 +240,14 @@ function animateGreeting(
   const boxW = bx1 - bx0 + 8;
   const boxH = by1 - by0 + 8;
   const boxHTight = Math.max(0, boxH - 2 * gap0);
-  const topLeft = { x: bx0 - 8, y: by0 - 10 };
-  const botRight = { x: bx1 + 4, y: by1 + 6 };
+  const topLeft = C({ x: bx0 - 8, y: by0 - 10 });
+  const botRight = C({ x: bx1 + 4, y: by1 + 6 });
   // The lower gap tick sits at 66% of the box height, centred horizontally.
   // The cursor grabs it and drags up to close the gap.
   const groupTop = by0 - 4;
-  const tick2 = { x: bx0 - 4 + boxW / 2, y: groupTop + boxH * 0.66 };
-  const tick2Tight = { x: tick2.x, y: groupTop + boxHTight * 0.66 };
+  const tick2Raw = { x: bx0 - 4 + boxW / 2, y: groupTop + boxH * 0.66 };
+  const tick2 = C(tick2Raw);
+  const tick2Tight = C({ x: tick2Raw.x, y: groupTop + boxHTight * 0.66 });
 
   gsap.set(group, { left: -4, top: -4 });
 
@@ -418,13 +429,30 @@ function animatePurpose(
   const emph = box?.querySelector<HTMLElement>("[data-emphasis]") ?? null;
   const markSvg = root.querySelector<SVGSVGElement>("[data-purpose-mark]");
   const markRect = root.querySelector<SVGRectElement>("[data-purpose-mark-rect]");
-  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--purpose");
-  if (!stageEl || !box || !cursor || !emph || !markSvg || !markRect) return;
+  const cursor = root.querySelector<HTMLElement>(".narrative-cursor--travel");
+  const homeStage = root.querySelector<HTMLElement>(".home-stage");
+  if (!stageEl || !box || !cursor || !emph || !markSvg || !markRect || !homeStage)
+    return;
   const span = end - start;
 
   const base = stageEl.getBoundingClientRect();
+  // The cursor sits at `.home-stage` level, so its targets are lifted from
+  // purpose-stage space into stage space. `.home-purpose__stage` is left
+  // translated up by (PURPOSE_DROP - (RIBBON_SPAN - 1))·vh by the strip proxy
+  // once the transition has run, and the cursor is not under that translate —
+  // fold that residual in too. The purpose mark svg IS inside the purpose stage,
+  // so its own geometry (`forma`, `mx`/`my`…) stays in the un-offset frame.
+  const stageBox = homeStage.getBoundingClientRect();
+  const off = {
+    x: base.left - stageBox.left,
+    y:
+      base.top -
+      stageBox.top +
+      (PURPOSE_DROP - (RIBBON_SPAN - 1)) * window.innerHeight,
+  };
+  const C = (p: { x: number; y: number }) => ({ x: p.x + off.x, y: p.y + off.y });
   // The emphasis word's box (full size — measured now, before the glyphs are
-  // collapsed for the typing reveal), relative to the stage.
+  // collapsed for the typing reveal), relative to the purpose stage.
   const er = emph.getBoundingClientRect();
   const forma = {
     x: er.left - base.left,
@@ -444,8 +472,8 @@ function animatePurpose(
   const UNDER = 8;
   // Same idea as the greeting boxes: the cursor drops to the box's start, then
   // rides ~8px under its bottom edge as the glyphs fill in.
-  const startPt = { x: boxL - 6, y: boxT + lineH + UNDER };
-  const endPt = { x: boxR - 8, y: boxB + UNDER };
+  const startPt = C({ x: boxL - 6, y: boxT + lineH + UNDER });
+  const endPt = C({ x: boxR - 8, y: boxB + UNDER });
 
   // Glyphs typed one by one; caret rides the last.
   const chars = [...box.querySelectorAll<HTMLElement>(".text-mark__char")];
@@ -454,10 +482,12 @@ function animatePurpose(
   // so the bottom-anchored box fills top-down as it types instead of growing
   // upward — a build-time pixel measurement here raced the webfont swap.
 
-  // 1 · the cursor appears and positions at the box's start …
+  // 1 · the cursor eases to the box's start. It arrives here already on screen
+  // (riding the ribbon), so this only nudges position — no autoAlpha:0 in the
+  // `from`, or scrubbing back out of purpose would strand it invisible.
   tl.fromTo(
     cursor,
-    { autoAlpha: 0, x: startPt.x + 44, y: startPt.y + 42 },
+    { x: startPt.x + 44, y: startPt.y + 42 },
     { autoAlpha: 1, x: startPt.x, y: startPt.y, duration: span * 0.05, ease: "power2.out" },
     start,
   );
@@ -512,11 +542,12 @@ function animatePurpose(
   const perim = 2 * (mw + mh);
   markRect.style.strokeDasharray = String(perim);
 
-  // Rect corners in stage coords; the stroke draws clockwise from the top-left.
-  const TL = { x: mx, y: my };
-  const TR = { x: mx + mw, y: my };
-  const BR = { x: mx + mw, y: my + mh };
-  const BL = { x: mx, y: my + mh };
+  // Rect corners the cursor traces, lifted into stage space; the stroke draws
+  // clockwise from the top-left.
+  const TL = C({ x: mx, y: my });
+  const TR = C({ x: mx + mw, y: my });
+  const BR = C({ x: mx + mw, y: my + mh });
+  const BL = C({ x: mx, y: my + mh });
   const drawAt = start + span * 0.44;
   const drawDur = span * 0.32;
   const side = drawDur / 4;
@@ -609,7 +640,7 @@ function animateBoard(
     { opacity: 1, scale: 1, duration: span * 0.16 },
     start + span * 0.82,
   );
-  const cursor = q('[data-motion="board-cursor"]');
+  const cursor = q(".narrative-cursor--board");
   tl.fromTo(
     cursor,
     { opacity: 0, x: small ? -90 : -230, y: -170 },
@@ -663,7 +694,7 @@ function animateFigma(
     { autoAlpha: 1, x: 0, duration: span * 0.1, stagger: span * 0.03 },
     start + span * 0.5,
   );
-  const cursor = q('[data-motion="figma-cursor"]');
+  const cursor = q(".narrative-cursor--figma");
   tl.fromTo(
     cursor,
     { autoAlpha: 0, x: 70, y: 60 },
@@ -716,7 +747,7 @@ function animateCode(
     { "--code-hl": "1", duration: span * 0.12 },
     start + span * 0.52,
   );
-  const cursor = q('[data-motion="code-cursor"]');
+  const cursor = q(".narrative-cursor--code");
   tl.fromTo(
     cursor,
     { autoAlpha: 0, x: 40, y: -30 },
@@ -797,7 +828,7 @@ function animateAI(
     { autoAlpha: 1, y: 0, duration: span * 0.07, stagger: span * 0.035 },
     start + span * 0.74,
   );
-  const cursor = q('[data-motion="ai-cursor"]');
+  const cursor = q(".narrative-cursor--ai");
   tl.fromTo(
     cursor,
     { autoAlpha: 0, x: 40, y: 30 },
@@ -1160,6 +1191,18 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
         const ribbonSvg = q("[data-ribbon]");
         const purposeStage = q(".home-purpose__stage");
         const D = RIBBON_SPAN - 1;
+        // The one cursor rides the ribbon as it draws: `getPointAtLength` walks
+        // the path (viewBox ≈ stage px, origin = stage top-left) and the same
+        // upward `y` the strip proxy applies to the ribbon svg is added, since
+        // the stage-level cursor is not under that translate.
+        const travelCursor = root.querySelector<HTMLElement>(
+          ".narrative-cursor--travel",
+        );
+        const ribbonPath = root.querySelector<SVGPathElement>("[data-ribbon-path]");
+        const ribbonLen =
+          ribbonPath && ribbonPath.getAttribute("d")
+            ? ribbonPath.getTotalLength()
+            : 0;
         const strip = { p: 0 };
         main.to(
           strip,
@@ -1172,20 +1215,77 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
               const up = -D * strip.p * h;
               gsap.set([greetLayout, ribbonSvg], { y: up });
               gsap.set(purposeStage, { y: (PURPOSE_DROP - D * strip.p) * h });
+              if (travelCursor && ribbonLen) {
+                const pt = ribbonPath!.getPointAtLength(ribbonLen * strip.p);
+                // autoAlpha every frame so the cursor is on screen for the whole
+                // ribbon zone in both directions — scrubbing back out of purpose
+                // leaves animatePurpose's entrance tween at autoAlpha 0.
+                gsap.set(travelCursor, { x: pt.x, y: pt.y + up, autoAlpha: 1 });
+              }
             },
           },
           gEnd,
         );
         main.fromTo(purpose, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, gEnd);
+        // The bubble's greeting line is put away as the ribbon takes over.
+        const travelMsg = root.querySelector<HTMLElement>(
+          ".narrative-cursor--travel [data-cursor-msg]",
+        );
+        const travelMsgInner = root.querySelector<HTMLElement>(
+          ".narrative-cursor--travel [data-cursor-msg-text]",
+        );
+        main.set(travelMsg, { "--cursor-msg": 0 }, gEnd);
+        // Mid-draw Paula's line catches up with the ribbon — a beat: the reveal
+        // and hide are scrubbed tweens on `main`, so scrubbing back past the
+        // midpoint undoes it. Glyphs type in on appearance like the greeting
+        // bubble. Put away again before the phrase, which carries no bubble.
+        const sayTransition = copy.narration.transition[0]?.say;
+        if (sayTransition && travelMsg && travelMsgInner) {
+          const mid = gEnd + TRANS * 0.42;
+          main.call(
+            () => {
+              const { chars, widths } = glyphFill(travelMsgInner, sayTransition);
+              gsap.killTweensOf(chars);
+              gsap.set(chars, { width: 0 });
+              gsap.to(chars, {
+                width: (k: number) => widths[k],
+                duration: 0.001,
+                stagger: 0.045,
+                ease: "steps(1)",
+              });
+            },
+            undefined,
+            mid,
+          );
+          main.fromTo(
+            travelMsg,
+            { "--cursor-msg": 0 },
+            { "--cursor-msg": 1, duration: TRANS * 0.06 },
+            mid,
+          );
+          main.to(
+            travelMsg,
+            { "--cursor-msg": 0, duration: TRANS * 0.06 },
+            gEnd + TRANS * 0.82,
+          );
+        }
 
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
-        // Greeting, ribbon and phrase clear together into premise.
+        // Greeting, ribbon and phrase clear together into premise. The travel
+        // cursor is stage-level (not inside the purpose section), so fade it out
+        // explicitly here — the scene cursors take over from board onward.
         leave(purpose, { autoAlpha: 0, y: -34, duration: 0.08 }, puStart + PURPOSE_HOLD);
         main.to(
           [greetLayout, ribbonSvg],
           { autoAlpha: 0, duration: 0.1 },
           puStart + PURPOSE_HOLD,
         );
+        if (travelCursor)
+          main.to(
+            travelCursor,
+            { autoAlpha: 0, duration: 0.08 },
+            puStart + PURPOSE_HOLD,
+          );
         at = puStart + PURPOSE_HOLD + 0.05;
 
         // 1 → 2 · purpose to premise.
@@ -1401,28 +1501,28 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       };
       refreshHint = showHint;
 
-      // Idle nudge: the greeting cursor's bubble carries `cursorShort` normally;
-      // if the user stops in the settled greeting it becomes the idle question,
-      // then the scroll invite. Wall-clock text swap on an aria-hidden bubble —
-      // not part of the scrubbed state — cleared on the next scroll.
-      const idleMsgEl = root.querySelector<HTMLElement>(
-        ".narrative-cursor--greeting [data-cursor-msg-text]",
-      );
-      const idleBubble = root.querySelector<HTMLElement>(
-        ".narrative-cursor--greeting [data-cursor-msg]",
-      );
-      // Swap the bubble text and type it in letter by letter (per-glyph spans,
-      // bubble grows with it). A one-off GSAP tween — not a timer, not on the
-      // scrubbed timeline — so it never fights the greeting timeline over the
-      // bubble's glyph nodes.
-      const typeBubble = (text: string, instant?: boolean) => {
-        if (!idleMsgEl) return;
-        const { chars, widths } = glyphFill(idleMsgEl, text);
+      // Idle nudge. In the greeting the bubble escalates through three lines if
+      // the user stops there; every later section that has a cursor shows one
+      // soft line after a longer pause, once per visit; the end of the journey
+      // stays quiet. Wall-clock text swaps on an aria-hidden bubble — not part
+      // of the scrubbed state, cleared on the next scroll.
+      type IdleTarget = { msg: HTMLElement; inner: HTMLElement };
+      const idleTargetFor = (scene: Scene): IdleTarget | null => {
+        const sel =
+          scene === "greeting" || scene === "purpose"
+            ? ".narrative-cursor--travel"
+            : `.narrative-cursor--${scene}`;
+        const host = root.querySelector<HTMLElement>(sel);
+        const msg = host?.querySelector<HTMLElement>("[data-cursor-msg]");
+        const inner = host?.querySelector<HTMLElement>("[data-cursor-msg-text]");
+        return msg && inner ? { msg, inner } : null;
+      };
+      // Type `text` into `inner` letter by letter (per-glyph spans, bubble grows
+      // with it). A one-off tween, not on the scrubbed timeline, so it never
+      // fights the greeting timeline over the bubble's glyph nodes.
+      const typeBubble = (inner: HTMLElement, text: string) => {
+        const { chars, widths } = glyphFill(inner, text);
         if (!chars.length) return;
-        if (instant) {
-          gsap.set(chars, { width: (k) => widths[k] });
-          return;
-        }
         gsap.set(chars, { width: 0 });
         gsap.to(chars, {
           width: (k: number) => widths[k],
@@ -1431,51 +1531,83 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           ease: "steps(1)",
         });
       };
-      // The greeting bubble types in `cursorShort` on its own (wall-clock, fired
-      // from the timeline). The idle controller only takes over once it has
-      // actually swapped in one of its own messages — otherwise rebuilding the
-      // glyph spans here would restart that reveal from nothing.
       let idleSwapped = false;
+      let idleShownBubble: HTMLElement | null = null;
+      // The section whose soft line we have already shown this visit — cleared
+      // once the user scrolls into a different section, so returning re-fires it.
+      let softIdleScene: Scene | null = null;
       const clearIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
         clearTimeout(idleC);
         if (!idleSwapped) return;
-        // The user scrolled while an idle nudge was up: hide it. It returns with
-        // the next nudge once they stop (armIdle → idleA below clears the flag).
+        // The user scrolled while a nudge was up: hide it. In the greeting it
+        // returns with the next nudge once they stop; a section's soft line
+        // stays gone until they leave and come back.
         idleSwapped = false;
-        idleBubble?.setAttribute("data-idle-hidden", "");
+        idleShownBubble?.setAttribute("data-idle-hidden", "");
+        idleShownBubble = null;
       };
-      // While the user rests on the settled greeting the bubble escalates
-      // through the three idle nudges (idleQuestion → scrollInvite → idlePing).
-      // Armed on every scroll-stop; only fires once the greeting choreography is
-      // done and the bubble is on screen.
+      // Armed on every scroll-stop.
       const armIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
         clearTimeout(idleC);
-        if (!idleMsgEl || !idleBubble || !trigger || root.dataset.intro !== "done")
+        if (!trigger || root.dataset.intro !== "done") return;
+        const { scene, progress } = snapshotAt(trigger.progress, bounds);
+        if (scene !== softIdleScene) softIdleScene = null;
+
+        if (scene === "greeting") {
+          const t = idleTargetFor("greeting");
+          if (!t) return;
+          // Only once the greeting is done and its bubble is on screen — read
+          // straight off the opacity gate the timeline drives.
+          const shown =
+            parseFloat(
+              getComputedStyle(t.msg).getPropertyValue("--cursor-msg") || "0",
+            ) > 0.9;
+          if (!shown) return;
+          idleA = window.setTimeout(() => {
+            idleSwapped = true;
+            idleShownBubble = t.msg;
+            t.msg.removeAttribute("data-idle-hidden");
+            typeBubble(t.inner, copy.idle.greeting[0]);
+            idleB = window.setTimeout(() => {
+              typeBubble(t.inner, copy.idle.greeting[1]);
+              idleC = window.setTimeout(() => {
+                typeBubble(t.inner, copy.idle.greeting[2]);
+              }, 3400);
+            }, 2400);
+          }, 2800);
           return;
-        // Fire once the greeting is done and its bubble is actually on screen —
-        // read straight off the opacity gate the timeline drives, so there is no
-        // brittle progress threshold to keep in sync.
-        const shown =
+        }
+
+        // Nothing left to nudge toward at the end of the journey.
+        if (trigger.progress >= 0.95) return;
+        // Already nudged this section since the user last entered it.
+        if (softIdleScene === scene) return;
+        // Let the section's choreography settle before speaking over it.
+        if (progress < 0.6) return;
+        const t = idleTargetFor(scene);
+        if (!t) return; // premise / manifesto carry no cursor yet
+        // Don't speak over a beat that is currently up.
+        const busy =
           parseFloat(
-            getComputedStyle(idleBubble).getPropertyValue("--cursor-msg") || "0",
+            getComputedStyle(t.msg).getPropertyValue("--cursor-msg") || "0",
           ) > 0.9;
-        if (!shown || snapshotAt(trigger.progress, bounds).scene !== "greeting")
-          return;
+        if (busy) return;
+        const line =
+          copy.idle[scene as keyof HomeCopy["idle"]]?.[0] ??
+          copy.idle._default[0];
+        if (!line) return;
         idleA = window.setTimeout(() => {
           idleSwapped = true;
-          idleBubble.removeAttribute("data-idle-hidden");
-          typeBubble(copy.intro.idleQuestion);
-          idleB = window.setTimeout(() => {
-            typeBubble(copy.intro.scrollInvite);
-            idleC = window.setTimeout(() => {
-              typeBubble(copy.intro.idlePing);
-            }, 3400);
-          }, 2400);
-        }, 2800);
+          idleShownBubble = t.msg;
+          softIdleScene = scene;
+          t.msg.removeAttribute("data-idle-hidden");
+          gsap.set(t.msg, { "--cursor-msg": 1 });
+          typeBubble(t.inner, line);
+        }, 4000);
       };
       refreshIdle = armIdle;
 

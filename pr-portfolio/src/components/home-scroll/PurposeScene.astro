@@ -1,7 +1,6 @@
 ---
 import type { HomeCopy } from './home-copy';
 import TextMark from './TextMark.astro';
-import NarrativeCursor from './NarrativeCursor.astro';
 interface Props { copy: HomeCopy }
 const { copy } = Astro.props;
 ---
@@ -18,6 +17,5 @@ const { copy } = Astro.props;
     <svg class="purpose-mark" data-purpose-mark aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <rect data-purpose-mark-rect fill="none" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
-    <NarrativeCursor label={copy.intro.cursorLabel} class="narrative-cursor--purpose" />
   </div>
 </section>
