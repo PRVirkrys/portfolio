@@ -54,10 +54,12 @@ narration: {
 
 idle: {
   greeting: ['¿Continuamos...?', 'Vamos, haz scroll...', 'Hey, ¿sigues ahí?'],
-  _default: ['<pick a line — see below>'],   // covers every non-greeting section
+  // es / en. Covers every non-greeting section until it gets its own line.
+  _default: ['Sigo aquí. Cuando quieras, seguimos.'],
   // per-scene keys override _default as the storyboard matures, e.g.
   // board: ['something board-specific'],
 }
+// en._default: ['Still here. Whenever you're ready.']
 ```
 
 Scene list (unchanged, in `home-progress.ts`):
@@ -82,13 +84,12 @@ source. Extend it for the new keys.
 Also suppress the idle nudge while a narration beat's line is currently showing,
 and during active scene choreography.
 
-### `_default` line — PICK ONE (pending)
+### `_default` line — CHOSEN: option A
 
-| # | ES | EN |
-|---|---|---|
-| **A (recommended)** | Sigo aquí. Cuando quieras, seguimos. | Still here. Whenever you're ready. |
-| B | Tómate tu tiempo… hay más abajo. | Take your time… there's more below. |
-| C | ¿Te quedaste pensando? Sigue bajando. | Lost in thought? Keep scrolling. |
+- ES: **`Sigo aquí. Cuando quieras, seguimos.`**
+- EN: **`Still here. Whenever you're ready.`**
+
+(Rejected: B `Tómate tu tiempo… hay más abajo.` / C `¿Te quedaste pensando? Sigue bajando.`)
 
 ---
 
@@ -200,7 +201,9 @@ instances) until P3 absorbs them.
   hidden. Verify with programmatic `getBoundingClientRect` reads + measured
   deltas, not only screenshots.
 
-## Open decisions when the next session starts
+## Where to start
 
-1. Pick the `idle._default` line (A / B / C above) — recommend A.
-2. Then: P1 first (safe), P2 next. P3 / P4 wait on the storyboard.
+- P1 first (safe: unify the component), then P2 (traveling cursor +
+  ribbon-follow + `Hey, ¡espérame!` + soft idle in purpose).
+- P3 / P4 wait on the storyboard.
+- No open decisions — `idle._default` is settled (option A above).
