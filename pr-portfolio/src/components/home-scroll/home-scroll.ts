@@ -1221,13 +1221,48 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           gEnd,
         );
         main.fromTo(purpose, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, gEnd);
-        // The bubble's greeting line is put away as the ribbon takes over; P2c
-        // brings it back mid-draw with "Hey, ¡espérame!".
-        main.set(
-          root.querySelector(".narrative-cursor--travel [data-cursor-msg]"),
-          { "--cursor-msg": 0 },
-          gEnd,
+        // The bubble's greeting line is put away as the ribbon takes over.
+        const travelMsg = root.querySelector<HTMLElement>(
+          ".narrative-cursor--travel [data-cursor-msg]",
         );
+        const travelMsgInner = root.querySelector<HTMLElement>(
+          ".narrative-cursor--travel [data-cursor-msg-text]",
+        );
+        main.set(travelMsg, { "--cursor-msg": 0 }, gEnd);
+        // Mid-draw Paula's line catches up with the ribbon — a beat: the reveal
+        // and hide are scrubbed tweens on `main`, so scrubbing back past the
+        // midpoint undoes it. Glyphs type in on appearance like the greeting
+        // bubble. Put away again before the phrase, which carries no bubble.
+        const sayTransition = copy.narration.transition[0]?.say;
+        if (sayTransition && travelMsg && travelMsgInner) {
+          const mid = gEnd + TRANS * 0.42;
+          main.call(
+            () => {
+              const { chars, widths } = glyphFill(travelMsgInner, sayTransition);
+              gsap.killTweensOf(chars);
+              gsap.set(chars, { width: 0 });
+              gsap.to(chars, {
+                width: (k: number) => widths[k],
+                duration: 0.001,
+                stagger: 0.045,
+                ease: "steps(1)",
+              });
+            },
+            undefined,
+            mid,
+          );
+          main.fromTo(
+            travelMsg,
+            { "--cursor-msg": 0 },
+            { "--cursor-msg": 1, duration: TRANS * 0.06 },
+            mid,
+          );
+          main.to(
+            travelMsg,
+            { "--cursor-msg": 0, duration: TRANS * 0.06 },
+            gEnd + TRANS * 0.82,
+          );
+        }
 
         animatePurpose(root, main, puStart, puStart + PURPOSE_HOLD);
         // Greeting, ribbon and phrase clear together into premise. The travel
