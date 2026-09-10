@@ -6,6 +6,7 @@ import {
   progressFor,
   snapshotAt,
   type Bounds,
+  type Scene,
   type Snapshot,
 } from "./home-progress";
 import { homeCopy, type HomeCopy, type Locale } from "./home-copy";
@@ -1495,28 +1496,28 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       };
       refreshHint = showHint;
 
-      // Idle nudge: the greeting cursor's bubble carries `cursorShort` normally;
-      // if the user stops in the settled greeting it becomes the idle question,
-      // then the scroll invite. Wall-clock text swap on an aria-hidden bubble —
-      // not part of the scrubbed state — cleared on the next scroll.
-      const idleMsgEl = root.querySelector<HTMLElement>(
-        ".narrative-cursor--travel [data-cursor-msg-text]",
-      );
-      const idleBubble = root.querySelector<HTMLElement>(
-        ".narrative-cursor--travel [data-cursor-msg]",
-      );
-      // Swap the bubble text and type it in letter by letter (per-glyph spans,
-      // bubble grows with it). A one-off GSAP tween — not a timer, not on the
-      // scrubbed timeline — so it never fights the greeting timeline over the
-      // bubble's glyph nodes.
-      const typeBubble = (text: string, instant?: boolean) => {
-        if (!idleMsgEl) return;
-        const { chars, widths } = glyphFill(idleMsgEl, text);
+      // Idle nudge. In the greeting the bubble escalates through three lines if
+      // the user stops there; every later section that has a cursor shows one
+      // soft line after a longer pause, once per visit; the end of the journey
+      // stays quiet. Wall-clock text swaps on an aria-hidden bubble — not part
+      // of the scrubbed state, cleared on the next scroll.
+      type IdleTarget = { msg: HTMLElement; inner: HTMLElement };
+      const idleTargetFor = (scene: Scene): IdleTarget | null => {
+        const sel =
+          scene === "greeting" || scene === "purpose"
+            ? ".narrative-cursor--travel"
+            : `.narrative-cursor--${scene}`;
+        const host = root.querySelector<HTMLElement>(sel);
+        const msg = host?.querySelector<HTMLElement>("[data-cursor-msg]");
+        const inner = host?.querySelector<HTMLElement>("[data-cursor-msg-text]");
+        return msg && inner ? { msg, inner } : null;
+      };
+      // Type `text` into `inner` letter by letter (per-glyph spans, bubble grows
+      // with it). A one-off tween, not on the scrubbed timeline, so it never
+      // fights the greeting timeline over the bubble's glyph nodes.
+      const typeBubble = (inner: HTMLElement, text: string) => {
+        const { chars, widths } = glyphFill(inner, text);
         if (!chars.length) return;
-        if (instant) {
-          gsap.set(chars, { width: (k) => widths[k] });
-          return;
-        }
         gsap.set(chars, { width: 0 });
         gsap.to(chars, {
           width: (k: number) => widths[k],
@@ -1525,51 +1526,83 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           ease: "steps(1)",
         });
       };
-      // The greeting bubble types in `cursorShort` on its own (wall-clock, fired
-      // from the timeline). The idle controller only takes over once it has
-      // actually swapped in one of its own messages — otherwise rebuilding the
-      // glyph spans here would restart that reveal from nothing.
       let idleSwapped = false;
+      let idleShownBubble: HTMLElement | null = null;
+      // The section whose soft line we have already shown this visit — cleared
+      // once the user scrolls into a different section, so returning re-fires it.
+      let softIdleScene: Scene | null = null;
       const clearIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
         clearTimeout(idleC);
         if (!idleSwapped) return;
-        // The user scrolled while an idle nudge was up: hide it. It returns with
-        // the next nudge once they stop (armIdle → idleA below clears the flag).
+        // The user scrolled while a nudge was up: hide it. In the greeting it
+        // returns with the next nudge once they stop; a section's soft line
+        // stays gone until they leave and come back.
         idleSwapped = false;
-        idleBubble?.setAttribute("data-idle-hidden", "");
+        idleShownBubble?.setAttribute("data-idle-hidden", "");
+        idleShownBubble = null;
       };
-      // While the user rests on the settled greeting the bubble escalates
-      // through the three idle nudges (idleQuestion → scrollInvite → idlePing).
-      // Armed on every scroll-stop; only fires once the greeting choreography is
-      // done and the bubble is on screen.
+      // Armed on every scroll-stop.
       const armIdle = () => {
         clearTimeout(idleA);
         clearTimeout(idleB);
         clearTimeout(idleC);
-        if (!idleMsgEl || !idleBubble || !trigger || root.dataset.intro !== "done")
+        if (!trigger || root.dataset.intro !== "done") return;
+        const { scene, progress } = snapshotAt(trigger.progress, bounds);
+        if (scene !== softIdleScene) softIdleScene = null;
+
+        if (scene === "greeting") {
+          const t = idleTargetFor("greeting");
+          if (!t) return;
+          // Only once the greeting is done and its bubble is on screen — read
+          // straight off the opacity gate the timeline drives.
+          const shown =
+            parseFloat(
+              getComputedStyle(t.msg).getPropertyValue("--cursor-msg") || "0",
+            ) > 0.9;
+          if (!shown) return;
+          idleA = window.setTimeout(() => {
+            idleSwapped = true;
+            idleShownBubble = t.msg;
+            t.msg.removeAttribute("data-idle-hidden");
+            typeBubble(t.inner, copy.idle.greeting[0]);
+            idleB = window.setTimeout(() => {
+              typeBubble(t.inner, copy.idle.greeting[1]);
+              idleC = window.setTimeout(() => {
+                typeBubble(t.inner, copy.idle.greeting[2]);
+              }, 3400);
+            }, 2400);
+          }, 2800);
           return;
-        // Fire once the greeting is done and its bubble is actually on screen —
-        // read straight off the opacity gate the timeline drives, so there is no
-        // brittle progress threshold to keep in sync.
-        const shown =
+        }
+
+        // Nothing left to nudge toward at the end of the journey.
+        if (trigger.progress >= 0.95) return;
+        // Already nudged this section since the user last entered it.
+        if (softIdleScene === scene) return;
+        // Let the section's choreography settle before speaking over it.
+        if (progress < 0.6) return;
+        const t = idleTargetFor(scene);
+        if (!t) return; // premise / manifesto carry no cursor yet
+        // Don't speak over a beat that is currently up.
+        const busy =
           parseFloat(
-            getComputedStyle(idleBubble).getPropertyValue("--cursor-msg") || "0",
+            getComputedStyle(t.msg).getPropertyValue("--cursor-msg") || "0",
           ) > 0.9;
-        if (!shown || snapshotAt(trigger.progress, bounds).scene !== "greeting")
-          return;
+        if (busy) return;
+        const line =
+          copy.idle[scene as keyof HomeCopy["idle"]]?.[0] ??
+          copy.idle._default[0];
+        if (!line) return;
         idleA = window.setTimeout(() => {
           idleSwapped = true;
-          idleBubble.removeAttribute("data-idle-hidden");
-          typeBubble(copy.intro.idleQuestion);
-          idleB = window.setTimeout(() => {
-            typeBubble(copy.intro.scrollInvite);
-            idleC = window.setTimeout(() => {
-              typeBubble(copy.intro.idlePing);
-            }, 3400);
-          }, 2400);
-        }, 2800);
+          idleShownBubble = t.msg;
+          softIdleScene = scene;
+          t.msg.removeAttribute("data-idle-hidden");
+          gsap.set(t.msg, { "--cursor-msg": 1 });
+          typeBubble(t.inner, line);
+        }, 4000);
       };
       refreshIdle = armIdle;
 

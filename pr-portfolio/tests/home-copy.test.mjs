@@ -4,10 +4,7 @@ import { readFileSync } from 'node:fs';
 const { homeCopy } = await import('../src/components/home-scroll/home-copy.ts');
 
 const LOCALES = ['es', 'en'];
-const INTRO_KEYS = [
-  'greeting', 'prefix', 'name',
-  'cursorLabel', 'cursorShort', 'idleQuestion', 'scrollInvite', 'idlePing',
-];
+const INTRO_KEYS = ['greeting', 'prefix', 'name', 'cursorLabel', 'cursorShort'];
 
 test('both locales carry the full intro + purpose contract', () => {
   for (const loc of LOCALES) {
@@ -34,6 +31,10 @@ test('es and en expose the same keys', () => {
     Object.keys(homeCopy.es.narration).sort(),
     Object.keys(homeCopy.en.narration).sort(),
   );
+  assert.deepEqual(
+    Object.keys(homeCopy.es.idle).sort(),
+    Object.keys(homeCopy.en.idle).sort(),
+  );
 });
 
 test('narration beats carry a first-person phrase in both locales', () => {
@@ -43,6 +44,20 @@ test('narration beats carry a first-person phrase in both locales', () => {
       assert.ok(
         lines.every((l) => typeof l.say === 'string' && l.say.length > 0),
         `${loc}.narration.${scene} entries each have a non-empty say`,
+      );
+    }
+  }
+});
+
+test('idle carries the greeting escalation and a soft default in both locales', () => {
+  for (const loc of LOCALES) {
+    const { greeting, _default } = homeCopy[loc].idle;
+    assert.ok(Array.isArray(greeting) && greeting.length === 3, `${loc}.idle.greeting has three lines`);
+    assert.ok(Array.isArray(_default) && _default.length > 0, `${loc}.idle._default is non-empty`);
+    for (const [scene, lines] of Object.entries(homeCopy[loc].idle)) {
+      assert.ok(
+        lines.every((s) => typeof s === 'string' && s.length > 0),
+        `${loc}.idle.${scene} entries are non-empty strings`,
       );
     }
   }
@@ -81,8 +96,8 @@ test('new narrative strings are not hardcoded in the GSAP logic', () => {
     // The full, distinctive narrative strings — short word fragments like the
     // emphasis part legitimately collide with tokens such as "transform".
     for (const s of [
-      c.intro.cursorShort, c.intro.idleQuestion, c.intro.scrollInvite,
-      c.intro.idlePing, c.purpose.title,
+      c.intro.cursorShort, c.purpose.title,
+      ...Object.values(c.idle).flat(),
       ...Object.values(c.narration).flat().map((l) => l.say),
     ]) {
       assert.ok(!src.includes(s), `"${s}" must come from copy, not home-scroll.ts`);
