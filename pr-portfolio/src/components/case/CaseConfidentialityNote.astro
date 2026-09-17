@@ -1,0 +1,38 @@
+<aside class="cs-confidentiality" aria-label="Nota de confidencialidad">
+	<div class="cs-confidentiality__inner">
+		<p class="cs-confidentiality__text">
+			<strong>Nota de confidencialidad</strong>
+			Algunas imágenes de este caso de estudio han sido modificadas o recreadas para proteger información confidencial. Se incluyen como apoyo visual para explicar el proceso y las decisiones de diseño.
+		</p>
+	</div>
+</aside>
+
+<style>
+	.cs-confidentiality__inner {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: calc(1440px * var(--ui-scale));
+		margin-inline: auto;
+		padding: 0 calc(64px * var(--ui-scale)) calc(24px * var(--ui-scale));
+	}
+	.cs-confidentiality__text {
+		margin: 0;
+		padding-top: calc(24px * var(--ui-scale));
+		border-top: var(--border-width) solid var(--color-border);
+		font-family: var(--font-sans);
+		font-size: max(14px, calc(18px * var(--ui-scale)));
+		line-height: 1.75;
+		color: color-mix(in srgb, var(--color-text) 80%, var(--color-bg));
+	}
+	.cs-confidentiality__text strong {
+		display: block;
+		margin-bottom: calc(8px * var(--ui-scale));
+		font-weight: 600;
+		color: var(--color-text);
+	}
+	@media (max-width: 839px) {
+		.cs-confidentiality__inner {
+			padding-inline: var(--gutter-mobile);
+		}
+	}
+</style>

@@ -18,6 +18,7 @@ const blog = defineCollection({
 			heroImage: z.optional(image()),
 			// Case study fields
 			type: z.enum(['post', 'case-study']).default('post'),
+			confidentialityNote: z.boolean().optional(),
 			tags: z.array(z.object({
 				label: z.string(),
 				category: tagCategory,
