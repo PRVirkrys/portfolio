@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 import Tag from '../components/ui/Tag.astro';
 import NextCase from '../components/case/NextCase.astro';
 import CaseLightbox from '../components/case/CaseLightbox.astro';
+import CaseConfidentialityNote from '../components/case/CaseConfidentialityNote.astro';
 import { ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
 import { withBase } from '../lib/url';
@@ -29,6 +30,7 @@ const {
 	tools,
 	platform,
 	nextCase,
+	confidentialityNote,
 } = Astro.props;
 
 // Figma's metadata table (node 16071:69160) orders "Sitio en vivo" before
@@ -137,6 +139,8 @@ const metaRows = [
 					</div>
 				</div>
 			</div>
+
+			{confidentialityNote && <CaseConfidentialityNote />}
 
 			<!-- Article body ------------------------------------------ -->
 			<article class="cs-article">
