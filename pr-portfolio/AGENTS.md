@@ -8,6 +8,10 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Case studies
+
+Antes de crear o modificar un case study (`src/content/blog/*-caso-estudio.mdx`), leer `docs/case-study-guide.md` — documenta el frontmatter, los componentes (`CaseSection`, `CaseCallout`, `CaseImageRow`, `CaseLogoBlock`, `LearningsGrid`) y todo lo que el sistema ya resuelve solo (lightbox, underline de links, target de links externos, cap de altura de imágenes), para no reinventarlo ni romper la consistencia con los case studies existentes.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
