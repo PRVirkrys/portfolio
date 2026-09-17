@@ -1,115 +1,74 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import Footer from '../../components/Footer.astro';
+import Button from '../../components/ui/Button.astro';
+import CaseStudyCard from '../../components/case/CaseStudyCard.astro';
+import { workCompanies } from '../../data/work-companies';
+import { focusCategories } from '../../lib/work-filters';
 import { withBase } from '../../lib/url';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const cases = (await getCollection('blog', ({ data }) => data.type === 'case-study')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const companies = workCompanies.filter(company => cases.some(entry => entry.data.company === company.id));
+const focuses = focusCategories.filter(focus => cases.some(entry => entry.data.tags?.some(tag => tag.category === focus)));
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: var(--color-text);
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: var(--color-text-muted);
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: var(--color-action-ghost-text);
-			}
-			ul a:hover img {
-				box-shadow: var(--elevation-floating);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={withBase(`/work/${post.id}/`)}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
+<html lang="es" class="dark">
+  <head><BaseHead title="Work · Paula Rodas" description="Case studies de producto, experiencia y diseño. Explora mi trabajo por empresa y disciplina." /></head>
+  <body>
+    <Header />
+    <main class="work-page" data-work-page>
+      <header class="work-page__intro">
+        <h1>Work</h1>
+        <p>Case studies de producto, experiencia y diseño.</p>
+      </header>
+      <div class="work-filters" data-work-filters hidden>
+        <fieldset><legend>Dónde trabajé</legend><div class="work-filters__options">
+          <button type="button" data-filter="company" data-value="" aria-pressed="true">Todos</button>
+          {companies.map(company => <button type="button" data-filter="company" data-value={company.id} aria-pressed="false">{company.name}</button>)}
+        </div></fieldset>
+        <fieldset><legend>Foco</legend><div class="work-filters__options">
+          <button type="button" data-filter="focus" data-value="" aria-pressed="true">Todos</button>
+          {focuses.map(focus => <button type="button" data-filter="focus" data-value={focus} aria-pressed="false">{focus}</button>)}
+        </div></fieldset>
+      </div>
+      <noscript><p>Puedes explorar todos los casos. Activa JavaScript para usar los filtros.</p></noscript>
+      <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><button type="button" class="work-page__clear" data-clear-filters hidden>Limpiar filtros</button></div>
+      <div class="work-grid" data-work-grid>{cases.map((entry, index) => <CaseStudyCard entry={entry} eager={index < 2} />)}</div>
+      <section class="work-empty" data-work-empty hidden aria-labelledby="empty-title"><h2 id="empty-title">No hay casos con esta selección</h2><p>Prueba otro foco o vuelve a explorar todos los proyectos.</p><Button data-clear-filters showLeadingIcon={false}>Ver todos los casos</Button></section>
+      <section class="work-contact" aria-labelledby="contact-title"><h2 id="contact-title">¿Hablamos de tu próximo proyecto?</h2><Button href={withBase('/contacto/')} showLeadingIcon={false}>Contactar</Button></section>
+    </main>
+    <Footer />
+  </body>
 </html>
+
+<script>
+  import '../../components/work/work-filter-controller';
+</script>
+
+<style>
+  .work-page { box-sizing: border-box; width: 100%; max-width: calc(1616px * var(--ui-scale)); margin-inline: auto; padding: calc(var(--component-header-height-desktop) + var(--space-12)) var(--gutter-desktop) var(--space-12); }
+  .work-page__intro { margin-bottom: var(--space-8); }
+  h1 { font-family: var(--font-heading); font-size: calc(72px * var(--ui-scale)); line-height: 1.1; font-weight: 700; letter-spacing: -1.5px; margin: 0 0 var(--space-3); }
+  .work-page__intro p { color: var(--color-text-secondary); font-size: calc(24px * var(--ui-scale)); line-height: 1.5; letter-spacing: 0; margin: 0; }
+  .work-filters { display: flex; flex-wrap: wrap; gap: var(--space-8); padding-bottom: var(--space-6); border-bottom: var(--border-width) solid var(--color-border); }
+  [hidden] { display: none !important; }
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+  legend { text-transform: uppercase; font-size: calc(11px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2px * var(--ui-scale)); color: var(--color-text-muted); margin-bottom: var(--space-3); }
+  .work-filters__options { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .work-filters button { padding: var(--space-3) var(--space-4); min-height: 36px; border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: transparent; color: var(--color-text); font-family: var(--font-sans); font-size: calc(14px * var(--ui-scale)); font-weight: 600; cursor: pointer; }
+  .work-filters button:hover { background: var(--color-action-secondary-bg-hover); }
+  .work-filters button[aria-pressed='true'] { background: var(--color-brand-purple-700); border-color: var(--color-brand-purple-700); color: var(--color-base-white); }
+  button:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  .work-page__results { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-block: var(--space-6); }
+  .work-page__results p { margin: 0; font-size: calc(16px * var(--ui-scale)); letter-spacing: 0; color: var(--color-text-muted); }
+  .work-page__clear { background: transparent; border: 0; padding: var(--space-2); color: var(--color-action-ghost-text); font: inherit; font-size: calc(16px * var(--ui-scale)); text-decoration: underline; cursor: pointer; }
+  .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
+  .work-empty { padding: var(--space-16) var(--space-6); text-align: center; border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); }
+  .work-empty h2, .work-contact h2 { font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); line-height: 1.3; letter-spacing: 0; margin: 0; }
+  .work-empty p { color: var(--color-text-secondary); font-size: calc(18px * var(--ui-scale)); letter-spacing: 0; }
+  .work-contact { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); border-top: var(--border-width) solid var(--color-border); margin-top: var(--space-12); padding-top: var(--space-8); }
+  @media (max-width: 839px) { .work-page { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-12); } h1 { font-size: calc(56px * var(--ui-scale)); } .work-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); } .work-contact { align-items: flex-start; flex-direction: column; } }
+</style>
