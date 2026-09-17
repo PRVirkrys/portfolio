@@ -80,6 +80,18 @@ const hasImage = Astro.slots.has('image');
 		display: flex;
 		gap: calc(24px * var(--ui-scale));
 		width: 100%;
+		justify-content: center;
+	}
+	/* A tall/portrait screenshot scaled to the column's width can end up
+	   absurdly long (a 960×1637 diagram at the 732px column width renders
+	   ~1000px tall). Cap the height instead and let width follow — the
+	   image renders narrower than the column here, which is the accepted
+	   tradeoff, and the lightbox is what gives full detail on click anyway. */
+	.cs-section[data-layout='stacked'] .cs-section__assets :global(img) {
+		/* 562.5px * 0.8 = 450px real. */
+		max-height: calc(562.5px * var(--ui-scale));
+		width: auto;
+		height: auto;
 	}
 	/* 'auto': a single image doesn't span the full row — it matches the copy
 	   column width below it. Explicit 'contained'/'full' below always win
@@ -129,8 +141,16 @@ const hasImage = Astro.slots.has('image');
 	   loop entirely: the assets column then has no intrinsic height of its
 	   own, so the row's height comes only from the copy column, and
 	   align-self: stretch above sizes assets to exactly that — which this
-	   absolutely positioned, object-fit: cover image then fills. */
-	.cs-section[data-layout='side'] .cs-section__assets :global(img) {
+	   absolutely positioned, object-fit: cover image then fills.
+
+	   Direct-child combinator on purpose: a bare <Image> dropped straight
+	   into the slot should get this treatment, but CaseLogoBlock's own
+	   nested tile images must not — CaseLogoBlock already manages its own
+	   absolute positioning at the wrapper level, and this rule matching
+	   its descendants too would strip each tile's own layout (flex
+	   centering, padding, sizing) and stretch/crop the logo to fill the
+	   whole assets column instead. */
+	.cs-section[data-layout='side'] .cs-section__assets > :global(img) {
 		position: absolute;
 		inset: 0;
 		width: 100%;
@@ -237,6 +257,10 @@ const hasImage = Astro.slots.has('image');
 		}
 		.cs-section[data-layout='stacked'] .cs-section__assets {
 			flex-direction: column;
+		}
+		.cs-section[data-layout='stacked'] .cs-section__assets :global(img) {
+			/* 375px * 0.8 = 300px real. */
+			max-height: calc(375px * var(--ui-scale));
 		}
 		.cs-section__heading {
 			font-size: calc(28px * var(--ui-scale));
