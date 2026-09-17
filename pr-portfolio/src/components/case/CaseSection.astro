@@ -115,11 +115,27 @@ const hasImage = Astro.slots.has('image');
 		flex: 1;
 		min-width: 0;
 		align-self: stretch;
-		display: flex;
-		flex-direction: column;
+		position: relative;
 	}
 	.cs-section[data-layout='side'] .cs-section__copy {
 		flex: 0 0 min(calc(732px * var(--ui-scale)), 50%);
+	}
+	/* Side layout: .cs-section__assets must take its height from
+	   .cs-section__copy, not the other way round. A flex item's own natural
+	   (pre-stretch) height still feeds into how tall the row gets — an <img>
+	   sized off its own intrinsic ratio would make the row (and therefore the
+	   "stretched" assets column) as tall as the IMAGE, not the text. Taking
+	   the image out of flow with position: absolute removes that feedback
+	   loop entirely: the assets column then has no intrinsic height of its
+	   own, so the row's height comes only from the copy column, and
+	   align-self: stretch above sizes assets to exactly that — which this
+	   absolutely positioned, object-fit: cover image then fills. */
+	.cs-section[data-layout='side'] .cs-section__assets :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	/* ── Text only: just copy, centred ── */
@@ -205,6 +221,17 @@ const hasImage = Astro.slots.has('image');
 		.cs-section[data-layout='side'] .cs-section__copy {
 			flex: unset;
 			width: 100%;
+		}
+		/* Below the row breakpoint, assets stacks above copy instead of
+		   sitting beside it — there's no longer a sibling row-height to
+		   stretch to (see the desktop rule above), and the image is
+		   position: absolute so it contributes no height of its own. Without
+		   an explicit height here the column collapses to 0 and the image
+		   disappears; give it a sensible aspect ratio instead, matching how
+		   'stacked' layout images size themselves on mobile. */
+		.cs-section[data-layout='side'] .cs-section__assets {
+			width: 100%;
+			aspect-ratio: 4 / 3;
 		}
 		.cs-section[data-layout='stacked'] .cs-section__assets {
 			flex-direction: column;

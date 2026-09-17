@@ -36,6 +36,24 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				padding: 1em;
 				color: var(--color-text);
 			}
+			.prose :global(ul),
+			.prose :global(ol) {
+				margin: 1em 0;
+				padding-left: 1.25em;
+			}
+			.prose :global(ul) {
+				list-style: disc;
+			}
+			.prose :global(ol) {
+				list-style: decimal;
+			}
+			.prose :global(li) {
+				margin-bottom: 0.5em;
+			}
+			.prose :global(li > ul),
+			.prose :global(li > ol) {
+				margin: 0.5em 0;
+			}
 			.title {
 				margin-bottom: 1em;
 				padding: 1em 0;
