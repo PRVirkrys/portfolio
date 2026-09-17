@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { workCompanyIds } from './data/work-companies';
 
 const tagCategory = z.enum(['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems', 'Neutral']);
 
@@ -18,6 +19,9 @@ const blog = defineCollection({
 			heroImage: z.optional(image()),
 			// Case study fields
 			type: z.enum(['post', 'case-study']).default('post'),
+			company: z.enum(workCompanyIds).optional(),
+			customer: z.string().optional(),
+			cardSummary: z.string().optional(),
 			confidentialityNote: z.boolean().optional(),
 			tags: z.array(z.object({
 				label: z.string(),

@@ -1,5 +1,6 @@
 import { iconUrl } from "../lib/icons";
 import { withBase } from '../lib/url';
+import { companyWorkPath, type WorkCompanyId } from './work-companies';
 
 export type TagCategory =
   | "Research"
@@ -22,7 +23,7 @@ export type Client = {
 };
 
 export type Work = {
-  id: "lpa" | "failfast" | "pelt8" | "pr";
+  id: WorkCompanyId;
   name: string;
   logo?: string;
   clients?: Client[];
@@ -33,6 +34,7 @@ export type Work = {
 export const works: Work[] = [
   {
     id: "lpa",
+    ctaHref: withBase(companyWorkPath('lpa')),
     name: "LPA",
     logo: iconUrl("work-lpa.svg"),
     clients: [
@@ -58,6 +60,7 @@ export const works: Work[] = [
   },
   {
     id: "failfast",
+    ctaHref: withBase(companyWorkPath('failfast')),
     name: "FailFast",
     logo: iconUrl("work-failfast.svg"),
     clients: [
@@ -71,12 +74,14 @@ export const works: Work[] = [
       },
       {
         name: "Base Sport",
+        href: withBase('/work/base-caso-estudio/'),
         logo: iconUrl("client-base.png"),
         logoClass: "client-bubble__logo--base",
         surface: "light",
       },
       {
         name: "UOC",
+        href: withBase('/work/uoc-catalogo-experiencia-decision/'),
         logo: iconUrl("client-uoc.svg"),
         logoClass: "client-bubble__logo--uoc",
         surface: "cyan",
@@ -104,6 +109,7 @@ export const works: Work[] = [
   },
   {
     id: "pelt8",
+    ctaHref: withBase(companyWorkPath('pelt8')),
     name: "Pelt8",
     logo: iconUrl("work-pelt8.svg"),
     clients: [
@@ -118,6 +124,7 @@ export const works: Work[] = [
   },
   {
     id: "pr",
+    ctaHref: withBase(companyWorkPath('pr')),
     name: "Paula Rodas",
     clients: [
       {

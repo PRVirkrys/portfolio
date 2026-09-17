@@ -11,6 +11,7 @@ import CaseConfidentialityNote from '../components/case/CaseConfidentialityNote.
 import { ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
 import { withBase } from '../lib/url';
+import { getWorkCompany, companyWorkPath } from '../data/work-companies';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -19,7 +20,9 @@ const {
 	description,
 	heroImage,
 	tags,
-	breadcrumbs,
+	breadcrumbs: authoredBreadcrumbs,
+	company,
+	customer,
 	client,
 	industry,
 	role,
@@ -32,6 +35,13 @@ const {
 	nextCase,
 	confidentialityNote,
 } = Astro.props;
+
+const workCompany = getWorkCompany(company);
+const breadcrumbs = workCompany ? [
+	{ label: 'Work', href: '/work/' },
+	{ label: workCompany.name, href: companyWorkPath(workCompany.id) },
+	{ label: customer ?? title, href: undefined },
+] : authoredBreadcrumbs?.map((crumb, index) => index === 0 ? { label: 'Work', href: '/work/' } : crumb);
 
 // Figma's metadata table (node 16071:69160) orders "Sitio en vivo" before
 // "Colaboración" — Colaboración is the last row, so it's the one that loses
@@ -60,8 +70,8 @@ const metaRows = [
 						<>
 							{i > 0 && <span class="cs-crumb__sep" aria-hidden="true">/</span>}
 							{crumb.href
-								? <a class="cs-crumb" href={withBase(crumb.href)}>{crumb.label}</a>
-								: <span class:list={['cs-crumb', { 'cs-crumb--active': i === breadcrumbs.length - 1 }]}>{crumb.label}</span>
+								? <a class="cs-crumb" href={withBase(crumb.href)} data-work-return={i === 0 ? '' : undefined}>{crumb.label}</a>
+								: <span aria-current={i === breadcrumbs.length - 1 ? 'page' : undefined} class:list={['cs-crumb', { 'cs-crumb--active': i === breadcrumbs.length - 1 }]}>{crumb.label}</span>
 							}
 						</>
 					))}
@@ -154,6 +164,16 @@ const metaRows = [
 	</body>
 </html>
 
+<script>
+	import { readWorkFilters, updateWorkQuery } from '../lib/work-filters';
+	const returnLink = document.querySelector<HTMLAnchorElement>('[data-work-return]');
+	const from = new URLSearchParams(location.search).get('from');
+	if (returnLink && from) {
+		const filters = readWorkFilters(from);
+		returnLink.href = `${new URL(returnLink.href).pathname}${updateWorkQuery('', filters)}`;
+	}
+</script>
+
 <style>
 	/* Page wrapper — sidebar offset comes from body padding in global.css */
 	.cs-page {
@@ -170,6 +190,7 @@ const metaRows = [
 	   count. */
 	.cs-hero__breadcrumbs {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: calc(12px * var(--ui-scale));
 		padding: calc(32px * var(--ui-scale)) calc(64px * var(--ui-scale)) 0;

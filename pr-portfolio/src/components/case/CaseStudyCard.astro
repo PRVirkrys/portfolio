@@ -1,0 +1,62 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Tag from '../ui/Tag.astro';
+import TextLink from '../ui/TextLink.astro';
+import { getWorkCompany } from '../../data/work-companies';
+import { withBase } from '../../lib/url';
+
+interface Props { entry: CollectionEntry<'blog'>; eager?: boolean }
+const { entry, eager = false } = Astro.props;
+const { data } = entry;
+const company = getWorkCompany(data.company);
+const titleId = `card-title-${entry.id}`;
+const meta = [
+  { label: 'Mi rol', value: data.role },
+  { label: data.platform ? 'Plataforma' : 'Periodo', value: data.platform ?? data.date },
+].filter(row => row.value);
+---
+
+<article class="case-card" data-case-card data-company={data.company ?? ''} data-focus={JSON.stringify(data.tags?.map(tag => tag.category) ?? [])}>
+  <div class="case-card__content">
+    {data.heroImage && <div class="case-card__cover"><Image src={data.heroImage} alt="" widths={[480, 720, 1080]} sizes="(max-width: 839px) 100vw, 50vw" loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
+    <div class="case-card__body">
+      {(company || data.customer) && <p class="case-card__context">{[company?.name, data.customer].filter(Boolean).join(' · ')}</p>}
+      <h2 id={titleId} class="case-card__title">{data.title}</h2>
+      {(data.cardSummary || data.description) && <p class="case-card__summary">{data.cardSummary ?? data.description}</p>}
+      <div class="case-card__details">
+        {meta.length > 0 && <dl class="case-card__meta">{meta.map(row => <div><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>}
+        {data.tags?.length && <div class="case-card__tags">{data.tags.slice(0, 3).map(tag => <Tag category={tag.category}>{tag.label}</Tag>)}</div>}
+        <TextLink class="case-card__cta" href={withBase(`/work/${entry.id}/`)} size="lg" aria-labelledby={titleId} data-case-link>Ver case study</TextLink>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .case-card { position: relative; min-width: 0; border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-subtle); transition: border-color var(--duration-fast) var(--ease-standard); }
+  .case-card[hidden] { display: none; }
+  .case-card:hover { border-color: var(--sidebar-item-text-active); }
+  .case-card__content { height: 100%; display: flex; flex-direction: column; border-radius: inherit; }
+  .case-card:has(a:focus-visible) { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  .case-card__cover { aspect-ratio: 16 / 9; padding: var(--space-4); background: var(--color-bg); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
+  .case-card__image { width: 100%; height: 100%; display: block; object-fit: contain; border-radius: var(--radius-sm); }
+  .case-card__body { padding: var(--space-8); display: flex; flex-direction: column; flex: 1; gap: var(--space-4); }
+  .case-card__context { margin: 0; color: var(--color-text-secondary); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(3px * var(--ui-scale)); text-transform: uppercase; }
+  .case-card__title { font-family: var(--font-heading); font-size: calc(36px * var(--ui-scale)); line-height: 1.2; font-weight: 700; letter-spacing: -0.5px; margin: 0; overflow-wrap: break-word; }
+  .case-card__summary { margin: 0; font-size: calc(20px * var(--ui-scale)); line-height: 1.65; letter-spacing: 0; color: var(--color-text-secondary); }
+  .case-card__details { margin-top: auto; padding-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-6); }
+  .case-card__meta { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); border-block: var(--border-width) solid var(--color-border); padding-block: var(--space-6); margin: 0; }
+  .case-card__meta > div { min-width: 0; }
+  .case-card__meta > div + div { border-left: var(--border-width) solid var(--color-border); padding-left: var(--space-6); }
+  dt { color: var(--color-text-secondary); text-transform: uppercase; font-size: calc(11px * var(--ui-scale)); letter-spacing: calc(2px * var(--ui-scale)); font-weight: 700; margin-bottom: var(--space-2); }
+  dd { margin: 0; font-size: calc(18px * var(--ui-scale)); line-height: 1.5; letter-spacing: 0; font-weight: 600; }
+  .case-card__tags { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .case-card__tags :global(.tag) { max-width: 100%; height: auto; min-height: calc(28px * var(--ui-scale)); white-space: normal; text-align: center; padding-block: var(--space-1); }
+  .case-card :global(.case-card__cta) { align-self: flex-start; }
+  /* Extend the single real TextLink over the card without nesting anchors.
+     TextLink keeps ownership of its typography, icon and animated underline. */
+  .case-card :global(.case-card__cta::before) { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); }
+  @media (max-width: 839px) { .case-card__body { padding: var(--space-6); } .case-card__title { font-size: calc(32px * var(--ui-scale)); } }
+  @media (prefers-reduced-motion: reduce) { .case-card { transition: none; } }
+</style>
