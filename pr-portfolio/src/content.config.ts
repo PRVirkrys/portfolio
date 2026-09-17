@@ -34,6 +34,7 @@ const blog = defineCollection({
 			liveUrl: z.object({ label: z.string(), href: z.string() }).optional(),
 			collaboration: z.string().optional(),
 			tools: z.string().optional(),
+			platform: z.string().optional(),
 			nextCase: z.object({ title: z.string(), slug: z.string() }).optional(),
 		}),
 });

@@ -1,0 +1,222 @@
+---
+title: "Base — De una parrilla de productos a una experiencia de marca"
+description: "¿Cómo transformar una entrada directa a una parrilla de productos en una experiencia de marca que ayude a explorar el catálogo? Del benchmark a una arquitectura de contenidos reutilizable: una nueva landing de marca y sus recorridos asociados para el ecommerce de Base."
+pubDate: "Oct 01 2023"
+heroImage: "../../assets/case-studies/base/hero.png"
+type: case-study
+tags:
+  - label: BENCHMARKING
+    category: Research
+  - label: CONTENT ARCHITECTURE
+    category: Strategy
+  - label: UX WIREFRAMES
+    category: UX Design
+breadcrumbs:
+  - label: work
+    href: /
+  - label: failfast
+  - label: base
+client: "Fail Fast · Base"
+industry: "Retail deportivo · Ecommerce"
+role: "UX Designer"
+liveUrl:
+  label: "Base — Adidas"
+  href: "https://base.net/pages/adidas"
+collaboration: "UI Design · Cliente · Desarrollo"
+tools: "Figma · FigJam"
+platform: "Ecommerce · Móvil y escritorio"
+nextCase:
+  title: "UOC · Universitat Oberta de Catalunya"
+  slug: "uoc-caso-estudio"
+---
+
+import { Image } from "astro:assets";
+import CaseSection from "../../components/case/CaseSection.astro";
+import CaseCallout from "../../components/case/CaseCallout.astro";
+import CaseImageRow from "../../components/case/CaseImageRow.astro";
+import CaseLogoBlock from "../../components/case/CaseLogoBlock.astro";
+import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import { Layers, Zap, PieChart } from "@lucide/astro";
+
+import baseLogo from "../../assets/clients/client-base.png";
+import failFastLogo from "../../assets/case-studies/logos/failfast.svg?raw";
+import retoImg from "../../assets/case-studies/base/reto.png";
+import benchmarkImg from "../../assets/case-studies/base/benchmark.png";
+import estructuraImg from "../../assets/case-studies/base/estructura-definida.png";
+import wireframesImg from "../../assets/case-studies/base/wireframes-landing.png";
+import parrillaImg from "../../assets/case-studies/base/parrilla.png";
+import cardImg from "../../assets/case-studies/base/card.png";
+import implementacionImg from "../../assets/case-studies/base/implementacion.png";
+
+<CaseSection
+  variant="default"
+  layout="side"
+  tag="OVERVIEW"
+  tagCategory="Neutral"
+  heading="Overview"
+>
+  <CaseLogoBlock slot="image" background="#FFFFFF" background2="#EE8089">
+    <Image src={baseLogo} alt="Base" />
+    <Fragment slot="second" set:html={failFastLogo} />
+  </CaseLogoBlock>
+  Durante mi etapa en Fail Fast, trabajé en la definición UX de una nueva experiencia de marca para Base. El encargo inicial era sustituir la entrada directa a una parrilla por una landing que organizara la exploración del catálogo. A partir de un benchmark, definí la arquitectura de contenidos, la validé con el cliente y desarrollé los wireframes. El alcance creció hacia las páginas asociadas y una propuesta de cards y previsualización de producto. Tras el trabajo visual del equipo de UI, preparé el prototipo final de la experiencia de marca.
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="THE CHALLENGE" tagCategory="Strategy" heading="El reto — de una lista de productos a una experiencia de marca">
+  <Image slot="image" src={retoImg} alt="Comparativa entre el acceso directo a la parrilla y la propuesta de landing de marca" />
+
+Cuando un usuario entraba en una marca como Adidas, llegaba directamente a una parrilla de productos. Podía acceder al catálogo, pero no había una landing que presentara la marca y organizara distintas formas de explorar su oferta.
+
+El encargo no debía resolverse solo para Adidas: la lógica tenía que poder aplicarse después a otras marcas, con catálogos y contenidos diferentes.
+
+Los retos principales eran:
+
+- Dar a cada marca un espacio propio de identificación y contexto.
+- Hacer visibles las entradas por género, deporte y categoría.
+- Combinar destacados, productos y contenidos de marca sin perder conexión con el catálogo.
+- Definir una estructura flexible, sin depender de una campaña o selección fija de productos.
+
+El objetivo fue facilitar el paso del contexto de marca a la exploración de productos relevantes.
+
+  <CaseCallout
+    title="Recorrido propuesto"
+    body="Reconocer la marca → elegir una ruta → explorar la oferta → encontrar productos."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="BENCHMARKING" tagCategory="Research" heading="Del benchmark a los criterios de diseño">
+  <Image slot="image" src={benchmarkImg} alt="Benchmark de referentes de ecommerce multimarca y retail deportivo" />
+
+Analicé referentes de ecommerce multimarca y retail deportivo que ya ofrecían este tipo de landings. Descompuse sus páginas en secciones y utilicé un código de color para comparar qué función cumplía cada contenido, cuánto espacio ocupaba y cómo se presentaba en móvil y escritorio.
+
+La clasificación distinguía identificación de marca, navegación y búsqueda local, accesos generales o por género, destacados, recomendación de producto, contenidos promocionales y captación.
+
+**Criterios derivados del análisis:**
+
+- **Distinguir orientación y exploración.** Las breadcrumbs indican dónde está el usuario; el menú dentro de la marca ofrece rutas para continuar.
+- **Ofrecer varias entradas al catálogo.** Género, deporte y categoría permiten organizar la exploración desde distintos puntos de partida.
+- **Combinar módulos con funciones diferentes.** Destacados, accesos a categorías y listados de producto no cumplen el mismo papel.
+- **Separar estructura y contenido.** La lógica debía mantenerse, aunque cambiaran la marca, los productos o las campañas.
+
+  <CaseCallout
+    title="Proceso"
+    body="Referentes → clasificación de secciones → criterios → arquitectura de contenidos → wireframes."
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="INFORMATION ARCHITECTURE" tagCategory="Strategy" heading="01 — Definir una arquitectura reutilizable, no una página fija">
+  <Image slot="image" src={estructuraImg} alt="Diagrama de arquitectura de contenidos reutilizable para distintas marcas" />
+
+Después del benchmark, elaboré un diagrama que relacionaba navegación, tipos de contenido y posibilidades de presentación. La propuesta diferenciaba elementos requeridos —como la identificación de marca— de opciones que podían variar, como banner, vídeo, carrusel o grid.
+
+La navegación local contemplaba Inicio, Hombre, Mujer, Niño/a, Deportes y Ofertas. Cada destino cambiaba el contexto de los contenidos: una vista general de marca no debía mostrar lo mismo que una sección de género o un deporte concreto.
+
+El diagrama también recogía reglas de aplicación:
+
+- Adaptar los contenidos a la marca, categoría o género seleccionado.
+- Utilizar títulos de sección acordes con ese contexto.
+- Proponer diferentes patrones de presentación según la sección.
+- No mostrar el módulo de ofertas si la categoría no tenía ofertas.
+- Permitir la exploración de un deporte concreto desde la sección de deportes.
+
+### Una estructura común con prioridades adaptables
+
+En esta etapa no contaba con métricas exactas de ventas o búsquedas. Por eso, el diagrama no fijaba una jerarquía como si ya estuviera respaldada por esos datos: proponía que la selección y el peso de los contenidos se ajustaran a lo más vendido o buscado dentro de cada contexto.
+
+Validamos esta arquitectura con el cliente antes de pasar a wireframes. Además, el diagrama incluía sugerencias de patrones UI obtenidas del benchmark para que los equipos de UI y desarrollo entendieran cómo aplicar la lógica.
+
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="UX WIREFRAMES" tagCategory="UX Design" heading="02 — Traducir la estructura a wireframes y recorridos">
+  <Image slot="image" src={wireframesImg} alt="Wireframes de la landing de marca y sus vistas asociadas" />
+
+Con la arquitectura más clara, desarrollé los wireframes de la landing y de las pantallas asociadas: vistas de "ver todo" por género, parrillas generales de deportes, páginas de un deporte concreto, ofertas y resultados de búsqueda.
+
+Los wireframes concretaban el orden y las relaciones entre módulos: desde la identificación de marca y los accesos al catálogo hasta destacados, más vendidos, ofertas y contenidos complementarios.
+
+El trabajo incluyó versiones para móvil y escritorio. El propio diagrama ya sugería pestañas para desktop y un menú colapsado para móvil: distintas presentaciones para conservar el acceso a las mismas rutas.
+
+El propósito no era diseñar pantallas aisladas, sino mantener una relación clara entre la entrada de marca y los niveles de exploración del catálogo.
+
+### Acercar la compra desde la parrilla
+
+También definí una propuesta UX para la parrilla y las cards de producto. Los wireframes contemplaban filtros aplicados, ordenación y consulta de disponibilidad en tienda, junto con información comercial visible desde el listado.
+
+Las cards reunían información comercial, stock y acciones de consulta rápida para evaluar el producto desde el listado. En desktop, propuse mostrar una imagen alternativa al hacer hover.
+
+Definí dos rutas de compra según las opciones que requería cada producto:
+
+- **Compra directa:** "Añadir a la cesta" para productos que no necesitaban elegir talla o color.
+- **Compra con selección de variantes:** "Consultar opciones de compra" cuando era necesario completar esa selección.
+
+Así, la acción de la card se adaptaba a las necesidades del producto, en lugar de ofrecer la misma compra directa para todo el catálogo.
+
+La previsualización reunía imágenes, información resumida y selección de color y talla. La propuesta contemplaba un color preseleccionado y la activación de "Añadir a la cesta" una vez completadas las opciones necesarias. "Ver más detalles" conservaba el acceso a la ficha completa. Al mostrarse sobre la parrilla, mantenía el listado como contexto de exploración.
+
+Exploré también distintas presentaciones para móvil: un producto por fila, dos columnas y una disposición horizontal.
+
+<CaseImageRow>
+  <Image src={parrillaImg} alt="Propuesta UX de la parrilla con filtros, cards de producto y exploraciones móviles" />
+  <Image src={cardImg} alt="Card de producto: compra directa frente a selección de variantes y previsualización" />
+</CaseImageRow>
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="PROTOTYPE" tagCategory="UX Design" heading="03 — De una estructura validada a un prototipo final">
+  <Image slot="image" src={implementacionImg} alt="Secuencia de wireframes, UI final e implementación de la experiencia de marca" />
+
+Los wireframes pasaron al equipo de UI, que definió el lenguaje visual y las pantallas de alta fidelidad. Después, retomé esas pantallas para preparar el prototipo final, conectar los recorridos y facilitar la revisión con el cliente.
+
+El prototipo permitió revisar la experiencia de marca como un recorrido conectado y sirvió de referencia para su paso a desarrollo, con un handoff ligero.
+
+  <CaseCallout
+    title="Colaboración"
+    body="Mi trabajo se centró en la definición UX y el prototipo de la experiencia de marca. El equipo de UI definió su estilo visual y el equipo de desarrollo la implementó."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="text-only" tag="RESULT" tagCategory="Neutral" heading="Resultado — una nueva puerta de entrada al catálogo">
+
+La experiencia de marca se implementó y su entrada dejó de depender únicamente de una parrilla genérica. La landing incorporó contexto de marca, rutas de exploración y módulos conectados con el catálogo.
+
+La [página actual de Adidas en Base](https://base.net/pages/adidas) permite ver la experiencia en vivo, aunque sus contenidos y campañas hayan evolucionado desde el proyecto.
+
+_Contexto del proyecto global: [Fail Fast comunica que el rediseño superó los objetivos de venta del primer año](https://www.failfast.design/work/base-ecommerce). Es un resultado colectivo del proyecto completo, no atribuible exclusivamente a esta intervención._
+
+</CaseSection>
+
+<CaseSection
+  variant="subtle"
+  layout="text-only"
+  tag="LEARNINGS"
+  tagCategory="Research"
+  heading="Lo que aprendí"
+  wide
+>
+  <LearningsGrid>
+    <CaseCallout
+      size="lg"
+      title="El benchmark gana valor cuando se convierte en reglas"
+      body="Clasificar secciones me permitió pasar de recopilar referencias a proponer una estructura aplicable."
+    >
+      <PieChart slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Separar estructura y contenido facilita la reutilización"
+      body="Una misma lógica puede adaptarse a marcas distintas sin obligarlas a mostrar los mismos módulos o productos."
+    >
+      <Layers slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Una estructura clara acelera el trabajo posterior"
+      body="Validar el diagrama con el cliente ayudó a concretar los wireframes y dio a UI y desarrollo un camino común para continuar."
+    >
+      <Zap slot="icon" />
+    </CaseCallout>
+  </LearningsGrid>
+</CaseSection>

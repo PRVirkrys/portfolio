@@ -120,6 +120,16 @@ a {
 a:hover {
 	color: var(--color-action-ghost-text);
 }
+/* Inline links inside body copy (case-study paragraphs/lists, blog prose,
+   callouts) otherwise read as plain text — underline is what actually
+   distinguishes them, one global rule instead of repeating it per
+   component wherever prose renders. Nav/buttons/cards/etc. define their
+   own link treatment and aren't matched by this p/li scope. */
+p a,
+li a {
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
+}
 p {
 	margin-bottom: 1em;
 }
