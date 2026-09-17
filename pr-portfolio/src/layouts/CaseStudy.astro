@@ -295,7 +295,7 @@ const metaRows = [
 	.cs-meta-row__value {
 		flex: 1;
 		font-family: var(--font-sans);
-		font-size: calc(16px * var(--ui-scale));
+		font-size: calc(20px * var(--ui-scale));
 		font-weight: 600;
 		line-height: 1.75;
 		letter-spacing: calc(1px * var(--ui-scale));
@@ -306,7 +306,7 @@ const metaRows = [
 		align-items: center;
 		gap: calc(8px * var(--ui-scale));
 		font-family: var(--font-sans);
-		font-size: calc(16px * var(--ui-scale));
+		font-size: calc(20px * var(--ui-scale));
 		font-weight: 600;
 		letter-spacing: calc(1px * var(--ui-scale));
 		color: color-mix(in srgb, var(--color-text) 90%, transparent);
@@ -363,7 +363,9 @@ const metaRows = [
 			font-size: calc(32px * var(--ui-scale));
 		}
 		.cs-hero__desc {
-			font-size: calc(16px * var(--ui-scale));
+			/* Match the desktop size (calc(20px * scale) = 16px real) instead
+			   of shrinking the hero description on mobile. */
+			font-size: calc(20px * var(--ui-scale));
 		}
 		.cs-hero__breadcrumbs {
 			padding: var(--gutter-mobile) var(--gutter-mobile) 0;
