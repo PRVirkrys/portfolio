@@ -97,14 +97,17 @@ $typography: (
 	'body-l': (
 		'font-family': $font-family-manrope,
 		'font-weight': 400,
-		'font-size': 18px,
+		// 20px source * --ui-scale (0.8) = 16px real — the readability floor
+		// for long-form body copy. Was 18px source (14.4px real).
+		'font-size': 20px,
 		'line-height': 1.6,
 		'letter-spacing': 0px,
 	),
 	'body-m': (
 		'font-family': $font-family-manrope,
 		'font-weight': 400,
-		'font-size': 16px,
+		// 18px source * 0.8 = 14.4px real. Was 16px source (12.8px real).
+		'font-size': 18px,
 		'line-height': 1.6,
 		'letter-spacing': 0px,
 	),

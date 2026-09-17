@@ -175,7 +175,9 @@ const hasImage = Astro.slots.has('image');
 	/* Slot typography — applied via :global() since MDX renders into slots */
 	.cs-section__copy :global(p) {
 		font-family: var(--font-sans);
-		font-size: calc(16px * var(--ui-scale));
+		/* 20px * --ui-scale (0.8) = 16px real — readability floor for the
+		   long-form paragraph copy case studies are built from. */
+		font-size: calc(20px * var(--ui-scale));
 		font-weight: 400;
 		line-height: 2;
 		letter-spacing: calc(1px * var(--ui-scale));
@@ -195,7 +197,7 @@ const hasImage = Astro.slots.has('image');
 	}
 	.cs-section__copy :global(li) {
 		font-family: var(--font-sans);
-		font-size: calc(16px * var(--ui-scale));
+		font-size: calc(20px * var(--ui-scale));
 		line-height: 2;
 		letter-spacing: calc(1px * var(--ui-scale));
 		color: color-mix(in srgb, var(--color-text) 90%, transparent);

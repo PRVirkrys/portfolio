@@ -274,7 +274,9 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 	.cs-lightbox__caption-text {
 		max-width: min(calc(640px * var(--ui-scale)), 80vw);
 		font-family: var(--font-sans);
-		font-size: calc(15px * var(--ui-scale));
+		/* 18px * --ui-scale = 14.4px real — up from 12px, still a step below
+		   body copy's 16px since this is a secondary caption, not reading text. */
+		font-size: calc(18px * var(--ui-scale));
 		line-height: 1.6;
 		color: var(--color-text-muted);
 	}
