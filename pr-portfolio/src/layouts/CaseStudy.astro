@@ -25,6 +25,7 @@ const {
 	date,
 	liveUrl,
 	collaboration,
+	tools,
 	nextCase,
 } = Astro.props;
 
@@ -94,7 +95,7 @@ const metaRows = [
 							<p class="cs-hero__desc">{description}</p>
 						</div>
 
-						{(metaRows.length > 0 || liveUrl || collaboration) && (
+						{(metaRows.length > 0 || liveUrl || collaboration || tools) && (
 							<div class="cs-hero__meta">
 								{metaRows.map(row => (
 									<div class="cs-meta-row">
@@ -115,6 +116,12 @@ const metaRows = [
 									<div class="cs-meta-row">
 										<span class="cs-meta-row__label">Colaboración</span>
 										<span class="cs-meta-row__value">{collaboration}</span>
+									</div>
+								)}
+								{tools && (
+									<div class="cs-meta-row">
+										<span class="cs-meta-row__label">Herramientas</span>
+										<span class="cs-meta-row__value">{tools}</span>
 									</div>
 								)}
 							</div>

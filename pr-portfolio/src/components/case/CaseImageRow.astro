@@ -1,0 +1,31 @@
+---
+// Generic media row for a CaseSection's copy flow: lays out 1-N images (or
+// any content) in an equal-width row, wrapping to a single column on mobile.
+// Same visual rhythm as CaseSection's own top-of-section assets row, but
+// droppable anywhere inside the prose — above/below text, mid-article — so
+// each case study can order text and images however its narrative needs
+// without a bespoke layout component per article.
+---
+
+<div class="cs-image-row">
+	<slot />
+</div>
+
+<style>
+	.cs-image-row {
+		display: flex;
+		gap: calc(24px * var(--ui-scale));
+		width: 100%;
+		margin-block: calc(8px * var(--ui-scale)) calc(24px * var(--ui-scale));
+	}
+	.cs-image-row :global(img) {
+		flex: 1;
+		min-width: 0;
+		margin: 0;
+	}
+	@media (max-width: 960px) {
+		.cs-image-row {
+			flex-direction: column;
+		}
+	}
+</style>

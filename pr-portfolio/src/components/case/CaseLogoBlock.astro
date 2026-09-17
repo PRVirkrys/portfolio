@@ -1,0 +1,57 @@
+---
+// Client/collaborator identity block for a CaseSection's image slot: one or
+// two solid-color bands stacked top-to-bottom, each with its own background
+// and a centered logo mark (inline SVG or <img>, never stretched or cropped —
+// unlike a flattened raster of the same idea, the mark always renders at its
+// own aspect ratio). Pass a single logo via the default slot for a one-brand
+// tile, or add a second via slot="second" + background2 for a client/agency
+// pair. Self-positions (absolute, inset: 0) so it drops straight into a
+// side-layout CaseSection's assets column and inherits the copy column's
+// height exactly like a real <img> would.
+export interface Props {
+	background: string;
+	background2?: string;
+}
+
+const { background, background2 } = Astro.props;
+const hasSecond = Astro.slots.has('second');
+---
+
+<div class="cs-logo-block">
+	<div class="cs-logo-tile" style={`background:${background}`}>
+		<slot />
+	</div>
+	{hasSecond && (
+		<div class="cs-logo-tile" style={`background:${background2}`}>
+			<slot name="second" />
+		</div>
+	)}
+</div>
+
+<style>
+	.cs-logo-block {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+	.cs-logo-tile {
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: calc(32px * var(--ui-scale));
+	}
+	.cs-logo-tile :global(svg),
+	.cs-logo-tile :global(img) {
+		max-width: 55%;
+		max-height: 45%;
+		width: auto;
+		height: auto;
+	}
+</style>
