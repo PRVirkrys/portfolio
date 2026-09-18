@@ -139,10 +139,12 @@ const { label = 'Tema oscuro', showLabel = true } = Astro.props;
 
 <script>
 	function initThemeToggle(control: HTMLElement) {
+		const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('.theme-toggle__label');
 		const sync = () => {
 			const isDark = document.documentElement.classList.contains('dark');
 			control.setAttribute('aria-checked', String(isDark));
 			control.setAttribute('aria-label', isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+			if (label) label.textContent = isDark ? 'Tema oscuro' : 'Tema claro';
 		};
 		sync();
 		control.addEventListener('click', () => {
