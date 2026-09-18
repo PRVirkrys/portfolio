@@ -29,5 +29,12 @@ pnpm-debug.log*
 portfolio-brand-ui-implementation-guide.md
 docs/case-study-guide.md
 
-# working specs/storyboards (scratch docs, not for version control)
+# working specs/storyboards/plans (scratch docs, not for version control)
 docs/superpowers/specs/
+docs/superpowers/plans/
+
+# agent instructions and working notes (local only)
+CLAUDE.md
+AGENTS.md
+NARRATIVE-CURSOR.md
+design-qa.md
