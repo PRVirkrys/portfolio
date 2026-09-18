@@ -227,7 +227,11 @@ const metaRows = [
 	}
 	.cs-hero__image-frame {
 		width: min(calc(1288px * var(--ui-scale)), 100%);
-		aspect-ratio: 1288 / 707;
+		/* Matches the delivered hero assets' native ratio (3386×1616), not the
+		   old Figma placeholder's 1288×707 — that mismatch left `object-fit:
+		   contain` letterboxing blank bars above/below the image on every
+		   case study. */
+		aspect-ratio: 3386 / 1616;
 		overflow: hidden;
 		border-radius: var(--radius-md);
 	}
@@ -242,7 +246,10 @@ const metaRows = [
 
 	/* ── Hero content ─────────────────────────────────────────────────── */
 	.cs-hero__content {
-		margin-top: calc(-270px * var(--ui-scale));
+		/* -270px was calibrated for the old 707px-tall frame (38.2% overlap).
+		   Scaled down to match the shorter real-asset frame height so the
+		   same proportion of the image stays visible behind the card. */
+		margin-top: calc(-235px * var(--ui-scale));
 		background: var(--color-bg);
 		border-top: var(--border-width) solid var(--color-border);
 		position: relative;
@@ -365,7 +372,7 @@ const metaRows = [
 		.cs-hero__content-inner {
 			flex-direction: column;
 		}
-		.cs-hero__content { margin-top: calc(-180px * var(--ui-scale)); }
+		.cs-hero__content { margin-top: calc(-156px * var(--ui-scale)); }
 		.cs-hero__text {
 			flex: unset;
 			width: 100%;
@@ -386,7 +393,7 @@ const metaRows = [
 			padding-bottom: calc(48px * var(--ui-scale));
 		}
 		.cs-hero__content {
-			margin-top: calc(-72px * var(--ui-scale));
+			margin-top: calc(-63px * var(--ui-scale));
 		}
 		.cs-hero__content-inner {
 			padding: var(--gutter-mobile);
