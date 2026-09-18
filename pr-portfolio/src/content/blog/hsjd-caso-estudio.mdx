@@ -1,0 +1,276 @@
+---
+title: "HSJD · Hospital Sant Joan de Déu"
+description: "¿Cómo ayudar a las familias a encontrar y comprender información de salud según sus necesidades? Este caso explica cómo la arquitectura, la navegación y las estructuras de contenido dieron forma a una propuesta para explorar consejos de salud, consultar enfermedades y acceder a recursos de apoyo."
+pubDate: "Nov 15 2023"
+heroImage: "../../assets/case-studies/hsjd/hero.png"
+type: case-study
+company: failfast
+customer: "HSJD"
+cardSummary: "¿Cómo ayudar a las familias a encontrar y comprender información de salud según sus necesidades?"
+confidentialityNote: true
+tags:
+  - label: RESEARCH SYNTHESIS
+    category: Research
+  - label: INFORMATION ARCHITECTURE
+    category: Strategy
+  - label: PRIORITIZATION
+    category: Strategy
+breadcrumbs:
+  - label: work
+    href: /
+  - label: failfast
+  - label: hsjd
+client: "Fail Fast · Hospital Sant Joan de Déu Barcelona"
+industry: "Salud y educación"
+role: "UX Designer"
+date: "2022"
+liveUrl:
+  label: "Escola de Salut"
+  href: "https://escolasalut.sjdhospitalbarcelona.org/ca"
+collaboration: "UI Design · Equipo de Fail Fast"
+tools: "Figma · FigJam · Miro"
+platform: "Web · Escritorio y móvil"
+nextCase:
+  title: "Base — De una parrilla de productos a una experiencia de marca"
+  slug: "base-caso-estudio"
+---
+
+import { Image } from "astro:assets";
+import CaseSection from "../../components/case/CaseSection.astro";
+import CaseCallout from "../../components/case/CaseCallout.astro";
+import CaseImageRow from "../../components/case/CaseImageRow.astro";
+import CaseLogoBlock from "../../components/case/CaseLogoBlock.astro";
+import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import { Users, ListChecks, GitBranch, Component } from "@lucide/astro";
+
+import hsjdLogo from "../../assets/clients/client-hsjd-escola.png";
+import failFastLogo from "../../assets/case-studies/logos/failfast.svg?raw";
+import retoImg from "../../assets/case-studies/hsjd/reto-necesidades.png";
+import benchmarkImg from "../../assets/case-studies/hsjd/benchmark-criterios.png";
+import orientarArquitecturaImg from "../../assets/case-studies/hsjd/orientar-arquitectura.png";
+import orientarWireframesImg from "../../assets/case-studies/hsjd/orientar-wireframes.png";
+import encontrarTemasImg from "../../assets/case-studies/hsjd/encontrar-distribuidora-temas.png";
+import encontrarAlfabeticaImg from "../../assets/case-studies/hsjd/encontrar-distribuidora-alfabetica.png";
+import comprenderNivelesImg from "../../assets/case-studies/hsjd/comprender-niveles-lectura.png";
+import comprenderFichaImg from "../../assets/case-studies/hsjd/comprender-ficha-enfermedad.png";
+import comprenderReglasImg from "../../assets/case-studies/hsjd/comprender-reglas-contenido.png";
+import priorizacionImg from "../../assets/case-studies/hsjd/priorizacion-fases.png";
+import wireframesAUiImg from "../../assets/case-studies/hsjd/wireframes-a-ui.png";
+import resultadoImg from "../../assets/case-studies/hsjd/resultado.png";
+
+<CaseSection
+  variant="default"
+  layout="side"
+  tag="OVERVIEW"
+  tagCategory="Neutral"
+  heading="Overview"
+>
+  <CaseLogoBlock slot="image" background="#FFFFFF" background2="#EE8089">
+    <Image src={hsjdLogo} alt="Sant Joan de Déu — Escola de Salut" />
+    <Fragment slot="second" set:html={failFastLogo} />
+  </CaseLogoBlock>
+  En 2022 participé desde Fail Fast en la definición de la Escola de Salut, una plataforma educativa del Hospital Sant Joan de Déu Barcelona. Mi trabajo partió de las necesidades recogidas por el equipo en workshops previos. Las traduje en criterios de diseño, arquitectura y wireframes para escritorio y móvil, y me encargué de priorizar la propuesta por fases ante las preocupaciones sobre su implementación. El caso se centra en cómo estas decisiones dieron estructura a una experiencia que reunía información de salud, enfermedades y recursos para familias y cuidadores.
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="THE CHALLENGE" tagCategory="Strategy" heading="El reto — convertir necesidades diversas en caminos comprensibles">
+
+<CaseImageRow>
+  <Image src={retoImg} alt="Síntesis de necesidades por público: stakeholders, familias con hijos sanos y familias con hijos crónicos" />
+</CaseImageRow>
+
+Las necesidades y los requerimientos recogidos reunían perspectivas de stakeholders, familias con hijos sanos y familias con hijos crónicos. La plataforma debía responder a necesidades de prevención, información sobre enfermedades y apoyo cotidiano.
+
+- **Encontrar lo relevante:** acceder a contenidos entre temas y formatos diversos.
+- **Comprender información compleja:** orientar la lectura y aclarar términos médicos.
+- **Adaptarse al tiempo disponible:** contemplar formatos rápidos y contenidos de mayor profundidad.
+- **Conectar información y cuidados:** acercar recursos útiles para afrontar la enfermedad.
+
+El objetivo de diseño era definir una estructura que permitiera orientarse, localizar información relevante y explorarla con distintos niveles de detalle.
+
+  <CaseCallout
+    title="Recorrido propuesto"
+    body="Orientarse → encontrar → comprender → acceder a recursos"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="BENCHMARKING" tagCategory="Research" heading="De los workshops y el benchmark a criterios de diseño">
+
+El equipo había realizado los workshops antes de mi incorporación. Revisé las capturas de necesidades recibidas y las contrasté con un benchmark de plataformas de salud.
+
+La comparación me ayudó a evaluar cómo los referentes resolvían el acceso, la lectura y la relación entre contenidos. Utilicé ese análisis para seleccionar patrones que respondieran a las necesidades del proyecto y detectar dificultades que convenía evitar.
+
+<CaseImageRow>
+  <Image src={benchmarkImg} alt="Análisis de referentes de plataformas de salud y criterios de diseño derivados" />
+</CaseImageRow>
+
+De ahí surgieron tres criterios:
+
+- **Adaptar el acceso a la intención de consulta.**
+- **Organizar la lectura con distintos niveles de profundidad.**
+- **Hacer visibles la procedencia de la información y los recursos relacionados.**
+
+  <CaseCallout
+    title="Proceso"
+    body="Workshops previos → benchmark → criterios de diseño → arquitectura → wireframes"
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="NAVIGATION" tagCategory="Strategy" heading="01 — Orientar: conectar las áreas con sus contenidos">
+
+Una familia que busca consejos generales no llega con la misma pregunta que alguien que necesita entender un diagnóstico. La arquitectura debía contemplar esas diferencias y conectar las páginas de entrada con las fichas de detalle.
+
+Definí un sitemap y un diagrama que organizaban las áreas de vida saludable, patologías, apoyo a familias, formación y actualidad, junto con la búsqueda.
+
+<CaseImageRow>
+  <Image src={orientarArquitecturaImg} alt="Sitemap y diagrama de arquitectura de contenidos: de la entrada general a la consulta de detalle" />
+</CaseImageRow>
+
+Trabajé también la página de inicio y las páginas de entrada a las secciones para dar contexto a cada área y acercar sus contenidos. La arquitectura establecía la relación entre estas capas: entrada general, selección de contenidos y consulta del detalle.
+
+Los primeros wireframes utilizaban bloques amplios para revisar jerarquías y relaciones antes de concretar su presentación.
+
+<CaseImageRow>
+  <Image src={orientarWireframesImg} alt="Primeros wireframes de las distribuidoras de vida sana 360 y patologías A-Z" />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Decisión"
+    body="Definir primero cómo se conectaba el sistema y después ajustar el acceso y la lectura en cada tipo de página."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="DISCOVERY FLOW" tagCategory="Strategy" heading="02 — Encontrar: ajustar las distribuidoras a las necesidades de consulta">
+
+Las necesidades de las familias con hijos sanos incluían acceder a consejos y contenidos sobre hábitos saludables. Para esa exploración, propuse distribuidoras con categorías y filtros que permitieran recorrer los artículos y acotar lo relevante.
+
+<CaseImageRow>
+  <Image src={encontrarTemasImg} alt="Distribuidora con categorías y filtros para explorar consejos y hábitos saludables" />
+</CaseImageRow>
+
+En las familias con hijos crónicos aparecía la necesidad de conocer una enfermedad, sus síntomas o sus tratamientos. Para la consulta de una enfermedad concreta, propuse búsqueda y acceso alfabético que facilitaran localizar un término conocido.
+
+<CaseImageRow>
+  <Image src={encontrarAlfabeticaImg} alt="Distribuidora de enfermedades con búsqueda y acceso alfabético" />
+</CaseImageRow>
+
+**Explorar contenidos y buscar información concreta debían convivir.** Adapté el mismo concepto de distribuidora a ambas necesidades: distintos mecanismos de acceso con una función común, ayudar a llegar al contenido de detalle.
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="UX WIREFRAMES" tagCategory="UX Design" heading="03 — Comprender: definir fichas y reglas para presentar el contenido">
+
+Las necesidades recibidas mostraban que algunas familias tenían poco tiempo y preferían formatos rápidos. En los artículos propuse un resumen de lo que se aprendería, lectura rápida y contenido completo: una estructura que permitía elegir cuánto profundizar.
+
+<CaseImageRow>
+  <Image src={comprenderNivelesImg} alt="Estructura de artículo con resumen, lectura rápida y contenido completo" />
+</CaseImageRow>
+
+Para las familias con hijos crónicos, la consulta abarcaba entender la enfermedad, conocer tratamientos y encontrar apoyo. Organicé las fichas en apartados que acompañaban esas preguntas, desde la explicación inicial hasta la convivencia y los recursos para familias.
+
+Definí índices y menús laterales para acceder a cada apartado, incluida su adaptación al móvil, e incorporé autoría, fuentes y fechas de revisión para hacer visible la procedencia del contenido.
+
+<CaseImageRow>
+  <Image src={comprenderFichaImg} alt="Ficha de enfermedad con índice de apartados, navegación móvil y tipos de contenido" />
+</CaseImageRow>
+
+El trabajo descendió al nivel de los bloques: listados, tablas, imágenes y contenidos que requerían énfasis, como las señales de alarma. Estas reglas orientaban cómo presentar la información según su naturaleza.
+
+<CaseImageRow>
+  <Image src={comprenderReglasImg} alt="Reglas de presentación de contenido: listados, tablas, imagen y explicación, señales de alarma" />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Criterio"
+    body="Necesidad de consulta → nivel de lectura → estructura de contenido"
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="PRIORITIZATION" tagCategory="Strategy" heading="04 — Priorizar: convertir la propuesta en una entrega por fases">
+
+<CaseImageRow>
+  <Image src={priorizacionImg} alt="Wireframes con la entrega marcada por fases 2 y 3" />
+</CaseImageRow>
+
+Cuando la propuesta estaba definida, surgieron preocupaciones sobre la implementación de ciertas funcionalidades y urgencia por avanzar. El equipo me encargó generar la priorización.
+
+Revisé qué aportaba cada función a las necesidades identificadas y organicé la propuesta por fases. Reflejé esa secuencia directamente sobre los wireframes, con marcas que distinguían los elementos previstos para momentos posteriores.
+
+La entrega ofrecía una referencia para avanzar progresivamente y mantener visible la evolución propuesta.
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="UX REVIEW" tagCategory="UX Design" heading="De los wireframes al trabajo de UI">
+
+<CaseImageRow>
+  <Image src={wireframesAUiImg} alt="Página de alimentación y nutrición ya con el lenguaje visual definido por el equipo de UI" />
+</CaseImageRow>
+
+Revisaba la arquitectura y los wireframes con el equipo y mi responsable. Después, el equipo de UI desarrolló la propuesta visual y la contrastó conmigo para revisar la continuidad de la experiencia.
+
+Mi conocimiento de componentes UI me ayudaba a concretar estructuras y comportamientos desde los wireframes. En Fail Fast recibía habitualmente feedback sobre su claridad y la facilidad para trasladarlos al diseño visual. Esa concreción daba al equipo una base para continuar el trabajo: jerarquías, patrones de contenido e interacciones ya definidos.
+
+_Nota de atribución: la investigación previa a mi incorporación fue responsabilidad del equipo, y la aplicación visual final correspondió al equipo de UI. Mi contribución se centró en la arquitectura de información, los wireframes y la priorización por fases._
+
+</CaseSection>
+
+<CaseSection variant="default" layout="side" tag="RESULT" tagCategory="Neutral" heading="Resultado — una propuesta documentada y patrones reconocibles en el producto actual">
+  <Image slot="image" src={resultadoImg} alt="Distribuidora de enfermedades con consulta alfabética y ficha de enfermedad con navegación por apartados" />
+
+La entrega reunió una arquitectura conectada, patrones de página para escritorio y móvil y una secuencia de implementación por fases.
+
+En la plataforma consultada recientemente se reconocen estructuras presentes en las propuestas:
+
+- **Entradas por temas y edades**, visibles en la [navegación](https://escolasalut.sjdhospitalbarcelona.org/ca).
+- **Consulta alfabética**, en la [distribuidora de enfermedades](https://escolasalut.sjdhospitalbarcelona.org/ca/malalties/malalties).
+- **Navegación por apartados**, en la [ficha de enfermedad](https://escolasalut.sjdhospitalbarcelona.org/ca/malalties/malaltia/coronavirus).
+- **Autoría, fechas y contenidos relacionados**, en la [ficha de artículo](https://escolasalut.sjdhospitalbarcelona.org/ca/consells-salut/alimentacio/falses-creences-sobre-la-fruita).
+
+Estos patrones permiten observar continuidad estructural con el producto actual, que ha seguido evolucionando desde mi participación.
+
+[Ver la Escola de Salut](https://escolasalut.sjdhospitalbarcelona.org/ca)
+
+</CaseSection>
+
+<CaseSection
+  variant="subtle"
+  layout="text-only"
+  tag="LEARNINGS"
+  tagCategory="Research"
+  heading="Aprendizajes"
+  wide
+>
+  <LearningsGrid>
+    <CaseCallout
+      size="lg"
+      title="Entender las necesidades de cada segmento permite adaptar el diseño"
+      body="Las familias con hijos sanos y las familias con hijos crónicos planteaban preguntas distintas. La exploración y la consulta concreta debían convivir para responder a esas necesidades."
+    >
+      <Users slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Un wireframe también puede definir reglas de contenido"
+      body="Trabajar los índices, niveles de lectura y tipos de bloque ayudaba a concretar la experiencia antes del diseño visual."
+    >
+      <ListChecks slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La propuesta necesita una secuencia de implementación"
+      body="Generar la priorización me permitió conectar la propuesta de experiencia con una secuencia de implementación, definiendo qué debía avanzar y qué se contemplaba para después."
+    >
+      <GitBranch slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="El conocimiento de UI ayuda a hacer una entrega más concreta"
+      body="Prever componentes y comportamientos permitía comunicar mejor cómo debía funcionar la estructura y facilitar su continuación por el equipo de UI."
+    >
+      <Component slot="icon" />
+    </CaseCallout>
+  </LearningsGrid>
+</CaseSection>
