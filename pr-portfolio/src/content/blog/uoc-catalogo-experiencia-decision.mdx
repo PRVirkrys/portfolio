@@ -43,13 +43,7 @@ import CaseLogoBlock from "../../components/case/CaseLogoBlock.astro";
 import LearningsGrid from "../../components/case/LearningsGrid.astro";
 import UocLogo from "../../assets/case-studies/logos/uoc.svg?raw";
 import FailFastLogo from "../../assets/case-studies/logos/failfast.svg?raw";
-import {
-  Move,
-  Navigation,
-  BarChart,
-  PieChart,
-  UserCheck,
-} from "@lucide/astro";
+import { Move, Navigation, BarChart, PieChart, UserCheck } from "@lucide/astro";
 
 import principiosDisenoImg from "../../assets/case-studies/uoc-medium/principios-diseno.png";
 import menuConceptoImg from "../../assets/case-studies/uoc-medium/menu-concepto.png";
@@ -101,9 +95,14 @@ El objetivo fue construir una experiencia coherente desde el primer contacto con
 </CaseSection>
 
 <CaseSection variant="default" layout="stacked" tag="RESEARCH SYNTHESIS" tagCategory="Research" heading="De research a principios de diseño">
-  <Image slot="image" src={principiosDisenoImg} alt="Claridad para orientarse e información para decidir" />
-
 El equipo de research había trabajado previamente con estudiantes actuales, personas candidatas y stakeholders. Recibí los hallazgos a través de presentaciones, documentos, boards de Miro y hojas de cálculo, y los traduje en decisiones de producto.
+
+<CaseImageRow>
+  <Image
+    src={principiosDisenoImg}
+    alt="Claridad para orientarse e información para decidir"
+  />
+</CaseImageRow>
 
 **Los resultados mostraban dos necesidades complementarias:**
 
@@ -121,37 +120,54 @@ Convertí estos hallazgos en prioridades de contenido y principios de experienci
 
 <CaseSection variant="subtle" layout="stacked" tag="NAVIGATION" tagCategory="Strategy" heading="1. Orientar: un mega menú para explorar o ir al grano">
 
-<CaseImageRow>
-  <Image src={menuConceptoImg} alt="Concepto del mega menú y sus niveles de profundidad" />
-</CaseImageRow>
-
 La auditoría del menú reveló dos problemas conectados: muchas opciones visibles al mismo tiempo y hasta cinco lógicas distintas para llegar a un programa según su tipología.
+
+<CaseImageRow>
+  <Image
+    src={menuConceptoImg}
+    alt="Auditoría del menú de la UOC: muchas opciones visibles a la vez, ramificadas en cinco lógicas distintas para llegar a un programa"
+  />
+</CaseImageRow>
 
 A partir de la auditoría y los insights, propuse un mega menú de hasta tres niveles para organizar la exploración sin ocultar la diversidad de la oferta. La estructura debía servir tanto a quien quería descubrir opciones por tipo de programa o área de estudio como a quien llegaba buscando una titulación concreta.
 
 En lugar de imponer la misma profundidad a todos los recorridos, definí una regla común y variantes explícitas: primer nivel para los tipos de oferta, segundo nivel para áreas cuando aportaban contexto y un tercer nivel para llegar a programas o listados relevantes. Las rutas directas se mantenían cuando una capa adicional no aportaba valor.
 
-Los casos de menú de dos y tres niveles permitieron comprobar que el sistema respondía a las variaciones reales del catálogo sin perder previsibilidad.
+<CaseImageRow>
+  <Image
+    src={menuNivelesImg}
+    alt="Arquitectura de primer, segundo y tercer nivel del mega menú"
+  />
+</CaseImageRow>
+Los casos de menú de dos y tres niveles permitieron comprobar que el sistema
+respondía a las variaciones reales del catálogo sin perder previsibilidad.
 
 <CaseImageRow>
-  <Image src={menuNivelesImg} alt="Arquitectura de primer, segundo y tercer nivel del mega menú" />
-  <Image src={menuRealImg} alt="Mega menú implementado en la web de la UOC" />
+  <Image src={menuRealImg} alt="Ejemplo real del mega menú con tres niveles: Grados, Artes y Humanidades y programas específicos" />
 </CaseImageRow>
 
 </CaseSection>
 
-<CaseSection variant="default" layout="stacked" imageWidth="full" tag="DISCOVERY FLOW" tagCategory="Strategy" heading="2. Encontrar: contexto antes de buscar, filtros para acotar">
-  <CaseImageRow slot="image">
-    <Image src={listadoRealImg} alt="Página de listado con búsqueda y filtros" />
-    <Image src={filtrosDiagramaImg} alt="Diagrama de la distribuidora de filtros" />
-  </CaseImageRow>
+<CaseSection variant="default" layout="stacked" tag="DISCOVERY FLOW" tagCategory="Strategy" heading="2. Encontrar: contexto antes de buscar, filtros para acotar">
 
 Una navegación coherente era solo el primer paso. La experiencia también necesitaba ayudar a reducir un catálogo amplio a opciones manejables, sin obligar a las personas a empezar a filtrar antes de entender qué estaban explorando.
 
 Los insights de usuarios mostraban que, en páginas de listado muy extensas, era fácil perder el foco. Para responder a esto, la exploración combinó dos capas:
 
 - El mega menú conducía a listados ya prefiltrados por tipo de programa o área de estudio, reduciendo el punto de partida.
+  <CaseImageRow>
+    <Image
+      src={filtrosDiagramaImg}
+      alt="Diagrama del mega menú conectando cada categoría con un listado de programas ya prefiltrado"
+    />
+  </CaseImageRow>
 - Cuando el listado necesitaba mantener una oferta amplia, incluía búsqueda y filtros para organizarla y acotarla sin perder el contexto.
+  <CaseImageRow>
+    <Image
+      src={listadoRealImg}
+      alt="Página de listado con búsqueda y filtros"
+    />
+  </CaseImageRow>
 
 La página de entrada a cada área resolvía además una pregunta prioritaria: entregar información relevante sobre el modelo de estudio de la UOC desde una primera lectura. El acceso a solicitud de información se integró como apoyo durante la exploración.
 
@@ -160,20 +176,18 @@ Con esta estructura, las personas podían explorar por tipo de programa o área 
 </CaseSection>
 
 <CaseSection variant="subtle" layout="stacked" tag="DECISION SUPPORT" tagCategory="Strategy" heading="3. Comparar: contrastar alternativas durante la exploración">
-  <Image slot="image" src={comparadorImg} alt="Comparador de programas académicos" />
 
 Cuando varias opciones podían encajar, el comparador permitía reunir alternativas relevantes y contrastarlas antes de pasar a la solicitud de información o a la matrícula. Se incorporó dentro de la experiencia de listado, en el momento en que la persona todavía explora y necesita decidir entre programas, evitando que tuviera que abrir varias fichas y recordar sus diferencias.
+
+<CaseImageRow>
+  <Image src={comparadorImg} alt="Comparador de programas académicos" />
+</CaseImageRow>
 
 El objetivo fue facilitar la exploración de programas con una vista más rápida y una búsqueda más simple, tanto para quienes querían descubrir opciones como para quienes llegaban con una necesidad concreta.
 
 </CaseSection>
 
-<CaseSection variant="default" layout="stacked" imageWidth="full" tag="UX WIREFRAMES" tagCategory="UX Design" heading="4. Evaluar: una ficha de programa pensada para decidir">
-  <CaseImageRow slot="image">
-    <Image src={fichaProblemasImg} alt="Problemas detectados en la ficha de programa" />
-    <Image src={matrizPriorizacionImg} alt="Matriz de priorización cruzando rankings de estudiantes y stakeholders" />
-    <Image src={fichaCapasImg} alt="Ficha de programa organizada en tres capas con navegación por anclajes" />
-  </CaseImageRow>
+<CaseSection variant="default" layout="stacked" tag="UX WIREFRAMES" tagCategory="UX Design" heading="4. Evaluar: una ficha de programa pensada para decidir">
 
 La ficha de programa concentraba una cantidad extensa de información académica y era uno de los puntos decisivos del recorrido. El reto era hacerla más clara, escaneable y navegable. Además, debía alinear las prioridades de contenido identificadas para estudiantes y stakeholders.
 
@@ -183,13 +197,32 @@ La ficha de programa concentraba una cantidad extensa de información académica
 - **La información relevante se dispersaba a lo largo de una página muy extensa.** Datos como precio, requisitos, plan de estudios o modalidad podían requerir demasiado esfuerzo para encontrarse.
 - **El menú existente recargaba la ficha en cada cambio de sección.** Esto interrumpía la lectura, añadía tiempos de espera y dificultaba localizar contenido específico.
 - **La priorización de contenidos debía conciliar dos perspectivas.** Las necesidades de estudiantes y stakeholders se recogían en rankings diferentes, que no siempre coincidían.
+  <CaseImageRow>
+    <Image
+      src={fichaProblemasImg}
+      alt="Problemas detectados en la ficha de programa"
+    />
+  </CaseImageRow>
 
 **Decisiones de diseño:**
 
 1. **Construir una jerarquía a partir de una matriz de priorización.** Crucé los rankings de estudiantes y stakeholders con los hallazgos de research y los patrones revisados en el benchmark para ordenar los contenidos.
+   <CaseImageRow>
+     <Image
+       src={matrizPriorizacionImg}
+       alt="Matriz de priorización cruzando rankings de estudiantes y stakeholders"
+     />
+   </CaseImageRow>
 2. **Hacer explícito el modelo de estudio desde la presentación.** La introducción de la titulación debía situar desde el inicio el carácter online y asíncrono de la experiencia.
 3. **Agrupar la información en tres capas:** resumen para decidir (título, descripción, precio, créditos, fechas, modalidad, plazas disponibles y acciones de información o matrícula), navegación local por temas (presentación, plan de estudios, matriculación, salidas profesionales, calidad y experiencias) y contenido progresivo (detalle académico, económico y de experiencia según las preguntas que aparecen durante la evaluación).
 4. **Sustituir los cambios de página por navegación con anclajes.** El menú superior acompañaba la ficha y permitía saltar entre secciones sin recargarla, manteniendo el contexto y reduciendo los tiempos de espera.
+
+   <CaseImageRow>
+     <Image
+       src={fichaCapasImg}
+       alt="Ficha de programa organizada en tres capas con navegación por anclajes"
+     />
+   </CaseImageRow>
 
 La arquitectura agrupó la información académica, económica, de acceso y de experiencia en bloques progresivos, de modo que cada persona pudiera profundizar según sus dudas.
 
@@ -201,9 +234,15 @@ La arquitectura agrupó la información académica, económica, de acceso y de e
 </CaseSection>
 
 <CaseSection variant="subtle" layout="stacked" tag="UX REVIEW" tagCategory="UX Design" heading="Del UX a la implementación">
-  <Image slot="image" src={implementacionImg} alt="Flujo completo de research a implementación" />
 
 Tras validar la arquitectura, los patrones de navegación, las páginas de listado, la búsqueda, la ficha y el comparador, el equipo de UI aplicó el lenguaje visual. Mi trabajo continuó con revisiones UX para asegurar que las decisiones de jerarquía, contenido y navegación se mantuvieran en la interfaz final.
+
+<CaseImageRow>
+  <Image
+    src={implementacionImg}
+    alt="Flujo completo de research a implementación"
+  />
+</CaseImageRow>
 
 <CaseCallout
   title="Flujo de colaboración"
