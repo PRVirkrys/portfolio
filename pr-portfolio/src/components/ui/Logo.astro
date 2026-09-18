@@ -6,6 +6,7 @@
 // it; "light-op2" is an explicit alternative exploration, not the default.
 import logoOriginal from '../../assets/brand/logo-original.svg?raw';
 import logoLightOp2 from '../../assets/brand/logo-light-op2.svg?raw';
+import logoLightMode from '../../assets/brand/logo-light-mode.svg?raw';
 
 export interface Props {
 	theme?: 'dark' | 'light' | 'light-op2';
@@ -24,11 +25,20 @@ const framed = theme === 'light';
 // near-invisible fragments. Suffixing every id/reference with a per-instance
 // token keeps each inlined copy self-contained.
 const uid = Math.random().toString(36).slice(2, 9);
-const markSvg = rawSvg.replace(/(id="|url\(#)([\w.-]+)/g, (_match, prefix, id) => `${prefix}${id}-${uid}`);
+const namespaceIds = (svg: string, suffix: string) =>
+	svg.replace(/(id="|url\(#)([\w.-]+)/g, (_match, prefix, id) => `${prefix}${id}-${uid}-${suffix}`);
+const markSvg = namespaceIds(rawSvg, 'a');
+
+// Only the unthemed default mark auto-swaps with the site's light/dark
+// toggle — an explicit theme prop ('light' framing, 'light-op2') is a
+// deliberate per-placement choice and stays fixed regardless of site theme.
+const isDefaultMark = theme === 'dark';
+const lightModeSvg = isDefaultMark ? namespaceIds(logoLightMode, 'b') : null;
 ---
 
 <span class:list={['logo', framed && 'logo--framed', className]} aria-hidden="true">
-	<Fragment set:html={markSvg} />
+	<span class="logo__mark logo__mark--current" set:html={markSvg} />
+	{lightModeSvg && <span class="logo__mark logo__mark--site-light" set:html={lightModeSvg} />}
 </span>
 
 <style>
@@ -43,6 +53,23 @@ const markSvg = rawSvg.replace(/(id="|url\(#)([\w.-]+)/g, (_match, prefix, id) =
 	.logo :global(svg) {
 		width: 100%;
 		height: 100%;
+	}
+
+	/* Site-theme-driven swap for the default (unthemed) mark: dark mode shows
+	   the original mark, light mode shows the light-mode export. Pure CSS
+	   keyed off <html>'s .dark class (set by BaseHead's blocking init script
+	   before first paint) so there's no flash and no client JS needed here. */
+	.logo__mark {
+		display: contents;
+	}
+	.logo__mark--site-light {
+		display: none;
+	}
+	:global(html:not(.dark)) .logo__mark--current {
+		display: none;
+	}
+	:global(html:not(.dark)) .logo__mark--site-light {
+		display: contents;
 	}
 
 	.logo--framed {
