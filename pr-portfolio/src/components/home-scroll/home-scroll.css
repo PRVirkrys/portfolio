@@ -521,11 +521,6 @@ html:not(.dark) .home-page {
   left: 58.912%;
   top: 54.051%;
 }
-html:not(.dark) .hero-logo {
-  background: #10101f;
-  box-shadow: 0 0 0 12px #10101f;
-  border-radius: 6px;
-}
 .home-board {
   display: grid;
   grid-template-columns: minmax(0, 548px) minmax(0, 560px);
