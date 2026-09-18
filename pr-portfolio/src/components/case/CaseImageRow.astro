@@ -23,6 +23,17 @@
 		min-width: 0;
 		margin: 0;
 	}
+	/* A tall/portrait image dropped alone in a row can render absurdly long
+	   at the row's full width — same tradeoff and 450px-real ceiling as
+	   CaseSection's own single-image assets column (see CaseSection.astro).
+	   Multi-image rows are untouched: they still stretch evenly. */
+	.cs-image-row:has(> :only-child) :global(img) {
+		flex: 0 0 auto;
+		max-height: calc(562.5px * var(--ui-scale));
+		width: auto;
+		height: auto;
+		margin-inline: auto;
+	}
 	@media (max-width: 960px) {
 		.cs-image-row {
 			flex-direction: column;

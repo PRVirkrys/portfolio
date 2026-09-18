@@ -63,13 +63,26 @@ import implementacionImg from "../../assets/case-studies/base/implementacion.png
     <Image src={baseLogo} alt="Base" />
     <Fragment slot="second" set:html={failFastLogo} />
   </CaseLogoBlock>
-  Durante mi etapa en Fail Fast, trabajé en la definición UX de una nueva experiencia de marca para Base. El encargo inicial era sustituir la entrada directa a una parrilla por una landing que organizara la exploración del catálogo. A partir de un benchmark, definí la arquitectura de contenidos, la validé con el cliente y desarrollé los wireframes. El alcance creció hacia las páginas asociadas y una propuesta de cards y previsualización de producto. Tras el trabajo visual del equipo de UI, preparé el prototipo final de la experiencia de marca.
+  Durante mi etapa en Fail Fast, trabajé en la definición UX de una nueva
+  experiencia de marca para Base. El encargo inicial era sustituir la entrada
+  directa a una parrilla por una landing que organizara la exploración del
+  catálogo. A partir de un benchmark, definí la arquitectura de contenidos, la
+  validé con el cliente y desarrollé los wireframes. El alcance creció hacia las
+  páginas asociadas y una propuesta de cards y previsualización de producto.
+  Tras el trabajo visual del equipo de UI, preparé el prototipo final de la
+  experiencia de marca.
 </CaseSection>
 
 <CaseSection variant="subtle" layout="stacked" tag="THE CHALLENGE" tagCategory="Strategy" heading="El reto — de una lista de productos a una experiencia de marca">
-  <Image slot="image" src={retoImg} alt="Comparativa entre el acceso directo a la parrilla y la propuesta de landing de marca" />
 
 Cuando un usuario entraba en una marca como Adidas, llegaba directamente a una parrilla de productos. Podía acceder al catálogo, pero no había una landing que presentara la marca y organizara distintas formas de explorar su oferta.
+
+<CaseImageRow>
+  <Image
+    src={retoImg}
+    alt="Comparativa entre el acceso directo a la parrilla y la propuesta de landing de marca"
+  />
+</CaseImageRow>
 
 El encargo no debía resolverse solo para Adidas: la lógica tenía que poder aplicarse después a otras marcas, con catálogos y contenidos diferentes.
 
@@ -90,11 +103,17 @@ El objetivo fue facilitar el paso del contexto de marca a la exploración de pro
 </CaseSection>
 
 <CaseSection variant="default" layout="stacked" tag="BENCHMARKING" tagCategory="Research" heading="Del benchmark a los criterios de diseño">
-  <Image slot="image" src={benchmarkImg} alt="Benchmark de referentes de ecommerce multimarca y retail deportivo" />
 
 Analicé referentes de ecommerce multimarca y retail deportivo que ya ofrecían este tipo de landings. Descompuse sus páginas en secciones y utilicé un código de color para comparar qué función cumplía cada contenido, cuánto espacio ocupaba y cómo se presentaba en móvil y escritorio.
 
 La clasificación distinguía identificación de marca, navegación y búsqueda local, accesos generales o por género, destacados, recomendación de producto, contenidos promocionales y captación.
+
+<CaseImageRow>
+  <Image
+    src={benchmarkImg}
+    alt="Benchmark de referentes de ecommerce multimarca y retail deportivo"
+  />
+</CaseImageRow>
 
 **Criterios derivados del análisis:**
 
@@ -103,7 +122,7 @@ La clasificación distinguía identificación de marca, navegación y búsqueda 
 - **Combinar módulos con funciones diferentes.** Destacados, accesos a categorías y listados de producto no cumplen el mismo papel.
 - **Separar estructura y contenido.** La lógica debía mantenerse, aunque cambiaran la marca, los productos o las campañas.
 
-  <CaseCallout
+    <CaseCallout
     title="Proceso"
     body="Referentes → clasificación de secciones → criterios → arquitectura de contenidos → wireframes."
     variant="subtle"
@@ -111,9 +130,15 @@ La clasificación distinguía identificación de marca, navegación y búsqueda 
 </CaseSection>
 
 <CaseSection variant="subtle" layout="stacked" tag="INFORMATION ARCHITECTURE" tagCategory="Strategy" heading="01 — Definir una arquitectura reutilizable, no una página fija">
-  <Image slot="image" src={estructuraImg} alt="Diagrama de arquitectura de contenidos reutilizable para distintas marcas" />
 
 Después del benchmark, elaboré un diagrama que relacionaba navegación, tipos de contenido y posibilidades de presentación. La propuesta diferenciaba elementos requeridos —como la identificación de marca— de opciones que podían variar, como banner, vídeo, carrusel o grid.
+
+<CaseImageRow>
+  <Image
+    src={estructuraImg}
+    alt="Diagrama de arquitectura de contenidos reutilizable para distintas marcas"
+  />
+</CaseImageRow>
 
 La navegación local contemplaba Inicio, Hombre, Mujer, Niño/a, Deportes y Ofertas. Cada destino cambiaba el contexto de los contenidos: una vista general de marca no debía mostrar lo mismo que una sección de género o un deporte concreto.
 
@@ -134,9 +159,15 @@ Validamos esta arquitectura con el cliente antes de pasar a wireframes. Además,
 </CaseSection>
 
 <CaseSection variant="default" layout="stacked" tag="UX WIREFRAMES" tagCategory="UX Design" heading="02 — Traducir la estructura a wireframes y recorridos">
-  <Image slot="image" src={wireframesImg} alt="Wireframes de la landing de marca y sus vistas asociadas" />
 
 Con la arquitectura más clara, desarrollé los wireframes de la landing y de las pantallas asociadas: vistas de "ver todo" por género, parrillas generales de deportes, páginas de un deporte concreto, ofertas y resultados de búsqueda.
+
+<CaseImageRow>
+  <Image
+    src={wireframesImg}
+    alt="Wireframes de la landing de marca en mobile y escritorio, con las secciones señalizadas por color"
+  />
+</CaseImageRow>
 
 Los wireframes concretaban el orden y las relaciones entre módulos: desde la identificación de marca y los accesos al catálogo hasta destacados, más vendidos, ofertas y contenidos complementarios.
 
@@ -148,7 +179,21 @@ El propósito no era diseñar pantallas aisladas, sino mantener una relación cl
 
 También definí una propuesta UX para la parrilla y las cards de producto. Los wireframes contemplaban filtros aplicados, ordenación y consulta de disponibilidad en tienda, junto con información comercial visible desde el listado.
 
-Las cards reunían información comercial, stock y acciones de consulta rápida para evaluar el producto desde el listado. En desktop, propuse mostrar una imagen alternativa al hacer hover.
+<CaseImageRow>
+  <Image
+    src={cardImg}
+    alt="Card de producto: compra directa, selección de variantes, previsualización y cambio de imagen al hacer hover"
+  />
+</CaseImageRow>
+Las cards reunían información comercial, stock y acciones de consulta rápida
+para evaluar el producto desde el listado. En desktop, propuse mostrar una
+imagen alternativa al hacer hover.
+<CaseImageRow>
+  <Image
+    src={parrillaImg}
+    alt="Propuesta UX de la parrilla con filtros, cards de producto y exploraciones móviles"
+  />
+</CaseImageRow>
 
 Definí dos rutas de compra según las opciones que requería cada producto:
 
@@ -161,17 +206,18 @@ La previsualización reunía imágenes, información resumida y selección de co
 
 Exploré también distintas presentaciones para móvil: un producto por fila, dos columnas y una disposición horizontal.
 
-<CaseImageRow>
-  <Image src={parrillaImg} alt="Propuesta UX de la parrilla con filtros, cards de producto y exploraciones móviles" />
-  <Image src={cardImg} alt="Card de producto: compra directa frente a selección de variantes y previsualización" />
-</CaseImageRow>
-
 </CaseSection>
 
 <CaseSection variant="subtle" layout="stacked" tag="PROTOTYPE" tagCategory="UX Design" heading="03 — De una estructura validada a un prototipo final">
-  <Image slot="image" src={implementacionImg} alt="Secuencia de wireframes, UI final e implementación de la experiencia de marca" />
 
 Los wireframes pasaron al equipo de UI, que definió el lenguaje visual y las pantallas de alta fidelidad. Después, retomé esas pantallas para preparar el prototipo final, conectar los recorridos y facilitar la revisión con el cliente.
+
+<CaseImageRow>
+  <Image
+    src={implementacionImg}
+    alt="Secuencia de wireframes, UI final e implementación de la experiencia de marca"
+  />
+</CaseImageRow>
 
 El prototipo permitió revisar la experiencia de marca como un recorrido conectado y sirvió de referencia para su paso a desarrollo, con un handoff ligero.
 
