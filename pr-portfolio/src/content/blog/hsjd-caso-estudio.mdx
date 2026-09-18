@@ -91,12 +91,15 @@ El objetivo de diseño era definir una estructura que permitiera orientarse, loc
   />
 </CaseSection>
 
-<CaseSection variant="default" layout="stacked" imageWidth="full" tag="BENCHMARKING" tagCategory="Research" heading="De los workshops y el benchmark a criterios de diseño">
-  <Image slot="image" src={benchmarkImg} alt="Análisis de referentes de plataformas de salud y criterios de diseño derivados" />
+<CaseSection variant="default" layout="stacked" tag="BENCHMARKING" tagCategory="Research" heading="De los workshops y el benchmark a criterios de diseño">
 
 El equipo había realizado los workshops antes de mi incorporación. Revisé las capturas de necesidades recibidas y las contrasté con un benchmark de plataformas de salud.
 
 La comparación me ayudó a evaluar cómo los referentes resolvían el acceso, la lectura y la relación entre contenidos. Utilicé ese análisis para seleccionar patrones que respondieran a las necesidades del proyecto y detectar dificultades que convenía evitar.
+
+<CaseImageRow>
+  <Image src={benchmarkImg} alt="Análisis de referentes de plataformas de salud y criterios de diseño derivados" />
+</CaseImageRow>
 
 De ahí surgieron tres criterios:
 
@@ -111,14 +114,19 @@ De ahí surgieron tres criterios:
   />
 </CaseSection>
 
-<CaseSection variant="subtle" layout="stacked" imageWidth="full" tag="NAVIGATION" tagCategory="Strategy" heading="01 — Orientar: conectar las áreas con sus contenidos">
-  <Image slot="image" src={orientarArquitecturaImg} alt="Sitemap y diagrama de arquitectura de contenidos: de la entrada general a la consulta de detalle" />
+<CaseSection variant="subtle" layout="stacked" tag="NAVIGATION" tagCategory="Strategy" heading="01 — Orientar: conectar las áreas con sus contenidos">
 
 Una familia que busca consejos generales no llega con la misma pregunta que alguien que necesita entender un diagnóstico. La arquitectura debía contemplar esas diferencias y conectar las páginas de entrada con las fichas de detalle.
 
 Definí un sitemap y un diagrama que organizaban las áreas de vida saludable, patologías, apoyo a familias, formación y actualidad, junto con la búsqueda.
 
-Trabajé también la página de inicio y las páginas de entrada a las secciones para dar contexto a cada área y acercar sus contenidos. La arquitectura establecía la relación entre estas capas: entrada general, selección de contenidos y consulta del detalle. Los primeros wireframes utilizaban bloques amplios para revisar jerarquías y relaciones antes de concretar su presentación.
+<CaseImageRow>
+  <Image src={orientarArquitecturaImg} alt="Sitemap y diagrama de arquitectura de contenidos: de la entrada general a la consulta de detalle" />
+</CaseImageRow>
+
+Trabajé también la página de inicio y las páginas de entrada a las secciones para dar contexto a cada área y acercar sus contenidos. La arquitectura establecía la relación entre estas capas: entrada general, selección de contenidos y consulta del detalle.
+
+Los primeros wireframes utilizaban bloques amplios para revisar jerarquías y relaciones antes de concretar su presentación.
 
 <CaseImageRow>
   <Image src={orientarWireframesImg} alt="Primeros wireframes de las distribuidoras de vida sana 360 y patologías A-Z" />
@@ -131,10 +139,13 @@ Trabajé también la página de inicio y las páginas de entrada a las secciones
   />
 </CaseSection>
 
-<CaseSection variant="default" layout="stacked" imageWidth="full" tag="DISCOVERY FLOW" tagCategory="Strategy" heading="02 — Encontrar: ajustar las distribuidoras a las necesidades de consulta">
-  <Image slot="image" src={encontrarTemasImg} alt="Distribuidora con categorías y filtros para explorar consejos y hábitos saludables" />
+<CaseSection variant="default" layout="stacked" tag="DISCOVERY FLOW" tagCategory="Strategy" heading="02 — Encontrar: ajustar las distribuidoras a las necesidades de consulta">
 
 Las necesidades de las familias con hijos sanos incluían acceder a consejos y contenidos sobre hábitos saludables. Para esa exploración, propuse distribuidoras con categorías y filtros que permitieran recorrer los artículos y acotar lo relevante.
+
+<CaseImageRow>
+  <Image src={encontrarTemasImg} alt="Distribuidora con categorías y filtros para explorar consejos y hábitos saludables" />
+</CaseImageRow>
 
 En las familias con hijos crónicos aparecía la necesidad de conocer una enfermedad, sus síntomas o sus tratamientos. Para la consulta de una enfermedad concreta, propuse búsqueda y acceso alfabético que facilitaran localizar un término conocido.
 
@@ -146,12 +157,17 @@ En las familias con hijos crónicos aparecía la necesidad de conocer una enferm
 
 </CaseSection>
 
-<CaseSection variant="subtle" layout="stacked" imageWidth="full" tag="UX WIREFRAMES" tagCategory="UX Design" heading="03 — Comprender: definir fichas y reglas para presentar el contenido">
-  <Image slot="image" src={comprenderNivelesImg} alt="Estructura de artículo con resumen, lectura rápida y contenido completo" />
+<CaseSection variant="subtle" layout="stacked" tag="UX WIREFRAMES" tagCategory="UX Design" heading="03 — Comprender: definir fichas y reglas para presentar el contenido">
 
 Las necesidades recibidas mostraban que algunas familias tenían poco tiempo y preferían formatos rápidos. En los artículos propuse un resumen de lo que se aprendería, lectura rápida y contenido completo: una estructura que permitía elegir cuánto profundizar.
 
-Para las familias con hijos crónicos, la consulta abarcaba entender la enfermedad, conocer tratamientos y encontrar apoyo. Organicé las fichas en apartados que acompañaban esas preguntas, desde la explicación inicial hasta la convivencia y los recursos para familias. Definí índices y menús laterales para acceder a cada apartado, incluida su adaptación al móvil, e incorporé autoría, fuentes y fechas de revisión para hacer visible la procedencia del contenido.
+<CaseImageRow>
+  <Image src={comprenderNivelesImg} alt="Estructura de artículo con resumen, lectura rápida y contenido completo" />
+</CaseImageRow>
+
+Para las familias con hijos crónicos, la consulta abarcaba entender la enfermedad, conocer tratamientos y encontrar apoyo. Organicé las fichas en apartados que acompañaban esas preguntas, desde la explicación inicial hasta la convivencia y los recursos para familias.
+
+Definí índices y menús laterales para acceder a cada apartado, incluida su adaptación al móvil, e incorporé autoría, fuentes y fechas de revisión para hacer visible la procedencia del contenido.
 
 <CaseImageRow>
   <Image src={comprenderFichaImg} alt="Ficha de enfermedad con índice de apartados, navegación móvil y tipos de contenido" />
