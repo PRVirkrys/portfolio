@@ -234,7 +234,7 @@
    width 0, so the box grows and the caret advances with the text. `--emph`
    (0..1) turns the marked fragment to the semantic purple. */
 .text-mark {
-  --text-mark-color: #fafafb;
+  --text-mark-color: var(--color-text);
   position: relative;
   display: inline-block;
   font: 500 var(--text-mark-size) / 1.15 var(--font-heading);
@@ -289,7 +289,7 @@
   /* The `|` glyph itself is the caret (matches Figma's component) — no bar
      background, or the two would stack into a doubled cursor. */
   font-weight: 200;
-  color: #fafafb;
+  color: var(--text-mark-color);
   opacity: var(--sel, 0);
   animation: text-mark-caret-blink 1.06s steps(1, end) infinite;
 }
@@ -1467,8 +1467,8 @@ html:not(.dark) .home-page {
   width: 3px;
   height: 200px;
   margin-left: -1.5px;
-  background: #ffffff;
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.45);
+  background: var(--color-text);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--color-text) 45%, transparent);
   transform: scaleY(0);
   transform-origin: center center;
   will-change: transform, opacity;
