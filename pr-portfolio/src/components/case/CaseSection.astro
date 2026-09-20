@@ -83,7 +83,7 @@ const hasImage = Astro.slots.has('image');
 		justify-content: center;
 	}
 	/* A tall/portrait screenshot scaled to the column's width can end up
-	   absurdly long (a 960×1637 diagram at the 732px column width renders
+	   absurdly long (a 960×1637 diagram at the 680px column width renders
 	   ~1000px tall). Cap the height instead and let width follow — the
 	   image renders narrower than the column here, which is the accepted
 	   tradeoff, and the lightbox is what gives full detail on click anyway. */
@@ -97,11 +97,11 @@ const hasImage = Astro.slots.has('image');
 	   column width below it. Explicit 'contained'/'full' below always win
 	   over this guess. */
 	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='auto']:has(> :only-child) {
-		width: min(calc(732px * var(--ui-scale)), 100%);
+		width: min(calc(680px * var(--ui-scale)), 100%);
 		margin-inline: auto;
 	}
 	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='contained'] {
-		width: min(calc(732px * var(--ui-scale)), 100%);
+		width: min(calc(680px * var(--ui-scale)), 100%);
 		margin-inline: auto;
 	}
 	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='full'] {
@@ -109,7 +109,7 @@ const hasImage = Astro.slots.has('image');
 		margin-inline: auto;
 	}
 	.cs-section[data-layout='stacked'] .cs-section__copy {
-		width: min(calc(732px * var(--ui-scale)), 100%);
+		width: min(calc(680px * var(--ui-scale)), 100%);
 	}
 	.cs-section[data-layout='stacked'][data-wide] .cs-section__copy {
 		width: min(calc(1120px * var(--ui-scale)), 100%);
@@ -130,7 +130,7 @@ const hasImage = Astro.slots.has('image');
 		position: relative;
 	}
 	.cs-section[data-layout='side'] .cs-section__copy {
-		flex: 0 0 min(calc(732px * var(--ui-scale)), 50%);
+		flex: 0 0 min(calc(680px * var(--ui-scale)), 50%);
 	}
 	/* Side layout: .cs-section__assets must take its height from
 	   .cs-section__copy, not the other way round. A flex item's own natural
@@ -165,7 +165,7 @@ const hasImage = Astro.slots.has('image');
 		align-items: center;
 	}
 	.cs-section[data-layout='text-only'] .cs-section__copy {
-		width: min(calc(732px * var(--ui-scale)), 100%);
+		width: min(calc(680px * var(--ui-scale)), 100%);
 	}
 	.cs-section[data-layout='text-only'][data-wide] .cs-section__copy {
 		width: min(calc(1120px * var(--ui-scale)), 100%);
@@ -199,18 +199,49 @@ const hasImage = Astro.slots.has('image');
 		   long-form paragraph copy case studies are built from. */
 		font-size: calc(20px * var(--ui-scale));
 		font-weight: 400;
-		line-height: 2;
-		letter-spacing: calc(1px * var(--ui-scale));
+		/* 1.65 (not 2) so a line break inside a paragraph reads tighter than
+		   the gap between paragraphs below — at 2.0 the two were inverted:
+		   a mid-paragraph line break (32px) had more air than the paragraph
+		   boundary itself (12.8px), which is why paragraphs didn't read as
+		   distinct chunks. */
+		line-height: 1.65;
+		/* 0.01em (~1%, 0.16px real): body text is set at 90% opacity on a dark
+		   background here, and light-on-dark text optically thins and reads
+		   tighter than the same weight would on a light background — a touch
+		   of positive tracking corrects for that without reintroducing the
+		   heavier +0.8px/5% tracking this used to carry, which was loose
+		   enough to slow word-shape recognition. em-relative so it scales
+		   automatically with --ui-scale instead of needing its own calc(). */
+		letter-spacing: 0.01em;
 		color: color-mix(in srgb, var(--color-text) 90%, transparent);
-		margin-block: 0 calc(16px * var(--ui-scale));
+		/* 36px * 0.8 = 28.8px real, deliberately more than one line's height
+		   (16px * 1.65 = 26.4px) so the paragraph gap reads as a real break,
+		   not just another line. */
+		margin-block: 0 calc(36px * var(--ui-scale));
 	}
 	.cs-section__copy :global(p:last-child) {
 		margin-bottom: 0;
 	}
+	.cs-section__copy :global(h3) {
+		font-family: var(--font-heading);
+		/* 28px * 0.8 = 22.4px real — a real step between the 16px body copy
+		   and the 36px (real) section heading, not just +3px like the
+		   unstyled global h3 this used to fall back to. */
+		font-size: calc(28px * var(--ui-scale));
+		font-weight: 600;
+		line-height: 1.3;
+		letter-spacing: -0.2px;
+		color: var(--color-text);
+		/* Generous top margin (48px * 0.8 = 38.4px real) so an in-body
+		   subheading visibly opens a new beat instead of sitting flush
+		   against the paragraph/list above it — previously 0, inherited
+		   from the unrelated global h3 rule. */
+		margin-block: calc(48px * var(--ui-scale)) calc(16px * var(--ui-scale));
+	}
 	.cs-section__copy :global(ul),
 	.cs-section__copy :global(ol) {
 		padding-left: calc(24px * var(--ui-scale));
-		margin-block: 0 calc(16px * var(--ui-scale));
+		margin-block: 0 calc(36px * var(--ui-scale));
 		/* Tailwind's preflight resets list-style to none globally — restore
 		   real markers for the markdown-rendered lists in the MDX body. */
 		list-style: revert;
@@ -218,10 +249,14 @@ const hasImage = Astro.slots.has('image');
 	.cs-section__copy :global(li) {
 		font-family: var(--font-sans);
 		font-size: calc(20px * var(--ui-scale));
-		line-height: 2;
-		letter-spacing: calc(1px * var(--ui-scale));
+		line-height: 1.65;
+		letter-spacing: 0.01em;
 		color: color-mix(in srgb, var(--color-text) 90%, transparent);
-		margin-bottom: calc(4px * var(--ui-scale));
+		/* 10px * 0.8 = 8px real — tighter than the paragraph gap on purpose
+		   (items in one list should read as a group), but enough to keep a
+		   two-line bullet's own line break from out-spacing the gap to the
+		   next bullet, same fix as the paragraph rule above. */
+		margin-bottom: calc(10px * var(--ui-scale));
 	}
 	.cs-section__copy :global(strong),
 	.cs-section__copy :global(b) {
