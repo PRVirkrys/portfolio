@@ -73,6 +73,10 @@ const { label = 'Español', showLabel = true } = Astro.props;
 		width: calc(24px * var(--ui-scale));
 		height: calc(24px * var(--ui-scale));
 		border-radius: var(--radius-full);
+		/* Same reasoning as ThemeToggle's thumb: a border so the white thumb
+		   stays visible against the near-white light-theme track now that the
+		   shadow it used to lean on is flat (none) in light theme. */
+		border: var(--border-width) solid var(--color-border);
 		background: var(--color-base-white);
 		box-shadow: var(--elevation-button-adaptive);
 	}

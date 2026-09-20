@@ -93,7 +93,9 @@ $button-overlay-hover: p.$color-overlay-black-8;
 $button-overlay-hover--dark: p.$color-overlay-black-40;
 $button-overlay-pressed: p.$color-overlay-black-16;
 $button-overlay-pressed--dark: p.$color-overlay-black-60;
-$button-shadow-color: p.$color-overlay-black-12;
+// transparent, not a low-opacity black: light theme is flat, no elevation
+// shadow on the button's resting state — dark keeps the Figma value.
+$button-shadow-color: transparent;
 $button-shadow-color--dark: p.$color-overlay-black-35;
 $button-shadow-y: 2px;
 $button-shadow-y--dark: 5px;

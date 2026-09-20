@@ -53,7 +53,11 @@ import WorkBubble from './ui/WorkBubble.astro';
 	.work-panel__client { position: relative; display: flex; }
 	:is(.work-panel__client, .work-panel__cta) :global(.work-panel__label-tag) { --tag-color: var(--color-base-white); position: absolute; top: 50%; left: calc(100% + var(--space-3)); transform: translateY(-50%); opacity: 0; pointer-events: none; text-transform: uppercase; letter-spacing: calc(1.4px * var(--ui-scale)); white-space: nowrap; transition: opacity var(--duration-fast) var(--ease-standard); }
 	:is(.work-panel__client, .work-panel__cta):hover :global(.work-panel__label-tag), :is(.work-panel__client, .work-panel__cta):focus-within :global(.work-panel__label-tag) { opacity: 1; }
-	.work-panel__cta { display: flex; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); flex: 0 0 auto; align-items: center; justify-content: center; border: var(--border-width) solid var(--color-base-white); border-radius: var(--radius-full); background: var(--color-neutral-950); box-shadow: 0 calc(-4px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0, 0, 0, 0.25); color: var(--color-base-white); }
+	.work-panel__cta { display: flex; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); flex: 0 0 auto; align-items: center; justify-content: center; border: var(--border-width) solid var(--color-base-white); border-radius: var(--radius-full); background: var(--color-neutral-950); color: var(--color-base-white); }
+	/* Contact shadow under the bubble — dark theme only. Flat in light theme,
+	   same reasoning as the shared elevation tokens: this hardcoded rgba(0,0,0)
+	   isn't one of those, so it needs its own light/dark split here. */
+	:global(html.dark) .work-panel__cta { box-shadow: 0 calc(-4px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0, 0, 0, 0.25); }
 	.work-panel__cta { position: relative; }
 	.work-panel__cta :global(svg) { width: var(--icon-lg); height: var(--icon-lg); transition: transform var(--duration-fast) var(--ease-standard); }
 	.work-panel__cta:hover :global(svg), .work-panel__cta:focus-visible :global(svg) { transform: translateX(25%); }

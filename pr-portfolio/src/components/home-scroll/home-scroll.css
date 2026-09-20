@@ -398,6 +398,10 @@
   left: 0;
   display: block;
   width: 22px;
+}
+/* Flat in light theme — dark keeps the drop shadow that separates the cursor
+   icon from the (also dark) page behind it. */
+html.dark .narrative-cursor__pointer {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 .narrative-cursor__pointer svg {
@@ -1164,6 +1168,11 @@ html:not(.dark) .home-page {
   min-height: calc(var(--flap-h) * 2 + var(--flap-gap));
   perspective: 900px;
 }
+/* TODO(light-theme): .flap and its children (#0d0d16 bg, #fafafb text,
+   #000/#00000066/#00000088 overlays below) are hardcoded dark regardless of
+   site theme — not yet adapted for light theme. Not fixing now: this piece
+   may get reworked or removed entirely, still undecided, so revisit once
+   that's settled instead of spending effort on it now. */
 .flap {
   position: relative;
   width: var(--flap-w);
@@ -1468,10 +1477,14 @@ html:not(.dark) .home-page {
   height: 200px;
   margin-left: -1.5px;
   background: var(--color-text);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--color-text) 45%, transparent);
   transform: scaleY(0);
   transform-origin: center center;
   will-change: transform, opacity;
+}
+/* Flat in light theme — the glow color follows --color-text, which is dark
+   there, so left on it would still read as a soft shadow around the line. */
+html.dark .home-intro__line {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--color-text) 45%, transparent);
 }
 .home-skip {
   position: fixed;

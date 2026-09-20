@@ -182,7 +182,14 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 	.cs-lightbox__backdrop {
 		position: absolute;
 		inset: 0;
-		background: color-mix(in srgb, var(--color-bg) 92%, black);
+		/* --color-neutral-950 (the fixed dark navy swatch, not --color-bg): a
+		   lightbox scrim needs to stay dark regardless of theme to dim the
+		   page behind the enlarged image. Mixing off --color-bg used to do
+		   that by accident in dark theme (where --color-bg is already almost
+		   this same navy) but broke in light theme, where --color-bg is
+		   near-white and 8% black barely dented it — the "backdrop" was
+		   nearly the same colour as the page. */
+		background: color-mix(in srgb, var(--color-neutral-950) 92%, black);
 	}
 	.cs-lightbox__dialog {
 		position: relative;

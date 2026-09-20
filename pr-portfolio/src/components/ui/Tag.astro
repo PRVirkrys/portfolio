@@ -22,6 +22,10 @@ const { category = 'Research', size = 'sm', class: className } = Astro.props;
 	.tag[data-category='Design Systems'] { --tag-color: #ffcd2b; }
 	.tag[data-category='Neutral'] { --tag-color: var(--color-text-muted); background: transparent; }
 	.tag[data-size='md'] { height: calc(36px * var(--ui-scale)); padding-inline: var(--space-4); font-size: calc(14px * var(--ui-scale)); line-height: calc(20px * var(--ui-scale)); }
-	.tag:hover { background-color: color-mix(in srgb, var(--tag-color) 12.2%, rgba(255, 255, 255, 0.07)); }
+	/* Bump opacity of the tag's own color instead of mixing toward white: a
+	   fixed white nudge reads as a highlight on a dark background but is
+	   nearly invisible on light theme's near-white page — going straight for
+	   more of --tag-color intensifies visibly in both themes. */
+	.tag:hover { background-color: color-mix(in srgb, var(--tag-color) 22%, transparent); }
 	@media (prefers-reduced-motion: reduce) { .tag { transition: none; } }
 </style>

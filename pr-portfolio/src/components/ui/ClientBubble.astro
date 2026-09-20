@@ -16,7 +16,9 @@ const Icon = icon ? ICONS[icon] : undefined;
 </Tag>
 
 <style>
-	.client-bubble { display: grid; position: relative; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: var(--border-width) solid var(--color-surface); border-radius: var(--radius-full); box-shadow: 0 calc(-4px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0, 0, 0, 0.25); transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard); }
+	.client-bubble { display: grid; position: relative; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: var(--border-width) solid var(--color-surface); border-radius: var(--radius-full); transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard); }
+	/* Contact shadow — dark theme only, see WorkNavigation.astro's __cta rule. */
+	:global(html.dark) .client-bubble { box-shadow: 0 calc(-4px * var(--ui-scale)) calc(2px * var(--ui-scale)) rgba(0, 0, 0, 0.25); }
 	.client-bubble--light { background: #fff; }
 	.client-bubble--cyan { background: #73ebff; }
 	.client-bubble--navy { background: #07152e; }

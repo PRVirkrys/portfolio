@@ -91,6 +91,12 @@ const { label = 'Tema oscuro', showLabel = true } = Astro.props;
 		display: grid;
 		place-items: center;
 		border-radius: var(--radius-full);
+		/* Border, not just the shadow: the thumb is always pure white and the
+		   light-theme track is #fafafb (--color-surface-raised) — near enough
+		   to white that with light theme's shadows now flat (none), the two
+		   were indistinguishable. The border is what actually separates them;
+		   the shadow below is extra depth on top of that, not the only cue. */
+		border: var(--border-width) solid var(--color-border);
 		background: var(--color-base-white);
 		box-shadow: var(--elevation-button-adaptive);
 		transition: transform var(--duration-fast) var(--ease-standard);

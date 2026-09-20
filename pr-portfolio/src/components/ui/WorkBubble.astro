@@ -15,7 +15,9 @@ const { id, name, logo } = Astro.props;
 </button>
 
 <style>
-	.work-bubble { display: grid; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: calc(2px * var(--ui-scale)) solid var(--color-neutral-950); border-radius: var(--radius-full); box-shadow: calc(-4px * var(--ui-scale)) 0 calc(2.5px * var(--ui-scale)) rgba(16, 16, 31, 0.25); cursor: pointer; transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+	.work-bubble { display: grid; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: calc(2px * var(--ui-scale)) solid var(--color-neutral-950); border-radius: var(--radius-full); cursor: pointer; transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+	/* Contact shadow — dark theme only, see WorkNavigation.astro's __cta rule. */
+	:global(html.dark) .work-bubble { box-shadow: calc(-4px * var(--ui-scale)) 0 calc(2.5px * var(--ui-scale)) rgba(16, 16, 31, 0.25); }
 	.work-bubble--lpa { background: #0d35dc; }
 	.work-bubble--failfast { background: #ee8089; }
 	.work-bubble--pelt8 { background: #062e4a; }

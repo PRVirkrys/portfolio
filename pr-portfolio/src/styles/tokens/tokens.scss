@@ -44,11 +44,12 @@
 	@include custom-properties(d.$dimension, $scaled: true);
 	@include custom-properties(s.$semantic-light);
 	@include custom-properties(g.$gradient);
-	@include custom-properties(e.$effect);
+	@include custom-properties(e.$effect-light);
 	@include custom-properties(m.$motion);
 	@include typography-custom-properties(t.$typography);
 }
 
 .dark {
 	@include custom-properties(s.$semantic-dark);
+	@include custom-properties(e.$effect-dark);
 }
