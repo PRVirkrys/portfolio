@@ -41,6 +41,8 @@ import CaseCallout from "../../components/case/CaseCallout.astro";
 import CaseImageRow from "../../components/case/CaseImageRow.astro";
 import CaseLogoBlock from "../../components/case/CaseLogoBlock.astro";
 import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import CaseTestimonials from "../../components/case/CaseTestimonials.astro";
+import CaseTestimonial from "../../components/case/CaseTestimonial.astro";
 import { CodeXml, ListTree, Component, MessagesSquare, FlaskConical } from "@lucide/astro";
 
 import lpaLogoImg from "../../assets/case-studies/lpa/lpa-logo.png";
@@ -249,7 +251,37 @@ Esta forma de trabajar se trasladó a IBOR y otros productos de la empresa. En I
   />
 </CaseSection>
 
-<CaseSection variant="subtle" layout="text-only" tag="RESULT" tagCategory="Neutral" heading="El resultado: definir una manera de trabajar">
+<CaseSection variant="subtle" layout="text-only" tag="TEAM FEEDBACK" tagCategory="Neutral" heading="La evolución, vista desde el equipo">
+
+La combinación de diseño, colaboración e implementación también fue reconocida por las personas con las que trabajé directamente desde ingeniería, liderazgo técnico y dirección.
+
+<CaseTestimonials>
+  <CaseTestimonial
+    size="primary"
+    quote="Su principal responsabilidad era el diseño de una aplicación web. Paula preparaba una propuesta inicial, la discutía con los Product Owners o con usuarios avanzados y a partir del feed-back obtenido mejoraba el diseño. Además, y posiblemente esto sea lo más excepcional, ella misma se encargaba de la implementación del HTML y el CSS. […] Paula ha demostrado ser una gran empleada, responsable, creativa y team player. Su habilidad para focalizarse en los puntos clave y aportar una visión especializada han contribuido muy positivamente a la conclusión de las tareas que se le han asignado."
+    name="Alex Aletà"
+    role="Head of Engineering · LPA"
+  />
+  <CaseTestimonial
+    quote="Her primary responsibilities, during her employment include, but are not limited to, designing components for different web applications, preparing mocks and wireframes, implementing HTML and CSS of the designed components as well as discussing and refining proposals with Product Owner and final users. […] Based on experience of all colleagues who are working with her, Paula proves herself as a hardworking, dependable and creative colleague and a team player. Her ability to quickly focus on key issues contributes very positively to the completion of all the tasks given to her, beyond expectations."
+    name="Stefan Lucht"
+    role="Managing Partner · LPA"
+    lang="en"
+  />
+  <CaseTestimonial
+    quote="Trabajó en dicha organización por más de 2 años, mostrando siempre amplios conocimientos y una actitud excelente en todo momento. Las funciones que desempeñó, de una manera comprometida y responsable, estuvieron relacionadas con su área de conocimiento: Diseño UX/UI y desarrollo de aplicaciones Frontend."
+    name="Daniel Pons Álvarez"
+    role="Technical Lead · Capmatix Barcelona"
+  />
+</CaseTestimonials>
+
+_Tres perspectivas complementarias: ingeniería, liderazgo técnico de Capmatix y dirección._
+
+_Recomendaciones completas disponibles [bajo solicitud](mailto:bypaularodas@gmail.com)._
+
+</CaseSection>
+
+<CaseSection variant="default" layout="text-only" tag="RESULT" tagCategory="Neutral" heading="El resultado: definir una manera de trabajar">
 
 La evolución del puesto puede verse en el alcance creciente de mis responsabilidades. Durante mi etapa en LPA:
 
@@ -268,7 +300,7 @@ _Mi paso por LPA convirtió una afinidad previa por el código en una parte cent
 </CaseSection>
 
 <CaseSection
-  variant="default"
+  variant="subtle"
   layout="text-only"
   tag="LEARNINGS"
   tagCategory="Research"

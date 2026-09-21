@@ -1,0 +1,22 @@
+---
+// Wrapper for the testimonial block in a case study (external validation
+// quotes, e.g. recommendation letters). Each child <CaseTestimonial> stacks
+// at the section's own reading width (.cs-section__copy, unchanged by this
+// component — no `wide` needed) rather than splitting into columns, so a
+// card is never narrower than the section's normal prose measure.
+---
+
+<div class="cs-testimonials">
+	<slot />
+</div>
+
+<style>
+	.cs-testimonials {
+		display: flex;
+		flex-direction: column;
+		gap: calc(24px * var(--ui-scale));
+		width: 100%;
+		margin-top: calc(16px * var(--ui-scale));
+		margin-bottom: calc(32px * var(--ui-scale));
+	}
+</style>
