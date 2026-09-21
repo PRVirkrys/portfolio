@@ -20,7 +20,14 @@ const { category = 'Research', size = 'sm', class: className } = Astro.props;
 	.tag[data-category='UI Design'] { --tag-color: #f06faf; }
 	.tag[data-category='Engineering'] { --tag-color: #3ed598; }
 	.tag[data-category='Design Systems'] { --tag-color: #ffcd2b; }
+	/* The dark-theme yellow is too washed out against light theme's near-white
+	   background — a darker gold keeps the same hue while staying legible. */
+	:global(html:not(.dark)) .tag[data-category='Design Systems'] { --tag-color: #c79c11; }
 	.tag[data-category='Neutral'] { --tag-color: var(--color-text-muted); background: transparent; }
+	/* Light theme's near-white page turns the color-mix tint into a faint
+	   halo around the border instead of a fill — flatten it to transparent
+	   there; dark theme keeps the tint. */
+	:global(html:not(.dark)) .tag { background: transparent; }
 	.tag[data-size='md'] { height: calc(36px * var(--ui-scale)); padding-inline: var(--space-4); font-size: calc(14px * var(--ui-scale)); line-height: calc(20px * var(--ui-scale)); }
 	/* Bump opacity of the tag's own color instead of mixing toward white: a
 	   fixed white nudge reads as a highlight on a dark background but is
