@@ -40,12 +40,14 @@ export const works: Work[] = [
     clients: [
       {
         name: "Capmatix",
+        href: withBase("/work/lpa-caso-estudio/"),
         logo: iconUrl("client-capmatix.png"),
         logoClass: "client-bubble__logo--capmatix",
         surface: "light",
       },
       {
         name: "Hedge Pilot",
+        href: withBase("/work/lpa-caso-estudio/"),
         logo: "",
         logos: [
           iconUrl("client-hedgepilot-a.svg"),
