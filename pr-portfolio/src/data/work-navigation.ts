@@ -90,6 +90,7 @@ export const works: Work[] = [
       },
       {
         name: "Hospital Sant Joan de Déu",
+        href: withBase("/work/hsjd-caso-estudio/"),
         logo: iconUrl("client-hsjd.svg"),
         logoClass: "client-bubble__logo--asset",
         surface: "asset",
