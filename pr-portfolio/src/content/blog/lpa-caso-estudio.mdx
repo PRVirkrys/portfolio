@@ -1,0 +1,315 @@
+---
+title: "LPA · De maquetar interfaces a crecer como Product Designer"
+description: "¿Cómo pasar de maquetar interfaces definidas por otros a asumir el diseño, la implementación y el handoff de productos financieros B2B completos? Una historia de crecimiento como Product Designer a través de HedgePilot y WebDD/Capmatix."
+pubDate: "Sep 21 2026"
+heroImage: "../../assets/case-studies/lpa/hero.png"
+type: case-study
+company: lpa
+customer: "HedgePilot · Capmatix"
+cardSummary: "De maquetar diseños definidos por otros a diseñar, prototipar e implementar productos financieros B2B completos."
+confidentialityNote: true
+tags:
+  - label: PRODUCT DESIGN
+    category: UX Design
+  - label: FRONTEND IMPLEMENTATION
+    category: Engineering
+  - label: DESIGN SYSTEMS
+    category: Design Systems
+breadcrumbs:
+  - label: work
+    href: /
+  - label: lpa
+  - label: hedgepilot · capmatix
+client: "LPA · HedgePilot y WebDD/Capmatix"
+industry: "Software financiero B2B"
+role: "Product Designer con implementación frontend"
+location: "Barcelona, equipos distribuidos"
+liveUrl:
+  label: "Lucht Probst Associates (LPA)"
+  href: "https://www.l-p-a.com/"
+collaboration: "Producto · UX/UI · Frontend · Desarrollo"
+tools: "Figma · HTML/CSS/Sass/Less · Angular · TypeScript · Optimal Workshop · AG Grid"
+platform: "Web · Software financiero B2B"
+nextCase:
+  title: "Base · De una parrilla de productos a una experiencia de marca"
+  slug: "base-caso-estudio"
+---
+
+import { Image } from "astro:assets";
+import CaseSection from "../../components/case/CaseSection.astro";
+import CaseCallout from "../../components/case/CaseCallout.astro";
+import CaseImageRow from "../../components/case/CaseImageRow.astro";
+import CaseLogoBlock from "../../components/case/CaseLogoBlock.astro";
+import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import { CodeXml, ListTree, Component, MessagesSquare, FlaskConical } from "@lucide/astro";
+
+import lpaLogoImg from "../../assets/case-studies/lpa/lpa-logo.png";
+import perfilHibridoImg from "../../assets/case-studies/lpa/perfil-hibrido.png";
+import userStoriesCompletasImg from "../../assets/case-studies/lpa/user-stories-completas.png";
+import correosHtmlFrontendImg from "../../assets/case-studies/lpa/correos-html-frontend.png";
+import disenarConDatosImg from "../../assets/case-studies/lpa/disenar-con-datos.png";
+import adaptar1024pxImg from "../../assets/case-studies/lpa/adaptar-1024px.png";
+import estructurarProductoComplejoImg from "../../assets/case-studies/lpa/estructurar-producto-complejo.png";
+import equilibrioExperienciaWebImg from "../../assets/case-studies/lpa/equilibrio-experiencia-web.png";
+import agGridBaseTecnicaImg from "../../assets/case-studies/lpa/ag-grid-base-tecnica.png";
+import disenoCodigoDialogoImg from "../../assets/case-studies/lpa/diseno-codigo-dialogo.png";
+
+<CaseSection
+  variant="default"
+  layout="side"
+  tag="OVERVIEW"
+  tagCategory="Neutral"
+  heading="Overview"
+>
+  <CaseLogoBlock slot="image" background="#FFFFFF">
+    <Image src={lpaLogoImg} alt="LPA — Lucht Probst Associates" />
+  </CaseLogoBlock>
+  Me incorporé a la oficina de Barcelona de Lucht Probst Associates (LPA) mientras cursaba el segundo posgrado de mi máster en Elisava. El equipo necesitaba un perfil de Product Design capaz de maquetar: diseño se encontraba principalmente en Alemania y desarrollo necesitaba apoyo cercano en Barcelona.
+
+  Comencé recibiendo diseños y trasladándolos a HTML, CSS y Sass. Durante los primeros meses pasé a trabajar también en diseño, primero en HedgePilot y después en WebDD, hoy conocido como Capmatix. Con el tiempo asumí user stories completas, desde la definición y el diseño hasta la maquetación y el handoff, además de investigación con usuarios, sistemas de diseño y acompañamiento de implementación.
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="HYBRID PROFILE" tagCategory="Engineering" heading="1. Llegar con un perfil híbrido">
+
+### De recibir diseños a comprender cómo se construyen
+
+Mi punto de entrada fue la implementación visual. Recibía diseños creados por el equipo de Alemania y los trasladaba a HTML, CSS y Sass dentro del entorno del producto. El objetivo no era todavía definir la experiencia, sino asegurar que las propuestas pudieran convertirse en interfaces reales.
+
+Este trabajo me permitió conocer desde el inicio:
+
+- La estructura técnica de los productos.
+- Las posibilidades y limitaciones de Angular.
+- La relación entre componentes visuales y lógica de negocio.
+- Las dudas que aparecen cuando un diseño llega a desarrollo.
+- El impacto de navegadores, frameworks y tiempos de entrega.
+
+La cercanía con desarrollo creó una base que después influiría en todas mis decisiones de diseño.
+
+<CaseImageRow>
+  <Image
+    src={perfilHibridoImg}
+    alt="Diseño del dashboard de HedgePilot en Figma junto a su implementación en HTML, SCSS y TypeScript con Angular en Visual Studio Code"
+  />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Evolución"
+    body="Recibir diseños → comprender restricciones → construir interfaces implementables"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="GROWING AUTONOMY" tagCategory="UX Design" heading="2. Ganar autonomía en HedgePilot">
+
+### De implementar decisiones a asumir user stories completas
+
+HedgePilot fue el primer producto en el que mi responsabilidad empezó a expandirse. Era una aplicación nueva para la gestión de estrategias de cobertura financiera. El equipo de Alemania había definido una dirección visual, lineamientos y un sistema de diseño; mi trabajo comenzó dando continuidad a ese lenguaje.
+
+<CaseImageRow>
+  <Image
+    src={userStoriesCompletasImg}
+    alt="Diagrama del flujo de una user story completa: user story, analyse, design, build y handoff, con criterios de aceptación en cada etapa"
+  />
+</CaseImageRow>
+
+Después de aproximadamente un mes empecé a recibir encargos de diseño. Con el tiempo trabajé tanto con propuestas procedentes de Alemania como con nuevos requerimientos. Llegué a responsabilizarme de user stories completas: analizar la necesidad, diseñar la solución, discutirla con el equipo, construir su capa visual con HTML y Sass y realizar el handoff para completar la lógica del producto.
+
+### Ampliar el alcance gracias al frontend
+
+Mis conocimientos técnicos también me permitieron resolver piezas que iban más allá de las pantallas principales. Diseñé y maqueté correos HTML de notificación para que las alertas y recomendaciones mantuvieran el lenguaje de HedgePilot fuera de la aplicación.
+
+<CaseImageRow>
+  <Image
+    src={correosHtmlFrontendImg}
+    alt="Diseño de un correo de notificación de HedgePilot junto a su maquetación en HTML con estilos inline"
+  />
+</CaseImageRow>
+
+### Aprender a diseñar con datos
+
+El producto reunía dashboards, ratios, monedas, fechas, exposiciones, transacciones, estados y validaciones. Diseñar estas pantallas exigía aprender a:
+
+- Priorizar información dentro de interfaces densas.
+- Representar datos sin perder precisión.
+- Diferenciar estados, advertencias y acciones.
+- Mantener coherencia entre temas claro y oscuro.
+- Diseñar flujos y componentes reutilizables.
+
+<CaseImageRow>
+  <Image
+    src={disenarConDatosImg}
+    alt="Dashboard de HedgePilot en tema claro y oscuro, con anotaciones sobre jerarquía de información, precisión de datos, componentes reutilizables y estados"
+  />
+</CaseImageRow>
+
+### Adaptar el producto a nuevos contextos de uso
+
+HedgePilot se había planteado inicialmente para resoluciones mayores. Cuando surgió la necesidad de utilizarlo en pantallas de 1024 px, tuve que reconsiderar la jerarquía, la densidad y el comportamiento de sus componentes para construir una versión más reducida y adaptable sin perder información crítica.
+
+<CaseImageRow>
+  <Image
+    src={adaptar1024pxImg}
+    alt="Comparación del dashboard de HedgePilot en pantalla grande frente a la versión adaptada a 1024 px, con navegación compacta y componentes adaptativos"
+  />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Evolución"
+    body="Implementar un sistema existente → interpretar requerimientos → asumir diseño, maquetación y handoff"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="DESIGN SYSTEMS" tagCategory="Design Systems" heading="3. Diseñar sistemas en WebDD / Capmatix">
+
+### De resolver funcionalidades a estructurar un producto complejo
+
+WebDD presentaba un problema diferente. El software ya existía como aplicación desktop, tenía usuarios y concentraba múltiples interacciones propias de una herramienta financiera especializada. Llevarlo a la web implicaba conservar su capacidad sin trasladar literalmente toda su complejidad.
+
+<CaseImageRow>
+  <Image
+    src={estructurarProductoComplejoImg}
+    alt="Recorrido de WebDD a Capmatix: la aplicación desktop original, el tree test de navegación con resultados de éxito y direccionalidad, y el sistema web resultante"
+  />
+</CaseImageRow>
+
+Mi responsabilidad incluyó:
+
+- Participar en la definición del producto desde sus primeras etapas web.
+- Diseñar navegación y funcionalidades para trasladar la experiencia desktop a la web.
+- Crear el sistema visual inicial desde cero.
+- Prototipar comportamientos para usuarios y desarrollo.
+- Realizar tree tests y probar propuestas de navegación con Optimal Workshop.
+- Diseñar árboles, tablas, estados, historial y acciones contextuales.
+
+### Encontrar el equilibrio entre una experiencia conocida y una mejor solución web
+
+Las personas usuarias conocían la aplicación desktop y esperaban encontrar comportamientos y lógicas similares en la nueva versión. Sin embargo, la web tenía limitaciones diferentes y también ofrecía oportunidades para mejorar sustancialmente la experiencia.
+
+<CaseImageRow>
+  <Image
+    src={equilibrioExperienciaWebImg}
+    alt="Comparación lado a lado de la experiencia desktop y web: qué se mantuvo, qué se adaptó a la interacción web y qué se mejoró en el flujo de trabajo"
+  />
+</CaseImageRow>
+
+El reto fue identificar qué modelos mentales y capacidades debían conservarse, qué interacciones no podían trasladarse literalmente y dónde la nueva plataforma permitía simplificar el trabajo. La solución debía ser reconocible para usuarios experimentados y, al mismo tiempo, demostrar que la versión web podía ayudarles a trabajar de una manera más clara y eficiente.
+
+### Adaptar el diseño a una nueva base técnica
+
+En un punto del desarrollo, la aplicación necesitó adoptar AG Grid como base técnica para árboles y tablas. El diseño tuvo que adaptarse a las reglas y posibilidades del framework. Para hacerlo, revisé su documentación, entendí su funcionamiento y traduje los patrones existentes a una experiencia coherente con el producto.
+
+<CaseImageRow>
+  <Image
+    src={agGridBaseTecnicaImg}
+    alt="Tres pasos para adoptar AG Grid en Capmatix: patrones del producto existente, las reglas técnicas de AG Grid y la experiencia final adaptada"
+  />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Evolución"
+    body="Diseñar pantallas → investigar estructuras → construir un sistema → adaptar el diseño a una arquitectura técnica"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="DESIGN + CODE" tagCategory="Engineering" heading="4. Convertir diseño e implementación en un mismo diálogo">
+
+### De entregar diseños a diseñar también en código
+
+A medida que ganaba autonomía, el código dejó de ser solo la fase posterior al diseño y se convirtió en una herramienta para explorar y decidir. Participaba en reuniones, sprints y conversaciones técnicas; creaba prototipos en Figma cuando era necesario; preparaba HTML y Sass; y permanecía disponible durante la implementación para resolver dudas y ajustar comportamientos.
+
+En algunos trabajos llegué a diseñar directamente en HTML y CSS. Cuando la funcionalidad no necesitaba una exploración previa en Figma, utilizaba el navegador y el código como espacio de diseño, acortando la distancia entre propuesta e implementación.
+
+<CaseImageRow>
+  <Image
+    src={disenoCodigoDialogoImg}
+    alt="Código HTML/CSS resaltado conectado con el componente correspondiente en la interfaz de HedgePilot, junto a la división de responsabilidades entre diseño, desarrollo y producto"
+  />
+</CaseImageRow>
+
+La responsabilidad estaba claramente compartida:
+
+- **Mi contribución:** diseño de producto, UX/UI, prototipos, HTML/CSS/Sass/Less y, ocasionalmente, TypeScript para interacciones básicas de frontend.
+- **Desarrollo:** arquitectura, lógica de negocio e integración técnica más compleja.
+- **Producto y equipo:** priorización, requisitos y decisiones colectivas.
+
+Esta forma de trabajar se trasladó a IBOR y otros productos de la empresa. En IBOR trabajé en el restyling de una aplicación antigua construida con Less que debía adaptarse a temas diferentes según el cliente.
+
+  <CaseCallout
+    title="Flujo de colaboración"
+    body="User story → conversación técnica → diseño en Figma o código → capa visual → integración → ajustes compartidos"
+    variant="subtle"
+  />
+
+  <CaseCallout
+    title="Evolución"
+    body="Handoff aislado → colaboración continua → código como parte del proceso de diseño"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="text-only" tag="RESULT" tagCategory="Neutral" heading="El resultado: definir una manera de trabajar">
+
+La evolución del puesto puede verse en el alcance creciente de mis responsabilidades. Durante mi etapa en LPA:
+
+- Pasé de maquetar diseños existentes a responsabilizarme de user stories completas.
+- Trabajé en productos nuevos y en la transformación web de software desktop.
+- Aprendí a diseñar visualizaciones, tablas y jerarquías de alta densidad.
+- Creé el sistema visual inicial de WebDD y trabajé dentro del sistema existente de HedgePilot.
+- Incorporé investigación con usuarios mediante pruebas de navegación.
+- Diseñé directamente en código cuando era la vía más eficiente.
+- Consolidé una práctica profesional situada entre producto, diseño y frontend.
+
+_Mi paso por LPA convirtió una afinidad previa por el código en una parte central de mi manera de diseñar: comprender el producto desde la experiencia, el negocio y la implementación._
+
+[LPA](https://www.l-p-a.com/) · [HedgePilot](https://www.hedgepilot.com/) · [Capmatix](https://www.l-p-a.com/capmatix/)
+
+</CaseSection>
+
+<CaseSection
+  variant="default"
+  layout="text-only"
+  tag="LEARNINGS"
+  tagCategory="Research"
+  heading="Aprendizajes"
+  wide
+>
+  <LearningsGrid>
+    <CaseCallout
+      size="lg"
+      title="La implementación también es material de diseño"
+      body="Comprender el entorno técnico permite anticipar problemas y proponer soluciones más sostenibles."
+    >
+      <CodeXml slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La complejidad debe estructurarse, no maquillarse"
+      body="En productos especializados, simplificar significa ayudar a orientarse, decidir y actuar sin ocultar información necesaria."
+    >
+      <ListTree slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Los sistemas de diseño conectan disciplinas"
+      body="Además de mantener consistencia visual, proporcionan un lenguaje compartido entre diseño y desarrollo."
+    >
+      <Component slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La colaboración continua produce mejores decisiones que un handoff final"
+      body="Trabajar cerca del equipo permite ajustar las propuestas mientras todavía es posible cambiarlas."
+    >
+      <MessagesSquare slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="El código puede ser una herramienta de exploración"
+      body="Consultar documentación, probar interacciones y diseñar directamente en frontend me dio mayor autonomía para evaluar soluciones y colaborar con desarrollo desde un lenguaje compartido."
+    >
+      <FlaskConical slot="icon" />
+    </CaseCallout>
+  </LearningsGrid>
+</CaseSection>
