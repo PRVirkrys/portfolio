@@ -1,0 +1,89 @@
+---
+// A single external-validation quote card (e.g. from a recommendation
+// letter) — always used inside <CaseTestimonials>. Real, selectable text
+// (not a rasterized image): a <blockquote> with a <footer>/<cite> for the
+// attribution, per the standard HTML5 pattern for cited quotes.
+// The quotation mark is the only graphic element — generated via CSS so it
+// never reaches the accessibility tree or the selectable text.
+export interface Props {
+	quote: string;
+	name: string;
+	role: string;
+	/** BCP-47 language of the quote itself, when it differs from the page
+	 * language (e.g. an English testimonial inside a Spanish case study). */
+	lang?: string;
+	/** 'primary' gets a bit more padding — the lead testimonial. Every card
+	 * is already full-width (see CaseTestimonials), so this is presence, not
+	 * layout. 'secondary' (default) is the standard supporting card. */
+	size?: 'primary' | 'secondary';
+}
+
+const { quote, name, role, lang, size = 'secondary' } = Astro.props;
+---
+
+<blockquote class="cs-testimonial" data-size={size} lang={lang}>
+	<p class="cs-testimonial__quote">{quote}</p>
+	<footer class="cs-testimonial__attribution">
+		<cite class="cs-testimonial__name">{name}</cite>
+		<span class="cs-testimonial__role">{role}</span>
+	</footer>
+</blockquote>
+
+<style>
+	.cs-testimonial {
+		position: relative;
+		margin: 0;
+		padding: calc(32px * var(--ui-scale)) calc(28px * var(--ui-scale)) calc(24px * var(--ui-scale));
+		background: var(--color-bg);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-md);
+		display: flex;
+		flex-direction: column;
+		gap: calc(16px * var(--ui-scale));
+	}
+	/* The lead testimonial gets a little more room to breathe than the
+	   supporting cards below it. */
+	.cs-testimonial[data-size='primary'] {
+		padding: calc(40px * var(--ui-scale)) calc(36px * var(--ui-scale)) calc(28px * var(--ui-scale));
+	}
+	.cs-testimonial::before {
+		content: "\201C";
+		position: absolute;
+		top: calc(8px * var(--ui-scale));
+		left: calc(20px * var(--ui-scale));
+		font-family: var(--font-heading);
+		font-size: calc(64px * var(--ui-scale));
+		line-height: 1;
+		color: color-mix(in srgb, var(--color-text) 15%, transparent);
+	}
+	.cs-testimonial__quote {
+		position: relative;
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: calc(20px * var(--ui-scale));
+		font-style: normal;
+		font-weight: 400;
+		line-height: 1.6;
+		letter-spacing: 0.01em;
+		color: var(--color-text);
+	}
+	.cs-testimonial__attribution {
+		display: flex;
+		flex-direction: column;
+		gap: calc(2px * var(--ui-scale));
+		font-style: normal;
+	}
+	.cs-testimonial__name {
+		font-family: var(--font-sans);
+		font-style: normal;
+		font-size: calc(15px * var(--ui-scale));
+		font-weight: 600;
+		color: var(--color-text);
+	}
+	.cs-testimonial__role {
+		font-family: var(--font-sans);
+		font-size: calc(13px * var(--ui-scale));
+		font-weight: 400;
+		color: var(--color-text-secondary);
+	}
+</style>
