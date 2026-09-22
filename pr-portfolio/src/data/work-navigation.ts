@@ -137,7 +137,7 @@ export const works: Work[] = [
         logoClass: "client-bubble__logo--asset",
         surface: "asset",
       },
-      { name: "Medusa Watch", logo: "", surface: "navy" },
+      { name: "Medusa Watch", href: withBase("/work/medusawatch-caso-estudio/"), logo: "", surface: "navy" },
     ],
     ctaLabel: "See all cases",
   },

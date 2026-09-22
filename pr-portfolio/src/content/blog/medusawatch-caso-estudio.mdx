@@ -1,0 +1,292 @@
+---
+title: "MedusaWatch · De una necesidad real a un prototipo funcional en dos días"
+description: "¿Qué puedo llegar a construir en dos días si parto de un PRD bien definido y uso IA para acelerar la ejecución? Diseño y desarrollo de un prototipo web que traduce datos de viento en una estimación de riesgo de medusas para las playas de Mallorca."
+pubDate: "Sep 22 2026"
+heroImage: "../../assets/case-studies/medusawatch/hero.png"
+type: case-study
+company: pr
+customer: "MedusaWatch"
+cardSummary: "Un PRD claro, dirección humana sobre la IA y criterio de frontend: de una necesidad real a un prototipo publicado en dos días."
+tags:
+  - label: PRODUCT THINKING
+    category: Strategy
+  - label: AI-ASSISTED PROTOTYPING
+    category: Engineering
+  - label: UX ENGINEERING
+    category: UX Design
+breadcrumbs:
+  - label: work
+    href: /
+  - label: pr
+  - label: medusawatch
+client: "Proyecto personal y ejercicio de aprendizaje"
+role: "Product Designer · Product Builder · Frontend"
+date: "Prototipo funcional: dos días · Refinamiento y publicación: marzo–mayo 2026"
+liveUrl:
+  label: "Ver MedusaWatch"
+  href: "https://prvirkrys.github.io/MedusaWatch/"
+tools: "Vanilla JavaScript · HTML · CSS · Leaflet.js · Open-Meteo API · OpenStreetMap Overpass API · GitHub Pages"
+platform: "Aplicación web responsive"
+nextCase:
+  title: "Base · De una parrilla de productos a una experiencia de marca"
+  slug: "base-caso-estudio"
+---
+
+import { Image } from "astro:assets";
+import CaseSection from "../../components/case/CaseSection.astro";
+import CaseCallout from "../../components/case/CaseCallout.astro";
+import CaseImageRow from "../../components/case/CaseImageRow.astro";
+import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import { ClipboardList, Code2, Bug, Users } from "@lucide/astro";
+
+import heroImg from "../../assets/case-studies/medusawatch/hero.png";
+import origenIdeaImg from "../../assets/case-studies/medusawatch/origen-idea.png";
+import necesidadPrdPrototipoImg from "../../assets/case-studies/medusawatch/necesidad-prd-prototipo.png";
+import direccionHumanaIaImg from "../../assets/case-studies/medusawatch/direccion-humana-ia.png";
+import vientoARiesgoImg from "../../assets/case-studies/medusawatch/viento-a-riesgo.png";
+import incertidumbreImg from "../../assets/case-studies/medusawatch/incertidumbre.png";
+import arquitecturaImg from "../../assets/case-studies/medusawatch/arquitectura.png";
+import responsiveMapsImg from "../../assets/case-studies/medusawatch/responsive-maps.png";
+import forecast24hImg from "../../assets/case-studies/medusawatch/forecast-24h.png";
+import resultadoImg from "../../assets/case-studies/medusawatch/resultado.png";
+
+<CaseSection
+  variant="default"
+  layout="side"
+  tag="OVERVIEW"
+  tagCategory="Neutral"
+  heading="Overview"
+>
+  <Image slot="image" src={heroImg} alt="MedusaWatch: mapa de riesgo estimado de medusas en las playas de Mallorca" />
+  MedusaWatch es una aplicación web que ayuda a elegir, antes de salir de casa, qué playas de Mallorca presentan menor probabilidad estimada de medusas. Combina la orientación de cada playa con datos de viento y representa el nivel de riesgo sobre un mapa.
+
+  El primer prototipo funcional se construyó en dos días a partir de una necesidad concreta y un PRD definido. Los días posteriores se dedicaron a corregir fallos y refinar UX y UI, especialmente en móvil. Mi papel reunió definición de producto, UX/UI, dirección del trabajo con IA, frontend, QA y publicación: la IA propuso caminos y aceleró la producción, yo decidí qué construir, cómo debía comportarse y cuándo el resultado tenía suficiente calidad para avanzar.
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="ORIGIN" tagCategory="Strategy" heading="Origen de la idea: convertir conocimiento local en una hipótesis de producto">
+
+El proyecto nació al conectar una necesidad real con un conocimiento local. Una amiga que preparaba un viaje a Mallorca me contó que le preocupaba encontrarse medusas y no sabía cómo anticiparlo. Al mismo tiempo, recordé algo que me había explicado un amigo menorquín: los lugareños observaban la dirección del viento para decidir a qué costa ir y reducir la probabilidad de encontrarse medusas.
+
+<CaseImageRow>
+  <Image src={origenIdeaImg} alt="Del conocimiento local sobre el viento y las medusas a la hipótesis de producto de MedusaWatch" />
+</CaseImageRow>
+
+Ese saber local se convirtió en una hipótesis de producto. Antes de construir, realicé comprobaciones y una investigación preliminar asistida por IA para entender la relación entre el viento, la orientación de la costa y la posible acumulación de medusas, y valorar si podía trasladarla de Menorca al contexto de Mallorca. La investigación exploratoria no permitía prometer la ausencia de medusas, pero sí ofrecía fundamento suficiente para formular una hipótesis de producto, concretar el problema y convertirlo en un PRD.
+
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="THE CHALLENGE" tagCategory="Strategy" heading="El reto — comprobar hasta dónde podía acelerar la IA la construcción de un prototipo">
+
+El ejercicio partía de una pregunta concreta: ¿hasta dónde podía llegar al combinar un PRD bien definido, mis conocimientos de frontend y la capacidad de ejecución de la IA? La cuestión no era si una IA podía generar una interfaz aislada, sino comprobar si esta forma de trabajo permitía avanzar desde una necesidad definida hasta un primer prototipo funcional en muy poco tiempo. Mi responsabilidad era orientar el proceso, comprender lo construido y mantener el control sobre las decisiones.
+
+El PRD reducía la ambigüedad antes de producir código. Definía el problema, el uso principal y un alcance pequeño:
+
+- Ayudar a tomar una decisión **antes** de desplazarse a una playa.
+- Traducir datos meteorológicos difíciles de interpretar en una señal comprensible.
+- Mostrar alternativas en toda Mallorca, no un dato aislado por zona.
+- Funcionar en escritorio y móvil.
+- Depender de servicios gratuitos y poder publicarse sin backend.
+- Comunicar que el riesgo es una estimación, no la confirmación de avistamientos reales.
+
+<CaseImageRow>
+  <Image src={necesidadPrdPrototipoImg} alt="Recorrido de una necesidad real a un PRD definido y un prototipo funcional en dos días" />
+</CaseImageRow>
+
+Durante esos mismos dos días amplié el contraste mediante foros de viajeros, reseñas de aplicaciones y análisis de competidores. La investigación apoyó de forma preliminar la hipótesis e hizo visible una tensión relevante: las soluciones basadas en avistamientos son reactivas y dependen de que alguien reporte primero; la oportunidad de MedusaWatch estaba en ayudar a decidir con antelación.
+
+  <CaseCallout
+    title="Pregunta de aprendizaje"
+    body="Necesidad real definida + PRD claro + criterio de producto + frontend + IA → ¿prototipo funcional en dos días?"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="AI-ASSISTED PROTOTYPING" tagCategory="Engineering" heading="Construir con IA sin delegar la dirección">
+
+La IA redujo de forma significativa el tiempo necesario para llegar a una primera versión tangible: generó propuestas de implementación, exploró alternativas y convirtió decisiones en código con una velocidad que no habría tenido trabajando sola desde cero.
+
+Pero acelerar la ejecución no eliminó la necesidad de saber qué estaba ocurriendo. Mis conocimientos de frontend fueron los que me permitieron leer la lógica general, valorar la viabilidad de cada propuesta y dirigir la siguiente iteración.
+
+- **Definir el problema, el alcance y los criterios del PRD** → la IA convertía requisitos en primeras propuestas funcionales.
+- **Decidir el comportamiento del producto y priorizar** → la IA proponía alternativas de interfaz e implementación.
+- **Entender la arquitectura y evaluar sus implicaciones** → la IA explicaba, generaba y reorganizaba partes del código.
+- **Aprobar, rechazar o redirigir las propuestas** → la IA aceleraba ciclos de cambio y experimentación.
+- **Probar, detectar errores y decidir cuándo avanzar** → la IA ayudaba a localizar causas y plantear correcciones.
+
+No necesitaba escribir manualmente cada línea para mantener la responsabilidad sobre el resultado. Sí necesitaba comprender las piezas, formular buenas restricciones, detectar cuándo una solución no respondía al problema y comprobarla en el navegador.
+
+<CaseImageRow>
+  <Image src={direccionHumanaIaImg} alt="Dirección humana sobre el trabajo con IA: definir, pedir una propuesta, comprender, evaluar, redirigir, probar y aprender" />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Bucle de trabajo"
+    body="Definir → pedir una propuesta → comprender → evaluar → redirigir → probar → aprender"
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="WIND-TO-RISK MODEL" tagCategory="Engineering" heading="1. Traducir el viento en una decisión por playa">
+
+Mostrar dirección y velocidad del viento habría trasladado el trabajo de interpretación al usuario. La propuesta necesitaba convertir esos datos en una respuesta útil: qué playas presentan menor o mayor riesgo estimado en ese momento.
+
+El modelo relaciona la dirección del viento con la orientación asociada a cada playa y aplica la velocidad como factor adicional. El resultado se presenta en tres niveles —bajo, moderado y alto— para poder recorrer el mapa de un vistazo.
+
+<CaseImageRow>
+  <Image src={vientoARiesgoImg} alt="Modelo que traduce dirección y velocidad del viento en un nivel de riesgo estimado por playa" />
+</CaseImageRow>
+
+La decisión importante no fue crear un mapa meteorológico, sino utilizar los datos como materia prima para una acción: dirección del viento → relación con la orientación de la playa → nivel estimado → comparación entre alternativas. Esto permitió pasar de una lectura regional a una señal específica para cada una de las 227 playas indexadas.
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="DESIGNING UNCERTAINTY" tagCategory="UX Design" heading="2. Diseñar para la incertidumbre, no ocultarla">
+
+MedusaWatch no detecta medusas ni confirma avistamientos: estima un nivel de riesgo a partir del viento. Convertir ese cálculo en colores claros hacía el producto más útil, pero también podía transmitir una seguridad mayor que la evidencia disponible.
+
+Para mantener esa diferencia visible:
+
+- La interfaz habla de **riesgo estimado**, no de presencia confirmada.
+- Los niveles ayudan a comparar playas sin presentar el porcentaje como una certeza.
+- Un disclaimer aparece en la primera visita.
+- La explicación permanece accesible desde la interfaz para consultas posteriores.
+- El producto se plantea como ayuda para decidir, no como garantía de seguridad.
+
+<CaseImageRow>
+  <Image src={incertidumbreImg} alt="Comunicación del riesgo estimado y el disclaimer de la primera visita en la interfaz de MedusaWatch" />
+</CaseImageRow>
+
+El disclaimer no fue un añadido legal colocado al final. Formó parte de la experiencia: debía informar sin bloquear cada visita ni competir con la acción principal.
+
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="ARCHITECTURE" tagCategory="Engineering" heading="3. Elegir una arquitectura proporcional al experimento">
+
+El objetivo era aprender y publicar, no construir una infraestructura mayor de la necesaria. Elegí Vanilla JavaScript, HTML y CSS, sin framework ni proceso de build. Esta decisión permitió mantener visible la lógica del producto mientras aprendía, reducir dependencias y configuración, publicar una aplicación estática en GitHub Pages y trabajar con APIs externas sin añadir un backend prematuro.
+
+La aplicación se dividió en módulos con responsabilidades diferenciadas: orquestación, obtención de playas, mapa, interfaz y utilidades. Esta estructura hizo más fácil comprender las propuestas de la IA, revisar cambios y corregir una parte sin perder de vista el conjunto.
+
+<CaseImageRow>
+  <Image src={arquitecturaImg} alt="Arquitectura modular de MedusaWatch: orquestación, obtención de playas, mapa, interfaz y utilidades" />
+</CaseImageRow>
+
+La simplicidad no eliminó los fallos externos. Overpass API puede responder lentamente o no hacerlo. Para evitar que un problema del servicio dejara la pantalla vacía, incorporé una caché de playas en `localStorage` durante 24 horas y un fallback a datos anteriores cuando fuese necesario.
+
+  <CaseCallout
+    title="Principio técnico"
+    body="Menos infraestructura → más comprensión → iteraciones más rápidas → producto publicable"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="RESPONSIVE DESIGN" tagCategory="UI Design" heading="4. Adaptar la experiencia a escritorio y móvil" imageWidth="full">
+
+El mapa, la búsqueda, la lista de playas, la leyenda y el control temporal debían convivir en superficies muy distintas. El contexto de uso más probable era el móvil: consultar la aplicación antes de salir o mientras se organizaba el día. Por eso prioricé especialmente la experiencia móvil y trabajé con dos composiciones:
+
+- **Escritorio:** panel lateral persistente, lista completa y controles visibles junto al mapa.
+- **Móvil:** mapa como superficie principal, panel inferior para el contenido y búsqueda en una capa superpuesta.
+
+Las funciones se mantienen, pero cambia su jerarquía. En escritorio, el panel acompaña la exploración; en móvil, aparece cuando la persona lo necesita y devuelve protagonismo al mapa al cerrarse.
+
+<CaseImageRow>
+  <Image src={responsiveMapsImg} alt="Composiciones de escritorio y móvil de MedusaWatch: panel lateral persistente frente a panel inferior y búsqueda superpuesta" />
+  <Image src={forecast24hImg} alt="Control temporal para revisar la evolución del riesgo estimado durante las próximas 24 horas" />
+</CaseImageRow>
+
+Para cerrar el recorrido, incorporé un botón de **Cómo llegar** que abre directamente la ubicación de cada playa en Google Maps. El control temporal permite revisar cómo puede cambiar el riesgo durante las próximas 24 horas y planificar la playa con antelación: esta función apareció en una iteración posterior, al identificar que la decisión no siempre se toma en el momento.
+
+</CaseSection>
+
+<CaseSection variant="default" layout="text-only" tag="QA & PUBLISHING" tagCategory="Engineering" heading="Del prototipo rápido a un producto publicable">
+
+La primera versión demostró que la idea podía funcionar. Convertirla en algo publicable exigió un tipo distinto de trabajo: revisar estados, probar comportamientos, detectar errores y decidir qué debía resolverse antes del lanzamiento.
+
+Durante la revisión previa a la publicación:
+
+- Añadí un estado de error visible cuando fallaba una API.
+- Corregí el cálculo que mostraba la temperatura del agua de la primera hora en lugar de la hora actual.
+- Incorporé una descripción clara del producto y su actualización.
+- Conecté la leyenda que explicaba los niveles de riesgo.
+- Integré el disclaimer de primera visita y su acceso permanente.
+- Revisé la documentación pública y los avisos legales.
+
+  <CaseCallout
+    title="Evolución"
+    body="Necesidad real → investigación preliminar + PRD → prototipo en dos días → iteración → QA → publicación en GitHub Pages"
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="side" tag="RESULT" tagCategory="Neutral" heading="Resultado">
+  <Image slot="image" src={resultadoImg} alt="MedusaWatch publicado: 227 playas de Mallorca con estimación de riesgo, previsión a 24 horas y experiencia adaptada a escritorio y móvil" />
+
+MedusaWatch quedó publicado en GitHub Pages el 25 de mayo de 2026. No realicé una campaña de lanzamiento o distribución, por lo que este resultado demuestra construcción y publicación, no todavía adopción.
+
+- 227 playas de Mallorca con una estimación específica basada en el viento.
+- Previsión de riesgo para las próximas 24 horas mediante un control temporal.
+- Experiencias adaptadas a escritorio y móvil, con acceso directo a Google Maps.
+- Caché y datos alternativos para reducir la dependencia de Overpass API.
+- Código modular, repositorio público y despliegue en GitHub Pages.
+
+El ejercicio demostró la viabilidad técnica de la idea y permitió convertir un prototipo de dos días en un producto publicable, manteniendo la comprensión de las decisiones principales. No representa un cambio hacia "hacer de todo": es una extensión natural de mi forma de trabajar, entender qué necesita una idea para avanzar y aprender lo necesario para darle forma. En este caso, la IA amplió mi capacidad de construir y el frontend me permitió dirigirla.
+
+_No presento todavía resultados de adopción o impacto en usuarios. La app está publicada, pero la validación formal con personas reales sigue pendiente._
+
+[Explorar MedusaWatch](https://prvirkrys.github.io/MedusaWatch/) · [Revisar el código](https://github.com/PRVirkrys/MedusaWatch)
+
+</CaseSection>
+
+<CaseSection variant="default" layout="text-only" tag="NEXT STEPS" tagCategory="Research" heading="Lo que todavía falta validar">
+
+El producto parte de una hipótesis razonada y de investigación exploratoria, pero un prototipo funcional no equivale a un problema validado. Las siguientes pruebas con usuarios reales deberán comprobar:
+
+- Si el nivel de riesgo se entiende sin explicación previa.
+- Si las personas interpretan correctamente que se trata de una estimación.
+- Si el mapa ayuda realmente a elegir una alternativa antes de salir.
+- Qué información necesitan para confiar en la recomendación.
+- Si la previsión por horas les ayuda a elegir una playa para ese día o para el siguiente.
+- Cómo utilizan el producto turistas, familias y residentes frecuentes.
+
+También permanecen como mejoras de producto la accesibilidad del mapa, la revisión del contraste de algunos indicadores, el soporte multilingüe, una versión instalable y la expansión a otras islas.
+
+</CaseSection>
+
+<CaseSection
+  variant="subtle"
+  layout="text-only"
+  tag="LEARNINGS"
+  tagCategory="Research"
+  heading="Aprendizajes"
+  wide
+>
+  <LearningsGrid>
+    <CaseCallout
+      size="lg"
+      title="La velocidad empieza antes del código"
+      body="El PRD delimitó el problema, la acción principal y lo que debía quedar fuera. La IA aceleró la ejecución porque recibió una dirección clara."
+    >
+      <ClipboardList slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Saber frontend permite dirigir y verificar a la IA"
+      body="Mis conocimientos me permitieron leer la lógica, hacer mejores preguntas, detectar propuestas desproporcionadas y aprobar solo aquello que podía comprender y comprobar."
+    >
+      <Code2 slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Construir revela preguntas que una pantalla estática no muestra"
+      body="Los fallos de API, los estados de carga, la caché, la hora correcta del dato y el comportamiento móvil se volvieron visibles al trabajar con un producto real."
+    >
+      <Bug slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="El prototipo demuestra viabilidad; las personas deberán demostrar utilidad"
+      body="MedusaWatch confirma que la idea puede construirse y publicarse. Las pruebas pendientes deberán mostrar si ayuda a decidir y qué necesita cambiar para resultar verdaderamente útil."
+    >
+      <Users slot="icon" />
+    </CaseCallout>
+  </LearningsGrid>
+</CaseSection>
