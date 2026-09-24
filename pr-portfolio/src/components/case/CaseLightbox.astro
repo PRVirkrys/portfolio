@@ -120,19 +120,20 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 			current = index;
 			lastFocused = document.activeElement as HTMLElement | null;
 			render();
+			// Pinned to the current scroll position rather than position:fixed —
+			// see the note on .cs-lightbox.
+			modal.style.top = `${window.scrollY}px`;
 			modal.hidden = false;
-			document.body.style.overflow = 'hidden';
 			document.addEventListener('keydown', onKeydown);
 			requestAnimationFrame(() => {
-				modal.querySelector<HTMLElement>('.cs-lightbox__close')?.focus();
+				modal.querySelector<HTMLElement>('.cs-lightbox__close')?.focus({ preventScroll: true });
 			});
 		}
 
 		function close() {
 			modal.hidden = true;
-			document.body.style.overflow = '';
 			document.removeEventListener('keydown', onKeydown);
-			lastFocused?.focus();
+			lastFocused?.focus({ preventScroll: true });
 		}
 
 		function step(delta: number) {
@@ -161,6 +162,12 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 			}
 		}
 
+		// Scroll lock lives on the lightbox itself (see `touch-action` in the
+		// styles below) instead of toggling `body { overflow: hidden }` — the
+		// lightbox is no longer position:fixed, so the page must not scroll
+		// out from under it.
+		modal.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+
 		closeEls.forEach((el) => el.addEventListener('click', close));
 		prevBtn.addEventListener('click', () => step(-1));
 		nextBtn.addEventListener('click', () => step(1));
@@ -170,18 +177,28 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 </script>
 
 <style>
+	/* position:absolute (top set to scrollY on open), not fixed, because of
+	   iOS 26 Safari: it tints the status bar by copying the background of a
+	   position:fixed element touching the top edge (normally .header). A
+	   fixed lightbox took that role while open and Safari never gave it back
+	   after close, leaving the status bar see-through with page text behind
+	   it for the rest of the visit. Safari ignores non-fixed elements, so the
+	   header stays the tint source. Same approach React Spectrum took
+	   (adobe/react-spectrum#8888). Rendered as a direct child of <body>
+	   (unpositioned), so `top` is relative to the document. */
 	.cs-lightbox {
-		position: fixed;
-		inset: 0;
+		position: absolute;
+		left: 0;
+		width: 100%;
+		/* lvh covers the area behind Safari's toolbars too; the dialog below
+		   uses dvh so its controls stay within the visible part. */
+		height: 100lvh;
 		z-index: 200;
 		display: flex;
-	}
-	.cs-lightbox[hidden] {
-		display: none;
-	}
-	.cs-lightbox__backdrop {
-		position: absolute;
-		inset: 0;
+		/* Blocks touch panning from reaching the page behind — part of the
+		   scroll lock, see the `wheel` listener in the script above. */
+		touch-action: none;
+		overscroll-behavior: contain;
 		/* --color-neutral-950 (the fixed dark navy swatch, not --color-bg): a
 		   lightbox scrim needs to stay dark regardless of theme to dim the
 		   page behind the enlarged image. Mixing off --color-bg used to do
@@ -191,13 +208,21 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 		   nearly the same colour as the page. */
 		background: color-mix(in srgb, var(--color-neutral-950) 92%, black);
 	}
+	.cs-lightbox[hidden] {
+		display: none;
+	}
+	/* Click target only — the scrim itself is painted on .cs-lightbox. */
+	.cs-lightbox__backdrop {
+		position: absolute;
+		inset: 0;
+	}
 	.cs-lightbox__dialog {
 		position: relative;
 		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		height: 100%;
+		height: 100dvh;
 		padding: var(--space-6);
 	}
 	.cs-lightbox__topbar {

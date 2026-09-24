@@ -40,6 +40,10 @@
 }
 html {
 	height: 100%;
+	/* iOS 26 Safari falls back to the root background to tint the status
+	   bar when no fixed element qualifies — without it the bar goes
+	   translucent and page text shows through behind it. */
+	background: var(--color-bg);
 }
 body {
 	font-family: var(--typography-body-l-font-family);
