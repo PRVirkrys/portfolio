@@ -4,6 +4,7 @@ import { z } from 'astro/zod';
 import { workCompanyIds } from './data/work-companies';
 
 const tagCategory = z.enum(['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems', 'Neutral']);
+const focusCategory = tagCategory.exclude(['Neutral']);
 
 const blog = defineCollection({
 	// Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -23,6 +24,9 @@ const blog = defineCollection({
 			customer: z.string().optional(),
 			cardSummary: z.string().optional(),
 			confidentialityNote: z.boolean().optional(),
+			// Work filters. Optional: defaults to the tag categories, so only set it
+			// when the case covers a discipline its (max 3–4) visible tags don't show.
+			focus: z.array(focusCategory).optional(),
 			tags: z.array(z.object({
 				label: z.string(),
 				category: tagCategory,

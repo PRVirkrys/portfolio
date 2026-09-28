@@ -5,6 +5,7 @@ import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
 import { getWorkCompany } from '../../data/work-companies';
 import { withBase } from '../../lib/url';
+import { caseFocus } from '../../lib/work-filters';
 
 interface Props { entry: CollectionEntry<'blog'>; eager?: boolean }
 const { entry, eager = false } = Astro.props;
@@ -17,7 +18,7 @@ const meta = [
 ].filter(row => row.value);
 ---
 
-<article class="case-card" data-case-card data-company={data.company ?? ''} data-focus={JSON.stringify(data.tags?.map(tag => tag.category) ?? [])}>
+<article class="case-card" data-case-card data-company={data.company ?? ''} data-focus={JSON.stringify(caseFocus(data))}>
   <div class="case-card__content">
     {data.heroImage && <div class="case-card__cover"><Image src={data.heroImage} alt="" widths={[480, 720, 1080]} sizes="(max-width: 839px) 100vw, 50vw" loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
     <div class="case-card__body">

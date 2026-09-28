@@ -6,7 +6,7 @@ if (root) {
   const cards = [...root.querySelectorAll<HTMLElement>('[data-case-card]')];
   const entries = cards.map(card => ({ card, data: {
     type: 'case-study', company: card.dataset.company,
-    tags: (JSON.parse(card.dataset.focus ?? '[]') as string[]).map(category => ({ category })),
+    focus: JSON.parse(card.dataset.focus ?? '[]') as string[],
   } }));
   const controls = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
   const count = root.querySelector<HTMLElement>('[data-work-count]');
