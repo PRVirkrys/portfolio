@@ -29,6 +29,8 @@ export type Work = {
   clients?: Client[];
   ctaLabel: string;
   ctaHref?: string;
+  /** Bubble links straight here instead of opening a clients panel. */
+  href?: string;
 };
 
 export const works: Work[] = [
@@ -116,14 +118,7 @@ export const works: Work[] = [
     ctaHref: withBase(companyWorkPath("pelt8")),
     name: "Pelt8",
     logo: iconUrl("work-pelt8.svg"),
-    clients: [
-      { name: "ESG B2B SaaS", icon: "MonitorCloud", surface: "teal" },
-      { name: "Product UX/UI", icon: "PanelsTopLeft", surface: "deep" },
-      { name: "Complex data flows", icon: "Workflow", surface: "teal" },
-      { name: "Design System", icon: "Component", surface: "deep" },
-      { name: "Engineering collaboration", icon: "CodeXml", surface: "teal" },
-      { name: "Brand & Website", icon: "Monitor", surface: "deep" },
-    ],
+    href: withBase("/work/pelt8-caso-estudio/"),
     ctaLabel: "See case study",
   },
   {
