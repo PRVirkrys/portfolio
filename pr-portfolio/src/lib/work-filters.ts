@@ -2,12 +2,23 @@ import { workCompanyIds } from '../data/work-companies.ts';
 
 export const focusCategories = ['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems'] as const;
 export type WorkFilters = { company: string; focus: string };
-type FilterableEntry = { data: { type: string; company?: string; tags?: { category: string }[] } };
+type FocusData = { focus?: string[]; tags?: { category: string }[] };
+type FilterableEntry = { data: { type: string; company?: string } & FocusData };
+
+/** Disciplines a case is filterable by: explicit `focus`, else its tag categories. */
+export function caseFocus(data: FocusData): string[] {
+  return data.focus ?? [...new Set(data.tags?.map(tag => tag.category).filter(category => focusCategories.some(focus => focus === category)))];
+}
 
 export function filterCaseStudies<T extends FilterableEntry>(entries: T[], filters: WorkFilters): T[] {
   return entries.filter(({ data }) => data.type === 'case-study'
     && (!filters.company || data.company === filters.company)
-    && (!filters.focus || data.tags?.some(tag => tag.category === filters.focus)));
+    && (!filters.focus || caseFocus(data).includes(filters.focus)));
+}
+
+/** Focuses that have at least one case study within the given company ('' = all). */
+export function availableFocuses(entries: FilterableEntry[], company: string): Set<string> {
+  return new Set(filterCaseStudies(entries, { company, focus: '' }).flatMap(({ data }) => caseFocus(data)));
 }
 
 export function readWorkFilters(search: string): WorkFilters {

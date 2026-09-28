@@ -15,6 +15,28 @@ test('company and focus filters intersect and ignore ordinary posts', async () =
   assert.deepEqual(filterCaseStudies(entries, { company: 'lpa', focus: 'Research' }), []);
 });
 
+test('explicit focus overrides tag categories for filtering', async () => {
+  const { filterCaseStudies, caseFocus } = await import('../src/lib/work-filters.ts');
+  const entries = [
+    { id: 'lpa', data: { type: 'case-study', focus: ['UI Design'], tags: [{ category: 'Engineering' }] } },
+    { id: 'base', data: { type: 'case-study', tags: [{ category: 'UX Design' }, { category: 'Neutral' }, { category: 'UX Design' }] } },
+  ];
+  assert.deepEqual(filterCaseStudies(entries, { company: '', focus: 'UI Design' }).map(x => x.id), ['lpa']);
+  assert.deepEqual(filterCaseStudies(entries, { company: '', focus: 'Engineering' }), []);
+  assert.deepEqual(caseFocus(entries[1].data), ['UX Design']);
+});
+
+test('available focuses are scoped to the selected company', async () => {
+  const { availableFocuses } = await import('../src/lib/work-filters.ts');
+  const entries = [
+    { data: { type: 'case-study', company: 'lpa', focus: ['UI Design', 'Engineering'] } },
+    { data: { type: 'case-study', company: 'failfast', tags: [{ category: 'Research' }, { category: 'Neutral' }] } },
+    { data: { type: 'post', company: 'lpa', tags: [{ category: 'Strategy' }] } },
+  ];
+  assert.deepEqual([...availableFocuses(entries, 'lpa')].sort(), ['Engineering', 'UI Design']);
+  assert.deepEqual([...availableFocuses(entries, '')].sort(), ['Engineering', 'Research', 'UI Design']);
+});
+
 test('queries preserve valid unavailable combinations and normalize invalid filters', async () => {
   const { readWorkFilters, updateWorkQuery } = await import('../src/lib/work-filters.ts');
   assert.deepEqual(readWorkFilters('?company=failfast&focus=UX+Design'), { company: 'failfast', focus: 'UX Design' });

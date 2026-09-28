@@ -6,12 +6,12 @@ import Footer from '../../components/Footer.astro';
 import Button from '../../components/ui/Button.astro';
 import CaseStudyCard from '../../components/case/CaseStudyCard.astro';
 import { workCompanies } from '../../data/work-companies';
-import { focusCategories } from '../../lib/work-filters';
+import { caseFocus, focusCategories } from '../../lib/work-filters';
 import { withBase } from '../../lib/url';
 
 const cases = (await getCollection('blog', ({ data }) => data.type === 'case-study')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const companies = workCompanies.filter(company => cases.some(entry => entry.data.company === company.id));
-const focuses = focusCategories.filter(focus => cases.some(entry => entry.data.tags?.some(tag => tag.category === focus)));
+const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(entry.data).includes(focus)));
 ---
 
 <!doctype html>
