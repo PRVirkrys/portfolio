@@ -16,6 +16,11 @@ export function filterCaseStudies<T extends FilterableEntry>(entries: T[], filte
     && (!filters.focus || caseFocus(data).includes(filters.focus)));
 }
 
+/** Focuses that have at least one case study within the given company ('' = all). */
+export function availableFocuses(entries: FilterableEntry[], company: string): Set<string> {
+  return new Set(filterCaseStudies(entries, { company, focus: '' }).flatMap(({ data }) => caseFocus(data)));
+}
+
 export function readWorkFilters(search: string): WorkFilters {
   const params = new URLSearchParams(search);
   const company = params.get('company') ?? '';

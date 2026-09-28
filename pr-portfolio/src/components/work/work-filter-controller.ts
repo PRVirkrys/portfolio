@@ -1,4 +1,4 @@
-import { filterCaseStudies, readWorkFilters, updateWorkQuery, type WorkFilters } from '../../lib/work-filters';
+import { availableFocuses, filterCaseStudies, readWorkFilters, updateWorkQuery, type WorkFilters } from '../../lib/work-filters';
 import { getWorkCompany } from '../../data/work-companies';
 
 const root = document.querySelector<HTMLElement>('[data-work-page]');
@@ -19,9 +19,15 @@ if (root) {
     const matches = new Set(filterCaseStudies(entries, filters).map(entry => entry.card));
     const visible = matches.size;
     for (const card of cards) card.hidden = !matches.has(card);
+    // Only offer focuses that exist where the visitor is looking. A focus that
+    // arrives unavailable via URL stays visible (pressed) so the empty state
+    // still explains the selection.
+    const focuses = availableFocuses(entries, filters.company);
     for (const button of controls) {
       const key = button.dataset.filter as keyof WorkFilters;
-      button.setAttribute('aria-pressed', String(filters[key] === button.dataset.value));
+      const value = button.dataset.value ?? '';
+      button.setAttribute('aria-pressed', String(filters[key] === value));
+      if (key === 'focus' && value) button.hidden = !focuses.has(value) && filters.focus !== value;
     }
     if (count) count.textContent = `${visible} ${visible === 1 ? 'case study' : 'case studies'}${filters.company ? ` · ${getWorkCompany(filters.company)?.name}` : ''}${filters.focus ? ` · ${filters.focus}` : ''}`;
     if (empty) empty.hidden = visible !== 0;
@@ -37,6 +43,9 @@ if (root) {
     }
   };
   const select = (next: WorkFilters) => {
+    // Switching company drops a focus that has no cases there, instead of
+    // leading to an empty grid.
+    if (next.company !== filters.company && next.focus && !availableFocuses(entries, next.company).has(next.focus)) next = { ...next, focus: '' };
     filters = next;
     const query = updateWorkQuery(location.search, filters);
     if (location.search !== query) history.pushState(null, '', `${location.pathname}${query}${location.hash}`);

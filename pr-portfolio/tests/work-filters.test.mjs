@@ -26,6 +26,17 @@ test('explicit focus overrides tag categories for filtering', async () => {
   assert.deepEqual(caseFocus(entries[1].data), ['UX Design']);
 });
 
+test('available focuses are scoped to the selected company', async () => {
+  const { availableFocuses } = await import('../src/lib/work-filters.ts');
+  const entries = [
+    { data: { type: 'case-study', company: 'lpa', focus: ['UI Design', 'Engineering'] } },
+    { data: { type: 'case-study', company: 'failfast', tags: [{ category: 'Research' }, { category: 'Neutral' }] } },
+    { data: { type: 'post', company: 'lpa', tags: [{ category: 'Strategy' }] } },
+  ];
+  assert.deepEqual([...availableFocuses(entries, 'lpa')].sort(), ['Engineering', 'UI Design']);
+  assert.deepEqual([...availableFocuses(entries, '')].sort(), ['Engineering', 'Research', 'UI Design']);
+});
+
 test('queries preserve valid unavailable combinations and normalize invalid filters', async () => {
   const { readWorkFilters, updateWorkQuery } = await import('../src/lib/work-filters.ts');
   assert.deepEqual(readWorkFilters('?company=failfast&focus=UX+Design'), { company: 'failfast', focus: 'UX Design' });
