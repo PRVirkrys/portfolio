@@ -10,9 +10,9 @@ import WorkBubble from './ui/WorkBubble.astro';
 	<div class="work-navigation__overlay" aria-hidden="true"></div>
 	<nav class="work-navigation__control" aria-label="Experiencia profesional">
 		<div class="work-navigation__bubbles">
-			{works.map((work) => <WorkBubble id={work.id} name={work.name} logo={work.logo} />)}
+			{works.map((work) => <WorkBubble id={work.id} name={work.name} logo={work.logo} href={work.href} />)}
 		</div>
-		{works.map((work) => (
+		{works.filter((work) => !work.href).map((work) => (
 			<section class="work-panel" id={`work-panel-${work.id}`} aria-label={`Experiencia ${work.name}`} hidden>
 				{work.clients && <div class="work-panel__clients">{work.clients.map((client) => (
 					<div class="work-panel__client">
@@ -45,7 +45,6 @@ import WorkBubble from './ui/WorkBubble.astro';
 	.work-panel[hidden] { display: none; }
 	#work-panel-lpa { left: calc(0 * var(--wb-step) - var(--space-2)); }
 	#work-panel-failfast { left: calc(1 * var(--wb-step) - var(--space-2)); }
-	#work-panel-pelt8 { left: calc(2 * var(--wb-step) - var(--space-2)); }
 	#work-panel-pr { left: calc(3 * var(--wb-step) - var(--space-2)); }
 	.work-panel__clients { display: flex; flex-direction: column; align-items: center; gap: var(--space-6); overflow: visible; }
 	.work-panel__clients:hover :global(.client-bubble) { opacity: calc(var(--opacity-disabled) / 100); }
@@ -67,12 +66,13 @@ import WorkBubble from './ui/WorkBubble.astro';
 <script>
 	const navigation = document.querySelector<HTMLElement>('.work-navigation');
 	if (navigation) {
-		const bubbles = Array.from(navigation.querySelectorAll<HTMLButtonElement>('.work-bubble'));
+		// Link bubbles (direct to a case study) share the hover treatment but never open a panel.
+		const bubbles = Array.from(navigation.querySelectorAll<HTMLElement>('.work-bubble'));
 		const panels = Array.from(navigation.querySelectorAll<HTMLElement>('.work-panel'));
 		const overlay = navigation.querySelector<HTMLElement>('.work-navigation__overlay');
 		if (overlay) document.body.appendChild(overlay);
 		let activeId: string | undefined;
-		const getWorkId = (bubble: HTMLButtonElement) => bubble.getAttribute('aria-controls')?.replace('work-panel-', '');
+		const getWorkId = (bubble: HTMLElement) => bubble.dataset.workId;
 		const setActive = (id?: string) => {
 			activeId = id;
 			navigation.classList.toggle('is-engaged', Boolean(id));
@@ -80,7 +80,7 @@ import WorkBubble from './ui/WorkBubble.astro';
 			bubbles.forEach((bubble) => {
 				const active = getWorkId(bubble) === id;
 				bubble.classList.toggle('is-active', active);
-				bubble.setAttribute('aria-expanded', String(active));
+				if (bubble instanceof HTMLButtonElement) bubble.setAttribute('aria-expanded', String(active));
 			});
 			panels.forEach((panel) => { panel.hidden = panel.id !== `work-panel-${id}`; });
 		};
@@ -90,7 +90,7 @@ import WorkBubble from './ui/WorkBubble.astro';
 			navigation.classList.toggle('is-engaged', Boolean(id || activeId));
 		};
 		bubbles.forEach((bubble) => {
-			bubble.addEventListener('click', () => { const id = getWorkId(bubble); setActive(activeId === id ? undefined : id); });
+			if (bubble instanceof HTMLButtonElement) bubble.addEventListener('click', () => { const id = getWorkId(bubble); setActive(activeId === id ? undefined : id); });
 			bubble.addEventListener('pointerenter', () => setHovered(getWorkId(bubble)));
 			bubble.addEventListener('focus', () => setHovered(getWorkId(bubble)));
 		});

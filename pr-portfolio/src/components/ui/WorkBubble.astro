@@ -5,14 +5,23 @@ export interface Props {
 	id: 'lpa' | 'failfast' | 'pelt8' | 'pr';
 	name: string;
 	logo?: string;
+	/** Direct destination: renders a link instead of the panel toggle. */
+	href?: string;
 }
 
-const { id, name, logo } = Astro.props;
+const { id, name, logo, href } = Astro.props;
+const classes = ['work-bubble', `work-bubble--${id}`];
 ---
 
-<button class:list={['work-bubble', `work-bubble--${id}`]} type="button" aria-controls={`work-panel-${id}`} aria-expanded="false" aria-label={`Explorar experiencia ${name}`}>
-	{logo ? <img src={logo} alt="" /> : <Logo class="work-bubble__brand" />}
-</button>
+{href ? (
+	<a class:list={classes} href={href} data-work-id={id} aria-label={`Ver case study de ${name}`}>
+		{logo ? <img src={logo} alt="" /> : <Logo class="work-bubble__brand" />}
+	</a>
+) : (
+	<button class:list={classes} type="button" data-work-id={id} aria-controls={`work-panel-${id}`} aria-expanded="false" aria-label={`Explorar experiencia ${name}`}>
+		{logo ? <img src={logo} alt="" /> : <Logo class="work-bubble__brand" />}
+	</button>
+)}
 
 <style>
 	.work-bubble { display: grid; width: var(--component-work-bubble-size); height: var(--component-work-bubble-size); place-items: center; flex: 0 0 var(--component-work-bubble-size); overflow: hidden; border: calc(2px * var(--ui-scale)) solid var(--color-neutral-950); border-radius: var(--radius-full); cursor: pointer; transition: transform var(--duration-medium) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
