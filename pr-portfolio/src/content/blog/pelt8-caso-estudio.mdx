@@ -1,0 +1,426 @@
+---
+title: "Pelt8 · Diseñar más allá del producto"
+description: "Diseñar no solo el producto, sino también los sistemas y soluciones que ayudaron a Pelt8 a crecer. Ayudé a dar forma a Pelt8 cuando todavía era una idea y regresé como Lead Designer para aportar coherencia a un SaaS en producción, crear sistemas compartidos y resolver necesidades que atravesaban producto, desarrollo, marca y operaciones."
+pubDate: "Sep 28 2026"
+heroImage: "../../assets/case-studies/pelt8/hero.png"
+type: case-study
+company: pelt8
+customer: "SaaS ESG"
+cardSummary: "De una idea inicial a un SaaS ESG en producción: producto, Design System, marca y soluciones no-code como una sola función de diseño."
+tags:
+  - label: PRODUCT DESIGN
+    category: UX Design
+  - label: DESIGN SYSTEMS
+    category: Design Systems
+  - label: BRAND & COMMUNICATION
+    category: UI Design
+  - label: NO-CODE & AUTOMATION
+    category: Engineering
+breadcrumbs:
+  - label: work
+    href: /
+  - label: pelt8
+client: "Pelt8"
+industry: "B2B SaaS para reporting ESG"
+role: "Colaboradora de diseño inicial → Lead Designer"
+location: "Equipo remoto · España, Suiza, Reino Unido e India"
+date: "Prototipado inicial en 2021 · Incorporación plena en 2023 · Finalización en 2025"
+collaboration: "Founders · Product Owner · Engineering · Customer Success · Marketing · Sales"
+platform: "Web · B2B SaaS utilizado por más de 25 empresas"
+nextCase:
+  title: "MedusaWatch · De una necesidad real a un prototipo funcional en dos días"
+  slug: "medusawatch-caso-estudio"
+---
+
+import { Image } from "astro:assets";
+import CaseSection from "../../components/case/CaseSection.astro";
+import CaseCallout from "../../components/case/CaseCallout.astro";
+import CaseImageRow from "../../components/case/CaseImageRow.astro";
+import LearningsGrid from "../../components/case/LearningsGrid.astro";
+import CaseTestimonials from "../../components/case/CaseTestimonials.astro";
+import CaseTestimonial from "../../components/case/CaseTestimonial.astro";
+import { Shuffle, Network, Route, BookOpen, Wrench, Layers } from "@lucide/astro";
+
+import heroImg from "../../assets/case-studies/pelt8/hero.png";
+import moscowFlowLowfiImg from "../../assets/case-studies/pelt8/moscow-flow-lowfi.png";
+import productAuditImg from "../../assets/case-studies/pelt8/product-audit-priorities.png";
+import sprintWorkflowImg from "../../assets/case-studies/pelt8/sprint-collaboration-workflow-labelled.png";
+import transversalDesignImg from "../../assets/case-studies/pelt8/transversal-design-function-v2.png";
+import metricsProblemImg from "../../assets/case-studies/pelt8/metrics-formula-builder-problem.png";
+import metricsTransitionImg from "../../assets/case-studies/pelt8/metrics-transition-strategy.png";
+import dsEvolutionImg from "../../assets/case-studies/pelt8/design-system-evolution.png";
+import dsUiKitImg from "../../assets/case-studies/pelt8/design-system-ui-kit.png";
+import documentationImg from "../../assets/case-studies/pelt8/documentation-reducing-dependency.png";
+import noCodeInitiativeImg from "../../assets/case-studies/pelt8/no-code-business-initiative.png";
+import noCodeJourneyImg from "../../assets/case-studies/pelt8/end-to-end-no-code-journey.png";
+import websiteIdentityImg from "../../assets/case-studies/pelt8/pelt8-website-identity-mockup.png";
+import brevoImg from "../../assets/case-studies/pelt8/brevo-communication-continuity.png";
+import brandMomentsImg from "../../assets/case-studies/pelt8/public-brand-moments-template-system.png";
+
+<CaseSection
+  variant="default"
+  layout="side"
+  tag="OVERVIEW"
+  tagCategory="Neutral"
+  heading="Overview"
+>
+  <Image slot="image" src={heroImg} alt="Pelt8: producto, Design System y marca de una startup suiza de reporting ESG" />
+  Pelt8 era una startup suiza de reporting ESG. Mi relación con el proyecto comenzó en 2021, cuando su fundador, Julian Osborne, me contactó para transformar una visión inicial en un prototipo que pudiera enseñar y validar con posibles usuarios.
+
+  Julian había sido mi Product Owner en HedgePilot durante mi etapa en [LPA](../lpa-caso-estudio/). Ya conocía mi trabajo y recurrió a mí cuando necesitó una diseñadora que pudiera ayudarle a estructurar el producto desde sus primeras hipótesis.
+
+  Después de aquella colaboración inicial, Julian continuó desarrollando y validando Pelt8. Yo apoyé ocasionalmente el proyecto hasta incorporarme plenamente en 2023 como Lead Designer y única diseñadora del equipo. Para entonces, Pelt8 era una aplicación en React utilizada por clientes reales y mi responsabilidad había cambiado: debía aportar coherencia al producto, establecer una base común para Design y Development y mantener la calidad de la marca en todos sus puntos de contacto.
+
+  **Responsabilidad:** Product UX/UI · Design System · marca · web · email · comunicación · no-code y automatización.
+
+  <CaseCallout
+    title="La evolución"
+    body="Idea inicial → producto real → sistema compartido → diseño transversal"
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="EARLY PROTOTYPE" tagCategory="Research" heading="1. Convertir una visión amplia en algo que pudiera discutirse">
+
+### Una invitación basada en confianza previa
+
+A comienzos de 2021, Julian estaba trabajando solo en una idea llamada Pelt8. Después de nuestra primera conversación me compartió un pitch preliminar, un documento conceptual sobre la organización que quería construir y un mapa de páginas y funcionalidades en Figma.
+
+El objetivo inmediato era crear un prototipo que pudiera enseñar a posibles usuarios para obtener feedback. También necesitaba una primera página de acceso al producto. Si las señales eran positivas, la intención era avanzar hacia una versión funcional y utilizar el interés de posibles clientes para buscar financiación.
+
+El material explicaba la ambición de Pelt8, pero todavía no existía una experiencia de producto capaz de mostrar cómo funcionaría.
+
+### Comprender el dominio antes de diseñar la interfaz
+
+Yo no conocía el mundo ESG. Antes de dibujar pantallas necesitaba entender qué problema quería resolver Pelt8, cómo funcionaba el proceso completo y qué información requerían las personas implicadas.
+
+La primera propuesta se centraba en ayudar a organizaciones de private capital markets a identificar los KPIs y estándares relevantes, solicitar información a distintas organizaciones, monitorizar el progreso y crear reportes para inversores y otros stakeholders.
+
+Además, el producto debía atender dos perspectivas conectadas pero diferentes:
+
+- la organización que definía indicadores, solicitaba información y consolidaba los resultados;
+- la entidad que recibía la solicitud y aportaba los datos.
+
+Investigué el dominio, revisé referencias y productos comparables y utilicé low-fi para hacer visibles las relaciones que todavía no estaban resueltas. El propósito de esa fase no era dominar toda la regulación ESG, sino adquirir la comprensión necesaria para formular mejores preguntas y convertir la lógica del negocio en una experiencia coherente.
+
+### Del mapa de funcionalidades a un recorrido de producto
+
+El Figma inicial de Julian organizaba páginas y funcionalidades mediante MoSCoW: must have, enabling functions, could have y wishlist. Era una base útil para priorizar, pero no explicaba cómo se conectaban las acciones, qué decisiones debía tomar cada usuario ni cómo se completaba un proceso de principio a fin.
+
+Empecé construyendo maps, user journeys y flows. Un recorrido general conectaba el acceso, los perfiles de organización, las fuentes de terceros, Indicators, Measures, Metrics y Reports. Otro profundizaba en la creación de una Metric: su periodicidad, responsable, pertenencia a un reporte, datos de origen, operadores y fórmula.
+
+A partir de esos recorridos conceptualicé pantallas low-fi. Los wireframes no eran una versión visualmente incompleta del producto final; eran una herramienta para convertir preguntas abstractas en decisiones observables. Julian podía seguir la lógica, detectar vacíos y discutir cómo debería comportarse el producto antes de invertir en su construcción.
+
+<CaseImageRow>
+  <Image src={moscowFlowLowfiImg} alt="Del mapa de funcionalidades MoSCoW a user journeys, flows y wireframes low-fi del primer prototipo de Pelt8" />
+</CaseImageRow>
+
+  <CaseCallout
+    title="De dónde partimos y qué cambió"
+    body="Una visión, un documento y un inventario de funcionalidades se convirtieron en journeys, flows y un primer prototipo que podía explicarse, discutirse y validarse."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="PRODUCT AUDIT" tagCategory="UX Design" heading="2. Regresar para aportar coherencia a un producto real">
+
+### De prototipar una posibilidad a trabajar dentro de un SaaS en producción
+
+Cuando me incorporé plenamente en 2023, Pelt8 ya no era un conjunto de hipótesis. Era una aplicación construida en React, con clientes y un equipo de Development que llevaba tiempo resolviendo las necesidades del negocio.
+
+Ese crecimiento también había dejado inconsistencias visuales, patrones que se comportaban de manera diferente y decisiones de experiencia tomadas sin una función de diseño dedicada. Mi primera responsabilidad fue auditar el producto para reconocer problemas recurrentes y separar tres niveles de trabajo:
+
+1. correcciones que podían mejorar la experiencia de inmediato;
+2. problemas estructurales que requerían patrones compartidos;
+3. oportunidades que debían formar parte de una evolución futura.
+
+La auditoría no pretendía producir una lista aislada de errores. Me permitió construir una visión del producto, comprender las decisiones que ya existían y establecer prioridades junto con Product y Engineering.
+
+<CaseImageRow>
+  <Image src={productAuditImg} alt="Auditoría del producto de Pelt8 organizada en correcciones inmediatas, problemas estructurales y oportunidades futuras" />
+</CaseImageRow>
+
+### Diseñar dentro del ritmo del equipo
+
+Trabajábamos por sprints. Colaboraba con el Product Owner y el Product Manager para comprender necesidades, definir funcionalidades, discutir mejoras y acordar el alcance. Diseñaba nuevas pantallas y revisaba experiencias existentes, pero mi responsabilidad no terminaba al entregar un archivo de Figma.
+
+Durante la implementación permanecía disponible para resolver dudas, revisar alternativas y hacer QA. El flujo real era continuo:
+
+**Necesidad → definición con Product → exploración → diseño → conversación técnica → trade-off → implementación → QA → documentación**
+
+Mis conocimientos de frontend me ayudaban a comprender qué cambios podían incorporarse con menor esfuerzo y cuáles tenían implicaciones mayores. Esto facilitaba conversar con Development desde las restricciones reales y proteger los elementos esenciales de la experiencia sin plantear soluciones desconectadas de la capacidad del equipo.
+
+<CaseImageRow>
+  <Image src={sprintWorkflowImg} alt="Flujo de colaboración por sprints: de la necesidad y la definición con Product hasta la implementación, el QA y la documentación" />
+</CaseImageRow>
+
+### Una función de diseño transversal
+
+Mi rol formal incluía supervisar el diseño desde la concepción hasta la entrega, asegurar la facilidad de uso de la aplicación, mantener la consistencia de marca, contribuir a métodos de research, liderar la experiencia de la web y crear materiales de marketing.
+
+En la práctica, esto significaba conectar producto, desarrollo, comunicación y operaciones. No se trataba de ocupar distintos roles de manera indiscriminada, sino de reconocer dónde una decisión de diseño podía reducir fricción, crear coherencia o ayudar al equipo a avanzar.
+
+<CaseImageRow>
+  <Image src={transversalDesignImg} alt="Función de diseño transversal que conecta producto, desarrollo, comunicación y operaciones en Pelt8" />
+</CaseImageRow>
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="COMPLEXITY" tagCategory="UX Design" heading="3. Hacer manejable una complejidad necesaria">
+
+### Metrics: un problema técnico que también necesitaba dirección de diseño
+
+Pelt8 debía representar relaciones entre Measures, Metrics, Frameworks y Reports. Una Measure era un dato utilizado por el sistema; una Metric podía combinar distintas Measures mediante una fórmula. La complejidad formaba parte del dominio y de la flexibilidad que necesitaban los usuarios, por lo que no podía eliminarse sin más.
+
+Antes de mi incorporación, el equipo de Development había resuelto la creación de fórmulas mediante una implementación basada en nodos desplegables. Fue una respuesta pragmática para dar salida con rapidez a un problema técnico complejo cuando todavía no existía una dirección de diseño dedicada.
+
+La solución hacía posible construir las fórmulas, pero presentaba dificultades de uso. Costaba distinguir la jerarquía, comprender qué elementos pertenecían a cada nivel, seguir las dependencias y leer con claridad el resultado que se estaba construyendo.
+
+El reto no era cuestionar la decisión anterior, sino comprender por qué se había tomado y diseñar una evolución compatible con la realidad del producto.
+
+<CaseImageRow>
+  <Image src={metricsProblemImg} alt="Constructor de fórmulas de Metrics basado en nodos desplegables y sus problemas de jerarquía, pertenencia y legibilidad" />
+</CaseImageRow>
+
+### Diseñar una transición, no únicamente un resultado ideal
+
+Engineering tenía una carga de trabajo elevada y reemplazar por completo la implementación no era viable de inmediato. Por eso organicé la propuesta en tres niveles:
+
+1. **Quick wins.** Ajustes de menor implementación para mejorar el espaciado, la pertenencia, la jerarquía y las pistas visuales.
+2. **Mejoras estructurales.** Cambios en la organización de los elementos para hacer más legibles las relaciones y dependencias.
+3. **Target vision.** Una dirección futura de interacción que mostraba cómo podría evolucionar el sistema con mayor disponibilidad técnica.
+
+Este enfoque convertía el diseño en una conversación sobre coste, impacto y secuencia. En lugar de presentar una solución de todo o nada, permitía mejorar la experiencia desde el corto plazo mientras manteníamos una visión compartida para el futuro.
+
+> **No bastaba con diseñar una solución ideal. También era necesario diseñar un camino viable para llegar hasta ella.**
+
+Metrics resume una parte importante de mi trabajo en Pelt8: aprender un concepto especializado, distinguir la complejidad necesaria de la fricción evitable y traducir una visión de UX en etapas que el equipo pudiera implementar.
+
+<CaseImageRow>
+  <Image src={metricsTransitionImg} alt="Estrategia de transición para Metrics en tres niveles: quick wins, mejoras estructurales y target vision" />
+</CaseImageRow>
+
+  <CaseCallout
+    title="Cambio de enfoque"
+    body="De una solución técnicamente funcional pero difícil de interpretar a una estrategia progresiva para mejorar comprensión, jerarquía e interacción."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="DESIGN SYSTEM" tagCategory="Design Systems" heading="4. Convertir la coherencia en un sistema compartido">
+
+### De corregir pantallas a identificar patrones
+
+Pelt8 no tenía un Design System estructurado cuando me incorporé. A medida que auditaba y rediseñaba el producto aparecía el mismo patrón: muchas inconsistencias no podían resolverse pantalla por pantalla porque procedían de la ausencia de foundations, componentes y criterios compartidos.
+
+Empecé construyendo las bases que necesitábamos para los problemas inmediatos. El sistema evolucionó con el producto:
+
+**Sin sistema → foundations propias → mayor alineación con Material → UI kit adaptado → componentes adicionales → documentación**
+
+La alineación con Material no consistió en adoptar una librería sin criterio. Nos proporcionaba una base reconocible y sostenible, mientras que el UI kit adaptado permitía conservar las necesidades y el lenguaje visual de Pelt8.
+
+El objetivo no era alcanzar una madurez teórica ni crear una biblioteca enorme. Era construir el nivel de consistencia que una startup pequeña pudiera mantener y utilizar en su trabajo diario.
+
+<CaseImageRow>
+  <Image src={dsEvolutionImg} alt="Evolución del Design System de Pelt8: de foundations propias a un UI kit adaptado sobre Material" />
+</CaseImageRow>
+
+<CaseImageRow>
+  <Image src={dsUiKitImg} alt="Componentes y foundations del UI kit de Pelt8" />
+</CaseImageRow>
+
+### Documentar para reducir dependencia
+
+El sistema no vivía únicamente en Figma. Empecé a documentar en Notion:
+
+- componentes y patrones;
+- principios de diseño;
+- criterios para decisiones recurrentes;
+- pautas de handoff;
+- buenas prácticas para la implementación.
+
+La documentación era parte de la solución. Permitía que Development consultara decisiones existentes, resolviera más situaciones con autonomía y redujera preguntas repetitivas. También evitaba que el conocimiento permaneciera únicamente en conversaciones o dependiera de mi disponibilidad.
+
+Una integración más madura entre diseño y código, mediante herramientas como Storybook, formaba parte de la visión futura. Sin embargo, el tiempo y las prioridades del producto no permitían construir y mantener esa infraestructura.
+
+Figma acompañado de documentación en Notion fue el primer paso viable: no eliminaba toda la distancia entre diseño y código, pero creaba un lenguaje común y una referencia que el equipo sí podía mantener.
+
+<CaseImageRow>
+  <Image src={documentationImg} alt="Documentación del Design System en Notion: componentes, principios, criterios, handoff y buenas prácticas de implementación" />
+</CaseImageRow>
+
+### Diseñar también la colaboración
+
+El Design System no funcionaba de manera aislada. Revisaba implementaciones, respondía dudas durante los sprints y ajustaba las propuestas cuando surgían restricciones. Cada problema resuelto podía convertirse en un patrón; cada patrón documentado evitaba comenzar desde cero la siguiente vez.
+
+  <CaseCallout
+    title="Cambio generado"
+    body="La consistencia dejó de depender de correcciones individuales y empezó a convertirse en una capacidad compartida entre Design y Development."
+    variant="subtle"
+  />
+</CaseSection>
+
+<CaseSection variant="subtle" layout="stacked" tag="NO-CODE" tagCategory="Engineering" heading="5. Resolver una necesidad fuera del roadmap">
+
+### Una iniciativa de negocio sin capacidad de Development
+
+En una colaboración vinculada al sector bancario, Pelt8 necesitaba lanzar una experiencia adicional en un plazo limitado. El equipo de Development estaba concentrado en el producto principal y no podía abrir otro proyecto.
+
+Esperar habría bloqueado la iniciativa. Construir una aplicación a medida habría consumido una capacidad que no existía. Antes de elegir una herramienta, investigué distintas alternativas no-code y valoré qué combinación podía ofrecer:
+
+- lógica condicional;
+- rapidez de construcción;
+- integración con los procesos existentes;
+- comunicaciones automatizadas;
+- una operación asumible para el equipo.
+
+Tally y Make ofrecían la combinación más viable para responder al alcance y al tiempo disponible. La decisión no partió de querer utilizar esas herramientas, sino de evaluar qué medio permitía resolver mejor el problema bajo las restricciones reales.
+
+<CaseImageRow>
+  <Image src={noCodeInitiativeImg} alt="Evaluación de alternativas no-code para una iniciativa de negocio sin capacidad de Development" />
+</CaseImageRow>
+
+### Construir el recorrido completo
+
+En Tally diseñé la experiencia basada en preguntas y ramificaciones. Las respuestas conducían a resultados u ofertas diferentes. Después utilicé Make para conectar el recorrido con las acciones posteriores:
+
+- generar comunicaciones según el resultado;
+- enviar emails automáticamente;
+- trasladar acciones de seguimiento al sistema de tareas;
+- permitir que el equipo operara la iniciativa sin depender de una nueva aplicación.
+
+La solución no intentaba reemplazar el producto principal ni convertirse en una plataforma paralela. Era una respuesta proporcionada: suficientemente sólida para cumplir el objetivo sin consumir el roadmap de Engineering.
+
+Este trabajo demuestra que resolver no siempre significa diseñar una pantalla para que otra persona la construya. También puede significar investigar opciones, seleccionar la arquitectura más viable y llevar la experiencia hasta un estado operativo.
+
+<CaseImageRow>
+  <Image src={noCodeJourneyImg} alt="Recorrido no-code de principio a fin: formulario con ramificaciones en Tally y automatizaciones en Make" />
+</CaseImageRow>
+
+  <CaseCallout
+    title="El patrón"
+    body="Comprender la necesidad → evaluar alternativas → elegir el medio adecuado → construir el recorrido → automatizar la operación."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection variant="default" layout="stacked" tag="BRAND & COMMUNICATION" tagCategory="UI Design" heading="6. Extender la experiencia más allá de la aplicación">
+
+### Una identidad coherente en todos los puntos de contacto
+
+Como única diseñadora, también era responsable de cómo Pelt8 aparecía fuera del SaaS. Realicé un restyling de la identidad y trabajé para trasladar el nuevo lenguaje visual a la web, las redes sociales, las presentaciones, los pitch decks, los materiales para clientes y fundraising, las piezas impresas y los eventos.
+
+La web existente estaba alojada en WordPress. Propuse reconstruirla en Framer porque ofrecía mayor control sobre el diseño, más autonomía para mantener el contenido y una continuidad más directa entre Figma y la implementación. Esto permitía iterar con mayor rapidez, mejorar la experiencia y reducir la dependencia técnica para ajustes cotidianos.
+
+<CaseImageRow>
+  <Image src={websiteIdentityImg} alt="Web de Pelt8 reconstruida en Framer con la nueva identidad visual" />
+</CaseImageRow>
+
+### Mejorar las comunicaciones desde la herramienta existente
+
+Brevo ya era la plataforma definida por la empresa para sus comunicaciones. Mi trabajo fue entrar en ese sistema y mejorar la experiencia desde dentro.
+
+Diseñé templates y assets, organicé la lógica de distintos mensajes y trabajé tanto en emails transaccionales enviados por la aplicación como en comunicaciones destinadas a informar a los clientes sobre nuevas releases. Para adaptar las plantillas a las necesidades visuales y funcionales de Pelt8, también trabajé directamente con HTML y CSS dentro de Brevo.
+
+Así, la comunicación posterior a una acción o a una actualización del producto mantenía continuidad con la interfaz y con la identidad de Pelt8. El diseño no terminaba en la pantalla principal: incluía los mensajes que acompañaban al usuario antes y después de utilizarla.
+
+<CaseImageRow>
+  <Image src={brevoImg} alt="Templates de email en Brevo: emails transaccionales y comunicaciones de releases alineados con la identidad de Pelt8" />
+</CaseImageRow>
+
+### Diseñar también los momentos públicos de la empresa
+
+Creé materiales para redes sociales, ventas, clientes y fundraising. También desarrollé la gráfica del Swiss Climate Reporting Forum y apoyé visualmente sus dos ediciones.
+
+Además de producir piezas concretas, diseñé templates reutilizables para presentaciones y documentos, disponibles tanto en Canva como en Figma. Preparé alternativas en ambas herramientas porque algunos miembros del equipo se sentían más cómodos trabajando en Canva y otros en Figma. Así, los founders contaban con lineamientos visuales claros y podían crear contenido con rapidez sin perder la consistencia de la marca ni detener necesidades urgentes de la startup a la espera de apoyo de diseño.
+
+La diversidad de formatos podía parecer una suma de tareas distintas, pero respondía al mismo objetivo: mantener una experiencia reconocible y profesional, mientras el equipo ganaba autonomía para moverse con velocidad.
+
+<CaseImageRow>
+  <Image src={brandMomentsImg} alt="Materiales públicos de Pelt8: gráfica del Swiss Climate Reporting Forum y templates de presentaciones en Canva y Figma" />
+</CaseImageRow>
+
+</CaseSection>
+
+<CaseSection variant="subtle" layout="text-only" tag="RESULT" tagCategory="Neutral" heading="Resultado">
+
+Mi trabajo en Pelt8 evolucionó junto con la empresa. Comenzó dando estructura visual y lógica a una idea que todavía necesitaba validarse. Continuó dentro de un producto real, donde diseñar significaba comprender restricciones, negociar prioridades y acompañar la implementación. Finalmente, se convirtió en una función transversal capaz de conectar producto, sistemas, marca y operaciones.
+
+El impacto no estuvo únicamente en las pantallas producidas:
+
+- **En el producto**, convertí complejidad en recorridos y estrategias de mejora que Development pudiera implementar.
+- **En el equipo**, construí referencias, componentes y documentación para reducir dependencia y tomar decisiones con mayor consistencia.
+- **En la empresa**, extendí la experiencia a la web, los emails, las presentaciones, los eventos y soluciones que no podían esperar al roadmap.
+
+<CaseTestimonials>
+  <CaseTestimonial
+    size="primary"
+    quote="Paula was one of our earliest employees and played a critical role in shaping the company’s identity and design direction from the ground up. Her design leadership was instrumental in developing the user interface and experience of our core product, which has since been adopted by over 25 companies. Paula brought creativity, strategic thinking, and deep attention to detail to everything she worked on. She was not only a talented designer but also a valued and collaborative team member who always contributed positively to our culture."
+    name="Julian Osborne"
+    role="Founder & CEO · Pelt8"
+    lang="en"
+  />
+</CaseTestimonials>
+
+_Carta de recomendación, mayo de 2025. Documento completo disponible [bajo solicitud](mailto:bypaularodas@gmail.com)._
+
+  <CaseCallout
+    title="Pelt8 convirtió mi adaptabilidad en una práctica profesional"
+    body="Comprender rápido, actuar con iniciativa y encontrar una forma viable de construir."
+    variant="dark"
+  />
+</CaseSection>
+
+<CaseSection
+  variant="default"
+  layout="text-only"
+  tag="LEARNINGS"
+  tagCategory="Research"
+  heading="Lo que esta experiencia consolidó"
+  wide
+>
+  <LearningsGrid>
+    <CaseCallout
+      size="lg"
+      title="Adaptarse es ampliar la forma de resolver"
+      body="Trabajar en una startup me enseñó a moverme hacia nuevas fronteras, herramientas y responsabilidades cuando el crecimiento de la empresa lo requería, sin perder de vista el objetivo del producto."
+    >
+      <Shuffle slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La complejidad debe estructurarse, no ocultarse"
+      body="En un dominio especializado, simplificar no significa eliminar información necesaria. Significa hacer visibles las relaciones, prioridades y acciones."
+    >
+      <Network slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Una buena solución necesita una ruta de implementación"
+      body="Los quick wins, las mejoras estructurales y la visión futura permitieron generar progreso sin ignorar las restricciones del equipo."
+    >
+      <Route slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="Documentar también es diseñar"
+      body="Los componentes, principios, templates y pautas de handoff ayudaron a distribuir conocimiento y dieron al equipo mayor autonomía para avanzar."
+    >
+      <BookOpen slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La herramienta debe responder al problema"
+      body="Framer, Brevo, Tally o Make fueron medios utilizados dentro de contextos concretos. El criterio de diseño consistía en entender la necesidad y elegir una respuesta proporcionada."
+    >
+      <Wrench slot="icon" />
+    </CaseCallout>
+    <CaseCallout
+      size="lg"
+      title="La coherencia se construye en todo el recorrido"
+      body="Producto, web, email, presentaciones y eventos forman parte de una misma experiencia de marca."
+    >
+      <Layers slot="icon" />
+    </CaseCallout>
+  </LearningsGrid>
+</CaseSection>
