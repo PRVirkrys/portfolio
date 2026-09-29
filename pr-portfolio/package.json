@@ -11,7 +11,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "npm run test:unit && playwright test",
-    "test:unit": "node --test tests/home-progress.test.mjs tests/split-flap.test.mjs tests/work-filters.test.mjs",
+    "test:unit": "node --test tests/home-progress.test.mjs tests/split-flap.test.mjs tests/work-filters.test.mjs tests/reading-time.test.mjs",
     "test:e2e": "playwright test",
     "test:rendered": "npm run build && node --test tests/work-cards-rendered.test.mjs",
     "astro": "astro"

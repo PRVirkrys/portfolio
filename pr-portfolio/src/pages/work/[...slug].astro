@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import CaseStudy from '../../layouts/CaseStudy.astro';
+import { readingMinutes } from '../../lib/reading-time';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -18,7 +19,7 @@ const isCaseStudy = post.data.type === 'case-study';
 ---
 
 {isCaseStudy ? (
-	<CaseStudy {...post.data}><Content /></CaseStudy>
+	<CaseStudy {...post.data} readingMinutes={readingMinutes(post.body)}><Content /></CaseStudy>
 ) : (
 	<BlogPost {...post.data}><Content /></BlogPost>
 )}
