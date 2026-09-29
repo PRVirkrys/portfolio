@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { caseStudies } from './support/case-studies.mjs';
 
 // Run after npm run build: verify the actual Astro-rendered markup.
 test('each rendered card has one design-system link with its complete title as accessible name', () => {
   const html = readFileSync(new URL('../dist/work/index.html', import.meta.url), 'utf8');
   const cards = [...html.matchAll(/<article\b[^>]*data-case-card[^>]*>([\s\S]*?)<\/article>/g)];
-  assert.equal(cards.length, 3);
+  assert.equal(cards.length, caseStudies.length);
   for (const [, card] of cards) {
     const anchors = [...card.matchAll(/<a\b([^>]*)>/g)];
     assert.equal(anchors.length, 1, 'one keyboard stop, no nested anchors');
