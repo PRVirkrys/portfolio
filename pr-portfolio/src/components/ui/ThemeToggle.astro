@@ -3,28 +3,23 @@
 // header's "Language menu" panel (node 16067:68076). Functional: flips
 // `.dark` on <html> and persists the choice — see BaseHead.astro's blocking
 // init script for how the saved value is applied before first paint.
-import { Sun, Moon } from '@lucide/astro';
+import { Lightbulb } from '@lucide/astro';
 
 export interface Props {
 	label?: string;
 	showLabel?: boolean;
 }
 
-const { label = 'Tema oscuro', showLabel = true } = Astro.props;
+const { label = 'Encender las luces', showLabel = true } = Astro.props;
 ---
 
 <div class="theme-toggle">
-	<button type="button" class="theme-toggle__control" role="switch" aria-checked="true" aria-label="Cambiar a tema claro">
+	<button type="button" class="theme-toggle__control" role="switch" aria-checked="true" aria-label="Encender las luces">
 		<span class="theme-toggle__track">
-			<!-- Figma (node 15705:1179): the icon for whichever mode is NOT
-			     active sits fixed in the track; the active mode's icon rides
-			     inside the thumb. Both icons exist in both spots and crossfade
-			     so the thumb never has to slide over — and hide — one of them. -->
-			<Sun class="theme-toggle__static theme-toggle__static--sun" aria-hidden="true" />
-			<Moon class="theme-toggle__static theme-toggle__static--moon" aria-hidden="true" />
+			<!-- Only the thumb carries an icon; the track stays empty. The same
+			     bulb lights up (yellow) in light theme and goes dark in dark. -->
 			<span class="theme-toggle__thumb" aria-hidden="true">
-				<Sun class="theme-toggle__icon theme-toggle__icon--sun" />
-				<Moon class="theme-toggle__icon theme-toggle__icon--moon" />
+				<Lightbulb class="theme-toggle__icon" />
 			</span>
 		</span>
 	</button>
@@ -55,33 +50,6 @@ const { label = 'Tema oscuro', showLabel = true } = Astro.props;
 		border-radius: var(--radius-full);
 		background: var(--color-surface-raised);
 	}
-	/* Static icons fixed to the track ends — each is the "off" side's icon,
-	   visible only while the thumb sits on the OTHER side. */
-	.theme-toggle__static {
-		position: absolute;
-		top: 50%;
-		width: calc(14px * var(--ui-scale));
-		height: calc(14px * var(--ui-scale));
-		transform: translateY(-50%);
-		color: var(--color-text-muted);
-		opacity: 1;
-		transition: opacity var(--duration-fast) var(--ease-standard);
-	}
-	.theme-toggle__static--sun {
-		left: calc(7px * var(--ui-scale));
-	}
-	.theme-toggle__static--moon {
-		right: calc(7px * var(--ui-scale));
-	}
-	/* checked = dark: thumb (with the moon) is on the right, so the static
-	   moon underneath it hides, leaving the static sun visible on the left. */
-	.theme-toggle__control[aria-checked='true'] .theme-toggle__static--moon {
-		opacity: 0;
-	}
-	.theme-toggle__control:not([aria-checked='true']) .theme-toggle__static--sun {
-		opacity: 0;
-	}
-
 	.theme-toggle__thumb {
 		position: absolute;
 		top: calc(3px * var(--ui-scale));
@@ -108,20 +76,21 @@ const { label = 'Tema oscuro', showLabel = true } = Astro.props;
 	/* Icon riding inside the thumb crossfades to match whichever side it's
 	   currently parked on. */
 	.theme-toggle__icon {
-		grid-area: 1 / 1;
 		width: calc(14px * var(--ui-scale));
 		height: calc(14px * var(--ui-scale));
 		/* The thumb is white in both themes, so its icon needs a fixed dark
 		   ink — --color-text-inverse flips to white in light theme. */
 		color: var(--color-neutral-950);
-		opacity: 0;
-		transition: opacity var(--duration-fast) var(--ease-standard);
+		fill: transparent;
+		transition:
+			fill var(--duration-fast) var(--ease-standard),
+			filter var(--duration-fast) var(--ease-standard);
 	}
-	.theme-toggle__control:not([aria-checked='true']) .theme-toggle__icon--sun {
-		opacity: 1;
-	}
-	.theme-toggle__control[aria-checked='true'] .theme-toggle__icon--moon {
-		opacity: 1;
+	/* Light theme = lights on: the bulb glows with yellow glass and a soft
+	   halo. Stroke keeps its ink so the shape still reads on the white thumb. */
+	.theme-toggle__control:not([aria-checked='true']) .theme-toggle__icon {
+		fill: var(--color-brand-yellow-500);
+		filter: drop-shadow(0 0 3px var(--color-brand-yellow-500));
 	}
 	.theme-toggle__control:focus-visible {
 		outline: var(--focus-width) solid var(--color-focus);
@@ -138,34 +107,73 @@ const { label = 'Tema oscuro', showLabel = true } = Astro.props;
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.theme-toggle__thumb,
-		.theme-toggle__icon,
-		.theme-toggle__static {
+		.theme-toggle__icon {
 			transition: none;
 		}
 	}
 </style>
 
+<!-- "Light switch" reveal: the new theme is a View Transition snapshot whose
+     clip-path circle grows out of the toggle (see the script below). Turn off
+     the default root crossfade so only that circle is visible. Global because
+     view-transition pseudo-elements live on <html>, outside component scope. -->
+<style is:global>
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+		mix-blend-mode: normal;
+	}
+</style>
+
 <script>
-	function initThemeToggle(control: HTMLElement) {
-		const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('.theme-toggle__label');
-		const sync = () => {
-			const isDark = document.documentElement.classList.contains('dark');
+	const controls = document.querySelectorAll<HTMLElement>('.theme-toggle__control');
+
+	// Every toggle on the page (desktop settings menu + mobile drawer) mirrors
+	// the same <html> class, so they all resync after any one is clicked.
+	function syncAll() {
+		const isDark = document.documentElement.classList.contains('dark');
+		// Label names the action, like a light switch: dark → "turn them on".
+		const text = isDark ? 'Encender las luces' : 'Apagar las luces';
+		controls.forEach((control) => {
 			control.setAttribute('aria-checked', String(isDark));
-			control.setAttribute('aria-label', isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
-			if (label) label.textContent = isDark ? 'Tema oscuro' : 'Tema claro';
-		};
-		sync();
-		control.addEventListener('click', () => {
-			const isDark = document.documentElement.classList.toggle('dark');
-			try {
-				localStorage.setItem('theme', isDark ? 'dark' : 'light');
-			} catch {
-				// Storage can be unavailable (private mode, disabled) — the
-				// toggle still works for the current page view either way.
-			}
-			sync();
+			control.setAttribute('aria-label', text);
+			const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('.theme-toggle__label');
+			if (label) label.textContent = text;
 		});
 	}
 
-	document.querySelectorAll<HTMLElement>('.theme-toggle__control').forEach(initThemeToggle);
+	function applyTheme() {
+		const isDark = document.documentElement.classList.toggle('dark');
+		try {
+			localStorage.setItem('theme', isDark ? 'dark' : 'light');
+		} catch {
+			// Storage can be unavailable (private mode, disabled) — the
+			// toggle still works for the current page view either way.
+		}
+		syncAll();
+	}
+
+	function toggleFrom(control: HTMLElement) {
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (!document.startViewTransition || reduceMotion) {
+			applyTheme();
+			return;
+		}
+		// Circle grows from the switch's center until it covers the farthest
+		// viewport corner, like light spreading from where it was flipped.
+		const rect = control.getBoundingClientRect();
+		const x = rect.left + rect.width / 2;
+		const y = rect.top + rect.height / 2;
+		const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+		const transition = document.startViewTransition(applyTheme);
+		transition.ready.then(() => {
+			document.documentElement.animate(
+				{ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+				{ duration: 700, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' },
+			);
+		});
+	}
+
+	syncAll();
+	controls.forEach((control) => control.addEventListener('click', () => toggleFrom(control)));
 </script>
