@@ -6,12 +6,15 @@ import TextLink from '../ui/TextLink.astro';
 import { getWorkCompany } from '../../data/work-companies';
 import { withBase } from '../../lib/url';
 import { caseFocus } from '../../lib/work-filters';
+import { readingMinutes } from '../../lib/reading-time';
+import { Clock } from '@lucide/astro';
 
 interface Props { entry: CollectionEntry<'blog'>; eager?: boolean }
 const { entry, eager = false } = Astro.props;
 const { data } = entry;
 const company = getWorkCompany(data.company);
 const titleId = `card-title-${entry.id}`;
+const context = [company?.name, data.customer].filter(Boolean).join(' · ');
 const meta = [
   { label: 'Mi rol', value: data.role },
   { label: data.platform ? 'Plataforma' : 'Periodo', value: data.platform ?? data.date },
@@ -22,7 +25,10 @@ const meta = [
   <div class="case-card__content">
     {data.heroImage && <div class="case-card__cover"><Image src={data.heroImage} alt="" widths={[480, 720, 1080]} sizes="(max-width: 839px) 100vw, 50vw" loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
     <div class="case-card__body">
-      {(company || data.customer) && <p class="case-card__context">{[company?.name, data.customer].filter(Boolean).join(' · ')}</p>}
+      <div class="case-card__eyebrow">
+        {context && <p class="case-card__context">{context}</p>}
+        <p class="case-card__reading"><Clock class="case-card__reading-icon" aria-hidden="true" />{readingMinutes(entry.body)} min de lectura</p>
+      </div>
       <h2 id={titleId} class="case-card__title">{data.title}</h2>
       {(data.cardSummary || data.description) && <p class="case-card__summary">{data.cardSummary ?? data.description}</p>}
       <div class="case-card__details">
@@ -43,7 +49,10 @@ const meta = [
   .case-card__cover { aspect-ratio: 16 / 9; padding: var(--space-4); background: var(--color-bg); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .case-card__image { width: 100%; height: 100%; display: block; object-fit: contain; border-radius: var(--radius-sm); }
   .case-card__body { padding: var(--space-8); display: flex; flex-direction: column; flex: 1; gap: var(--space-4); }
-  .case-card__context { margin: 0; color: var(--color-text-secondary); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(3px * var(--ui-scale)); text-transform: uppercase; }
+  .case-card__eyebrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+  .case-card__reading { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .case-card__reading-icon { width: calc(14px * var(--ui-scale)); height: calc(14px * var(--ui-scale)); flex-shrink: 0; }
+  .case-card__context, .case-card__reading { margin: 0; color: var(--color-text-secondary); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(3px * var(--ui-scale)); text-transform: uppercase; }
   .case-card__title { font-family: var(--font-heading); font-size: calc(36px * var(--ui-scale)); line-height: 1.2; font-weight: 700; letter-spacing: -0.5px; margin: 0; overflow-wrap: break-word; }
   .case-card__summary { margin: 0; font-size: calc(20px * var(--ui-scale)); line-height: 1.65; letter-spacing: 0; color: var(--color-text-secondary); }
   .case-card__details { margin-top: auto; padding-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-6); }

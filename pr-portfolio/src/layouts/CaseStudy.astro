@@ -8,12 +8,12 @@ import Tag from '../components/ui/Tag.astro';
 import NextCase from '../components/case/NextCase.astro';
 import CaseLightbox from '../components/case/CaseLightbox.astro';
 import CaseConfidentialityNote from '../components/case/CaseConfidentialityNote.astro';
-import { ExternalLink } from '@lucide/astro';
+import { Clock, ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
 import { withBase } from '../lib/url';
 import { getWorkCompany, companyWorkPath } from '../data/work-companies';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & { readingMinutes?: number };
 
 const {
 	title,
@@ -34,6 +34,7 @@ const {
 	platform,
 	nextCase,
 	confidentialityNote,
+	readingMinutes,
 } = Astro.props;
 
 const workCompany = getWorkCompany(company);
@@ -107,6 +108,12 @@ const metaRows = [
 							)}
 							<h1 class="cs-hero__title">{title}</h1>
 							<p class="cs-hero__desc">{description}</p>
+							{readingMinutes && (
+								<p class="cs-hero__reading">
+									<Clock class="cs-hero__reading-icon" aria-hidden="true" />
+									{readingMinutes} min de lectura
+								</p>
+							)}
 						</div>
 
 						{(metaRows.length > 0 || liveUrl || collaboration || tools || platform) && (
@@ -294,6 +301,26 @@ const metaRows = [
 		letter-spacing: calc(1px * var(--ui-scale));
 		color: color-mix(in srgb, var(--color-text) 90%, transparent);
 		margin: 0;
+	}
+
+	/* Same eyebrow voice as the meta-table labels: secondary info, not content. */
+	.cs-hero__reading {
+		display: inline-flex;
+		align-items: center;
+		gap: calc(8px * var(--ui-scale));
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 800;
+		line-height: 1.75;
+		letter-spacing: calc(6px * var(--ui-scale));
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--color-text) 80%, transparent);
+	}
+	.cs-hero__reading-icon {
+		width: calc(16px * var(--ui-scale));
+		height: calc(16px * var(--ui-scale));
+		flex-shrink: 0;
 	}
 
 	/* ── Meta table ───────────────────────────────────────────────────── */
