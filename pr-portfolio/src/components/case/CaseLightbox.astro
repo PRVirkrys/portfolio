@@ -208,6 +208,13 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 		   nearly the same colour as the page. */
 		background: color-mix(in srgb, var(--color-neutral-950) 92%, black);
 	}
+	/* Light theme gets a light scrim instead: the controls and caption use
+	   theme text colours, which are dark in light theme and vanished against
+	   the navy scrim. Opaque like the dark one, and --color-bg-subtle rather
+	   than --color-bg so it still reads as a separate layer from the page. */
+	:global(html:not(.dark)) .cs-lightbox {
+		background: var(--color-bg-subtle);
+	}
 	.cs-lightbox[hidden] {
 		display: none;
 	}
@@ -271,7 +278,14 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 		color: var(--color-text);
 		cursor: pointer;
 	}
-	.cs-lightbox__btn:hover {
+	/* Light theme's --elevation-button-adaptive is flat (none), so the
+	   buttons need a surface + border to still read as buttons. */
+	:global(html:not(.dark)) .cs-lightbox__btn {
+		border: var(--border-width) solid var(--color-border);
+		background: var(--color-surface-raised);
+	}
+	.cs-lightbox__btn:hover,
+	:global(html:not(.dark)) .cs-lightbox__btn:hover {
 		background: var(--color-action-secondary-bg-hover);
 	}
 	.cs-lightbox__btn:focus-visible {
