@@ -63,7 +63,10 @@ const { label = 'Español', showLabel = true } = Astro.props;
 	}
 	.language-toggle__option--es {
 		right: calc(8px * var(--ui-scale));
-		color: var(--color-text-inverse);
+		/* Sits on the always-white thumb: fixed dark ink (see ThemeToggle),
+		   and stacked above the thumb, which comes later in the DOM. */
+		z-index: 1;
+		color: var(--color-neutral-950);
 	}
 	.language-toggle__thumb {
 		position: absolute;

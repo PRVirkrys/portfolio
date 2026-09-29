@@ -111,7 +111,9 @@ const { label = 'Tema oscuro', showLabel = true } = Astro.props;
 		grid-area: 1 / 1;
 		width: calc(14px * var(--ui-scale));
 		height: calc(14px * var(--ui-scale));
-		color: var(--color-text-inverse);
+		/* The thumb is white in both themes, so its icon needs a fixed dark
+		   ink — --color-text-inverse flips to white in light theme. */
+		color: var(--color-neutral-950);
 		opacity: 0;
 		transition: opacity var(--duration-fast) var(--ease-standard);
 	}
