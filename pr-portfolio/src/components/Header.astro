@@ -113,6 +113,10 @@ const selectorItems = [
 	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); }
 	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header > :global(.header__identity) { display: none; } }
 
+	@media (prefers-reduced-motion: reduce) {
+		.header { transition: none !important; }
+	}
+
 	/* ── Mobile (≤839px) — Figma node 16067:57688 / 16077:69757 ──────────── */
 	.header__mobile-brand,
 	.header__mobile-trigger,
@@ -127,6 +131,14 @@ const selectorItems = [
 			   and size its own height against a known bar height. */
 			height: var(--component-header-height-mobile);
 			padding: calc(24px * var(--ui-scale));
+			transition: transform 200ms var(--ease-standard);
+		}
+		/* Smart hide/show (see script). Visible state is `transform: none`,
+		   not translateY(0): any transform would make .header the containing
+		   block for the fixed-position menu overlay inside it. The header is
+		   already position: fixed, so hiding it never shifts page content. */
+		.header.is-scroll-hidden {
+			transform: translateY(-100%);
 		}
 		.header > :global(.header__identity),
 		.header__selector,
@@ -310,5 +322,42 @@ const selectorItems = [
 			if (!query.matches) close();
 		};
 		query.addEventListener('change', handleChange);
+
+		// Mobile smart header: hide after a deliberate downward scroll, reveal
+		// after a shorter upward one. Distance accumulates per direction and
+		// resets when the direction flips, so small reading adjustments don't
+		// toggle it. Always visible near the top, while the menu is open,
+		// while focus is inside the header, and outside the mobile breakpoint.
+		const TOP_ZONE = 64;
+		const HIDE_AFTER = 32;
+		const SHOW_AFTER = 16;
+		let lastY = window.scrollY;
+		let travelled = 0;
+		let ticking = false;
+		const setHidden = (hidden: boolean) => header.classList.toggle('is-scroll-hidden', hidden);
+		const update = () => {
+			ticking = false;
+			const y = window.scrollY;
+			const delta = y - lastY;
+			lastY = y;
+			if (!query.matches || !panel.hidden || y <= TOP_ZONE || header.contains(document.activeElement)) {
+				travelled = 0;
+				setHidden(false);
+				return;
+			}
+			if (delta === 0) return;
+			if (Math.sign(delta) !== Math.sign(travelled)) travelled = 0;
+			travelled += delta;
+			if (travelled >= HIDE_AFTER) setHidden(true);
+			else if (travelled <= -SHOW_AFTER) setHidden(false);
+		};
+		window.addEventListener('scroll', () => {
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(update);
+			}
+		}, { passive: true });
+		header.addEventListener('focusin', () => setHidden(false));
+		trigger.addEventListener('click', () => setHidden(false));
 	});
 </script>
