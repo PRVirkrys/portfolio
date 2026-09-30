@@ -12,7 +12,7 @@
 // shadow, hover tint, outline focus-ring), and the per-image caption's
 // eyebrow is a *clone* of that image's own CaseSection <Tag> pill — so it
 // always matches the section's real tag color with zero duplicated CSS.
-import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
+import { X, ChevronLeft, ChevronRight, Maximize2, Lock } from '@lucide/astro';
 ---
 
 <div class="cs-lightbox" id="cs-lightbox" hidden>
@@ -40,12 +40,21 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 		<div class="cs-lightbox__caption" data-lightbox-caption hidden>
 			<span class="cs-lightbox__caption-eyebrow" data-lightbox-eyebrow></span>
 			<span class="cs-lightbox__caption-text" data-lightbox-caption-text></span>
+			<span class="cs-image-note" data-lightbox-note hidden><Lock aria-hidden="true" />Imagen modificada o recreada por confidencialidad</span>
 		</div>
 	</div>
 </div>
 
 <template data-lightbox-badge-template>
 	<span class="cs-zoom-badge" aria-hidden="true"><Maximize2 /></span>
+</template>
+
+<!-- Per-image caption for case studies with `confidentialityNote: true`
+     (the article carries data-confidential-images). An image can opt out
+     with `data-public` on its <Image>. Shown under the image and in the
+     gallery. -->
+<template data-image-note-template>
+	<span class="cs-image-note"><Lock aria-hidden="true" />Imagen modificada o recreada por confidencialidad</span>
 </template>
 
 <script>
@@ -66,14 +75,18 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 		const captionEl = modal.querySelector<HTMLElement>('[data-lightbox-caption]')!;
 		const eyebrowEl = modal.querySelector<HTMLElement>('[data-lightbox-eyebrow]')!;
 		const captionTextEl = modal.querySelector<HTMLElement>('[data-lightbox-caption-text]')!;
+		const noteEl = modal.querySelector<HTMLElement>('[data-lightbox-note]')!;
+		const noteTemplate = document.querySelector<HTMLTemplateElement>('[data-image-note-template]');
+		const confidential = article.hasAttribute('data-confidential-images');
 		const closeEls = modal.querySelectorAll<HTMLElement>('[data-lightbox-close]');
 		const prevBtn = modal.querySelector<HTMLButtonElement>('[data-lightbox-prev]')!;
 		const nextBtn = modal.querySelector<HTMLButtonElement>('[data-lightbox-next]')!;
 
-		type Item = { src: string; alt: string; tag: HTMLElement | null };
+		type Item = { src: string; alt: string; tag: HTMLElement | null; note: boolean };
 		const items: Item[] = candidates.map((img) => {
 			const sectionTag = img.closest('.cs-section')?.querySelector<HTMLElement>('.cs-section__header .tag') ?? null;
-			return { src: img.currentSrc || img.src, alt: img.alt, tag: sectionTag };
+			const note = confidential && !img.hasAttribute('data-public');
+			return { src: img.currentSrc || img.src, alt: img.alt, tag: sectionTag, note };
 		});
 
 		candidates.forEach((img, index) => {
@@ -87,6 +100,9 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 			img.setAttribute('aria-label', 'Ampliar imagen');
 			if (badgeTemplate) {
 				wrap.appendChild(badgeTemplate.content.cloneNode(true));
+			}
+			if (items[index].note && noteTemplate) {
+				wrap.appendChild(noteTemplate.content.cloneNode(true));
 			}
 			const open = () => openAt(index);
 			wrap.addEventListener('click', open);
@@ -110,7 +126,8 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 			eyebrowEl.replaceChildren();
 			if (item.tag) eyebrowEl.appendChild(item.tag.cloneNode(true));
 			captionTextEl.textContent = item.alt;
-			captionEl.hidden = !item.tag && !item.alt;
+			noteEl.hidden = !item.note;
+			captionEl.hidden = !item.tag && !item.alt && !item.note;
 
 			prevBtn.hidden = items.length <= 1;
 			nextBtn.hidden = items.length <= 1;
@@ -342,6 +359,29 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from '@lucide/astro';
 </style>
 
 <style is:global>
+	/* Confidentiality caption: under each image and in the gallery caption. */
+	.cs-image-note {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+		margin-top: var(--space-3);
+		font-family: var(--font-sans);
+		font-size: max(12px, calc(14px * var(--ui-scale)));
+		font-style: italic;
+		line-height: 1.5;
+		color: var(--color-text-secondary);
+	}
+	.cs-image-note[hidden] {
+		display: none;
+	}
+	.cs-image-note svg {
+		flex-shrink: 0;
+		width: calc(14px * var(--ui-scale));
+		height: calc(14px * var(--ui-scale));
+		color: var(--color-action-ghost-text);
+	}
+
 	/* Wraps a gallery-eligible <img> at runtime — see the script above. */
 	.cs-zoomable-wrap {
 		position: relative;
