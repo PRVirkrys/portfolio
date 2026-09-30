@@ -1,9 +1,15 @@
+---
+import { Lock } from '@lucide/astro';
+---
+
 <aside class="cs-confidentiality" aria-label="Nota de confidencialidad">
 	<div class="cs-confidentiality__inner">
-		<p class="cs-confidentiality__text">
-			<strong>Nota de confidencialidad</strong>
-			Algunas imágenes de este caso de estudio han sido modificadas o recreadas para proteger información confidencial. Se incluyen como apoyo visual para explicar el proceso y las decisiones de diseño.
-		</p>
+		<div class="cs-confidentiality__note">
+			<p class="cs-confidentiality__label"><Lock class="cs-confidentiality__icon" aria-hidden="true" />Nota de confidencialidad</p>
+			<p class="cs-confidentiality__text">
+				Algunas imágenes de este caso de estudio han sido modificadas o recreadas para proteger información confidencial. Se incluyen como apoyo visual para explicar el proceso y las decisiones de diseño.
+			</p>
+		</div>
 	</div>
 </aside>
 
@@ -13,22 +19,42 @@
 		width: 100%;
 		max-width: calc(1440px * var(--ui-scale));
 		margin-inline: auto;
-		padding: 0 calc(64px * var(--ui-scale)) calc(24px * var(--ui-scale));
+		padding: calc(24px * var(--ui-scale)) calc(64px * var(--ui-scale)) calc(48px * var(--ui-scale));
+	}
+	/* Reads as an aside, not content: accent rule on the left, no fill,
+	   limited to the reading column. */
+	.cs-confidentiality__note {
+		max-width: calc(680px * var(--ui-scale));
+		padding-left: calc(20px * var(--ui-scale));
+		border-left: 2px solid var(--color-action-ghost-text);
+	}
+	/* Same type as CaseCallout's title. */
+	.cs-confidentiality__label {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		margin: 0 0 calc(8px * var(--ui-scale));
+		font-family: var(--font-heading);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.75;
+		letter-spacing: calc(4px * var(--ui-scale));
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+	}
+	.cs-confidentiality__icon {
+		flex-shrink: 0;
+		width: calc(16px * var(--ui-scale));
+		height: calc(16px * var(--ui-scale));
+		color: var(--color-action-ghost-text);
 	}
 	.cs-confidentiality__text {
 		margin: 0;
-		padding-top: calc(24px * var(--ui-scale));
-		border-top: var(--border-width) solid var(--color-border);
 		font-family: var(--font-sans);
-		font-size: max(14px, calc(18px * var(--ui-scale)));
-		line-height: 1.75;
-		color: color-mix(in srgb, var(--color-text) 80%, var(--color-bg));
-	}
-	.cs-confidentiality__text strong {
-		display: block;
-		margin-bottom: calc(8px * var(--ui-scale));
-		font-weight: 600;
-		color: var(--color-text);
+		font-size: max(14px, calc(17px * var(--ui-scale)));
+		font-style: italic;
+		line-height: 1.65;
+		color: var(--color-text-secondary);
 	}
 	@media (max-width: 839px) {
 		.cs-confidentiality__inner {
