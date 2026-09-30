@@ -1,0 +1,68 @@
+---
+// Reading progress for case studies: a thin bar pinned right under the
+// header that fills as the page scrolls and empties when scrolling back.
+// Decorative (aria-hidden) — the scrollbar already exposes position.
+---
+
+<div class="cs-progress" aria-hidden="true">
+	<div class="cs-progress__fill"></div>
+</div>
+
+<style>
+	.cs-progress {
+		position: fixed;
+		top: var(--component-header-height-desktop);
+		left: var(--component-sidebar-width);
+		right: 0;
+		/* Under the header (z-index 30) so the open mobile menu covers it. */
+		z-index: 29;
+		height: calc(4px * var(--ui-scale));
+		pointer-events: none;
+		transition: transform 200ms var(--ease-standard);
+	}
+	.cs-progress__fill {
+		height: 100%;
+		background: var(--color-action-ghost-text);
+		transform: scaleX(var(--cs-progress, 0));
+		transform-origin: left;
+	}
+
+	@media (max-width: 839px) {
+		.cs-progress {
+			top: var(--component-header-height-mobile);
+			left: 0;
+		}
+		/* The mobile header slides away on scroll (Header.astro); the bar
+		   stays and moves up with it to the top edge. Same 200ms timing. */
+		:global(body:has(.header.is-scroll-hidden)) .cs-progress {
+			transform: translateY(calc(-1 * var(--component-header-height-mobile)));
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cs-progress {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const bar = document.querySelector<HTMLElement>('.cs-progress');
+	if (bar) {
+		let ticking = false;
+		const update = () => {
+			ticking = false;
+			const max = document.documentElement.scrollHeight - window.innerHeight;
+			const progress = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+			bar.style.setProperty('--cs-progress', String(progress));
+		};
+		const schedule = () => {
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(update);
+			}
+		};
+		window.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', schedule);
+		update();
+	}
+</script>

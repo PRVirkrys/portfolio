@@ -9,6 +9,7 @@ import NextCase from '../components/case/NextCase.astro';
 import CaseLightbox from '../components/case/CaseLightbox.astro';
 import CaseConfidentialityNote from '../components/case/CaseConfidentialityNote.astro';
 import CaseExecutiveSummary from '../components/case/CaseExecutiveSummary.astro';
+import CaseReadingProgress from '../components/case/CaseReadingProgress.astro';
 import { Clock, ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
 import { withBase } from '../lib/url';
@@ -65,6 +66,7 @@ const metaRows = [
 	</head>
 	<body>
 		<Header />
+		<CaseReadingProgress />
 		<div class="cs-page">
 
 			{breadcrumbs && breadcrumbs.length > 0 && (
