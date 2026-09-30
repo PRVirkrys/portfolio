@@ -23,6 +23,7 @@ const { category = 'Research', size = 'sm', class: className } = Astro.props;
 	/* The dark-theme yellow is too washed out against light theme's near-white
 	   background — a darker gold keeps the same hue while staying legible. */
 	:global(html:not(.dark)) .tag[data-category='Design Systems'] { --tag-color: #c79c11; }
+	:global(html:not(.dark)) .tag[data-category='Engineering'] { --tag-color: #189d67; }
 	.tag[data-category='Neutral'] { --tag-color: var(--color-text-muted); background: transparent; }
 	/* Light theme's near-white page turns the color-mix tint into a faint
 	   halo around the border instead of a fill — flatten it to transparent
