@@ -489,18 +489,20 @@ const metaRows = [
 	}
 
 	/* Learnings read like the executive summary: one row per callout —
-	   icon, title, body — separated by hairlines instead of boxed cards.
-	   The callout header becomes display: contents so icon and title join
-	   the row grid directly. */
+	   its number (01, 02…) in the left column; icon + title, with the body
+	   underneath, in the right column. Rows are separated by hairlines
+	   instead of boxed cards. */
 	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid) {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 0;
+		counter-reset: learning;
 	}
 	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout) {
+		counter-increment: learning;
 		display: grid;
-		grid-template-columns: calc(64px * var(--ui-scale)) minmax(0, 1fr) minmax(0, 2.4fr);
-		align-items: baseline;
-		gap: calc(24px * var(--ui-scale));
+		grid-template-columns: calc(64px * var(--ui-scale)) minmax(0, 1fr);
+		column-gap: calc(24px * var(--ui-scale));
+		row-gap: calc(16px * var(--ui-scale));
 		padding: calc(32px * var(--ui-scale)) 0;
 		background: transparent;
 		border: 0;
@@ -509,15 +511,29 @@ const metaRows = [
 	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout:last-child) {
 		border-bottom: 0;
 	}
-	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__header) {
-		display: contents;
-	}
-	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__icon) {
-		align-self: start;
+	/* Same type as .cs-summary__number. */
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout::before) {
+		content: counter(learning, decimal-leading-zero);
+		grid-column: 1;
+		grid-row: 1 / span 2;
+		padding-top: calc(6px * var(--ui-scale));
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 800;
+		line-height: 1.4;
+		letter-spacing: calc(5px * var(--ui-scale));
 		color: var(--color-action-ghost-text);
 	}
-	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__icon svg) {
-		color: inherit;
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__header) {
+		grid-column: 2;
+		align-items: center;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__body) {
+		grid-column: 2;
+		font-size: calc(18px * var(--ui-scale));
+		line-height: 1.65;
 	}
 	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__title) {
 		font-size: calc(24px * var(--ui-scale));
@@ -525,16 +541,6 @@ const metaRows = [
 		letter-spacing: normal;
 		text-transform: none;
 		color: var(--color-text);
-	}
-	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__body) {
-		font-size: calc(18px * var(--ui-scale));
-		line-height: 1.65;
-	}
-	@media (max-width: 839px) {
-		.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout) {
-			grid-template-columns: minmax(0, 1fr);
-			gap: calc(16px * var(--ui-scale));
-		}
 	}
 
 	/* ── Responsive ───────────────────────────────────────────────────── */
