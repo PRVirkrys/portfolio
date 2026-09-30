@@ -73,19 +73,21 @@ const { items } = Astro.props;
 	}
 	.cs-summary__grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: minmax(0, 1fr);
 		border-top: var(--border-width) solid var(--color-border);
 	}
+	/* One row per item: number + label on the left, text on the right. */
 	.cs-summary__item {
-		display: flex;
-		flex-direction: column;
-		gap: calc(20px * var(--ui-scale));
+		display: grid;
+		grid-template-columns: calc(64px * var(--ui-scale)) minmax(0, 1fr) minmax(0, 2.4fr);
+		align-items: baseline;
+		gap: calc(24px * var(--ui-scale));
 		min-width: 0;
-		padding: calc(32px * var(--ui-scale));
-		border-right: var(--border-width) solid var(--color-border);
+		padding-block: calc(32px * var(--ui-scale));
+		border-bottom: var(--border-width) solid var(--color-border);
 	}
 	.cs-summary__item:last-child {
-		border-right: 0;
+		border-bottom: 0;
 	}
 	.cs-summary__item h3 {
 		margin: 0;
@@ -121,16 +123,9 @@ const { items } = Astro.props;
 		.cs-summary__heading h2 {
 			font-size: calc(36px * var(--ui-scale));
 		}
-		.cs-summary__grid {
-			grid-template-columns: 1fr;
-		}
 		.cs-summary__item {
-			padding: calc(32px * var(--ui-scale)) 0;
-			border-right: 0;
-			border-bottom: var(--border-width) solid var(--color-border);
-		}
-		.cs-summary__item:last-child {
-			border-bottom: 0;
+			grid-template-columns: minmax(0, 1fr);
+			gap: calc(16px * var(--ui-scale));
 		}
 	}
 </style>
