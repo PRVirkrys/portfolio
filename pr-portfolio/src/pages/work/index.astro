@@ -8,6 +8,7 @@ import CaseStudyCard from '../../components/case/CaseStudyCard.astro';
 import { workCompanies } from '../../data/work-companies';
 import { caseFocus, focusCategories } from '../../lib/work-filters';
 import { withBase } from '../../lib/url';
+import { LayoutGrid, Rows3 } from '@lucide/astro';
 
 const cases = (await getCollection('blog', ({ data }) => data.type === 'case-study')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const companies = workCompanies.filter(company => cases.some(entry => entry.data.company === company.id));
@@ -35,8 +36,8 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
         </div></fieldset>
       </div>
       <noscript><p>Puedes explorar todos los casos. Activa JavaScript para usar los filtros.</p></noscript>
-      <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><button type="button" class="work-page__clear" data-clear-filters hidden>Limpiar filtros</button></div>
-      <div class="work-grid" data-work-grid>{cases.map((entry, index) => <CaseStudyCard entry={entry} eager={index < 2} />)}</div>
+      <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><button type="button" class="work-page__clear" data-clear-filters hidden>Limpiar filtros</button><div class="work-view" role="group" aria-label="Vista" data-work-view><button type="button" data-view-option="grid" aria-pressed="true" aria-label="Cuadrícula"><LayoutGrid aria-hidden="true" /></button><button type="button" data-view-option="rows" aria-pressed="false" aria-label="Filas"><Rows3 aria-hidden="true" /></button></div></div>
+      <div class="work-grid" data-work-grid data-view="grid">{cases.map((entry, index) => <CaseStudyCard entry={entry} eager={index < 2} />)}</div>
       <section class="work-empty" data-work-empty hidden aria-labelledby="empty-title"><h2 id="empty-title">No hay casos con esta selección</h2><p>Prueba otro foco o vuelve a explorar todos los proyectos.</p><Button data-clear-filters showLeadingIcon={false}>Ver todos los casos</Button></section>
       <section class="work-contact" aria-labelledby="contact-title"><h2 id="contact-title">¿Hablamos de tu próximo proyecto?</h2><Button href={withBase('/contacto/')} showLeadingIcon={false}>Contactar</Button></section>
     </main>
@@ -46,6 +47,17 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
 
 <script>
   import '../../components/work/work-filter-controller';
+
+  // Grid / rows view toggle (desktop only — mobile is always one column).
+  const grid = document.querySelector<HTMLElement>('[data-work-grid]');
+  const options = document.querySelectorAll<HTMLButtonElement>('[data-view-option]');
+  for (const option of options) {
+    option.addEventListener('click', () => {
+      if (!grid) return;
+      grid.dataset.view = option.dataset.viewOption;
+      for (const other of options) other.setAttribute('aria-pressed', String(other === option));
+    });
+  }
 </script>
 
 <style>
@@ -66,9 +78,15 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
   .work-page__results p { margin: 0; font-size: calc(16px * var(--ui-scale)); letter-spacing: 0; color: var(--color-text-muted); }
   .work-page__clear { background: transparent; border: 0; padding: var(--space-2); color: var(--color-action-ghost-text); font: inherit; font-size: calc(16px * var(--ui-scale)); text-decoration: underline; cursor: pointer; }
   .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
+  .work-grid[data-view='rows'] { grid-template-columns: minmax(0, 1fr); }
+  .work-view { display: flex; gap: var(--space-1); margin-left: auto; padding: var(--space-1); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); }
+  .work-view button { display: grid; place-items: center; width: calc(40px * var(--ui-scale)); height: calc(40px * var(--ui-scale)); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+  .work-view button:hover { background: var(--color-action-secondary-bg-hover); }
+  .work-view button[aria-pressed='true'] { background: var(--color-brand-purple-700); color: var(--color-base-white); }
+  .work-view :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
   .work-empty { padding: var(--space-16) var(--space-6); text-align: center; border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); }
   .work-empty h2, .work-contact h2 { font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); line-height: 1.3; letter-spacing: 0; margin: 0; }
   .work-empty p { color: var(--color-text-secondary); font-size: calc(18px * var(--ui-scale)); letter-spacing: 0; }
   .work-contact { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); border-top: var(--border-width) solid var(--color-border); margin-top: var(--space-12); padding-top: var(--space-8); }
-  @media (max-width: 839px) { .work-page { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-12); } h1 { font-size: calc(56px * var(--ui-scale)); } .work-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); } .work-contact { align-items: flex-start; flex-direction: column; } }
+  @media (max-width: 839px) { .work-view { display: none; } .work-grid[data-view] { grid-template-columns: minmax(0, 1fr); } .work-page { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-12); } h1 { font-size: calc(56px * var(--ui-scale)); } .work-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); } .work-contact { align-items: flex-start; flex-direction: column; } }
 </style>
