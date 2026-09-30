@@ -402,54 +402,6 @@ const metaRows = [
 	/* ── Editorial case-study variant ───────────────────────────────────
 	   Opt-in only. The content and the existing case components remain the
 	   source of truth; this layer changes composition and reading rhythm. */
-	.cs-page[data-case-layout='editorial'] .cs-hero {
-		border-bottom: var(--border-width) solid var(--color-border);
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__content {
-		margin-top: 0;
-		border-top: 0;
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__content-inner {
-		align-items: flex-start;
-		gap: calc(80px * var(--ui-scale));
-		padding-block: calc(96px * var(--ui-scale)) calc(72px * var(--ui-scale));
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__text {
-		flex: 1 1 calc(820px * var(--ui-scale));
-		max-width: calc(860px * var(--ui-scale));
-		overflow: visible;
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__title {
-		max-width: 18ch;
-		font-size: clamp(calc(48px * var(--ui-scale)), 5vw, calc(82px * var(--ui-scale)));
-		line-height: 1.02;
-		letter-spacing: -0.045em;
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__desc {
-		max-width: 64ch;
-		font-size: calc(22px * var(--ui-scale));
-		line-height: 1.6;
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__meta {
-		flex: 0 1 calc(420px * var(--ui-scale));
-		width: 100%;
-		padding: 0;
-		background: transparent;
-		border: 0;
-		border-top: var(--border-width) solid var(--color-border);
-	}
-	.cs-page[data-case-layout='editorial'] .cs-meta-row {
-		align-items: flex-start;
-		padding: calc(18px * var(--ui-scale)) 0;
-	}
-	.cs-page[data-case-layout='editorial'] .cs-meta-row__label {
-		flex-basis: calc(150px * var(--ui-scale));
-		letter-spacing: calc(4px * var(--ui-scale));
-	}
-	.cs-page[data-case-layout='editorial'] .cs-hero__image-frame {
-		width: min(calc(1440px * var(--ui-scale)), 100%);
-		border-radius: var(--radius-md);
-	}
 
 	.cs-page[data-case-layout='editorial'] .cs-article {
 		counter-reset: case-section;
@@ -536,15 +488,6 @@ const metaRows = [
 		max-height: none;
 	}
 
-	@media (max-width: 1100px) {
-		.cs-page[data-case-layout='editorial'] .cs-hero__content-inner {
-			gap: calc(56px * var(--ui-scale));
-		}
-		.cs-page[data-case-layout='editorial'] .cs-hero__meta {
-			flex-basis: auto;
-		}
-	}
-
 	/* ── Responsive ───────────────────────────────────────────────────── */
 	@media (max-width: 1100px) {
 		.cs-hero__content-inner {
@@ -591,15 +534,6 @@ const metaRows = [
 		.cs-meta-row__label {
 			flex: 0 0 120px;
 			font-size: calc(10px * var(--ui-scale));
-		}
-		.cs-page[data-case-layout='editorial'] .cs-hero__content {
-			margin-top: 0;
-		}
-		.cs-page[data-case-layout='editorial'] .cs-hero__content-inner {
-			padding-block: calc(64px * var(--ui-scale));
-		}
-		.cs-page[data-case-layout='editorial'] .cs-hero__title {
-			font-size: calc(42px * var(--ui-scale));
 		}
 		.cs-page[data-case-layout='editorial'] :global(.cs-section) {
 			padding-block: calc(96px * var(--ui-scale));
