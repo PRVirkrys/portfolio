@@ -73,6 +73,12 @@ const meta = [
     .case-card__image { transition: transform 600ms cubic-bezier(.22, 1, .36, 1); }
     .case-card:is(:hover, :focus-within) .case-card__image { transform: scale(1.05); }
   }
+  /* Rows view (toggle on /work/, desktop only): cover on the left, body on
+     the right. The cover stretches to the body's height. */
+  @media (min-width: 840px) {
+    :global([data-view='rows']) .case-card__content { flex-direction: row; }
+    :global([data-view='rows']) .case-card__cover { flex: 0 0 44%; aspect-ratio: auto; border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+  }
   @media (max-width: 839px) { .case-card__body { padding: var(--space-6); } .case-card__title { font-size: calc(32px * var(--ui-scale)); } }
   @media (prefers-reduced-motion: reduce) { .case-card, .case-card__image { transition: none; } .case-card:is(:hover, :focus-within) .case-card__image { transform: none; } }
 </style>
