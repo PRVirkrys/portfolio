@@ -120,7 +120,7 @@ const metaRows = [
 							)}
 						</div>
 
-						{(metaRows.length > 0 || liveUrl || collaboration || tools || platform) && (
+						{(metaRows.length > 0 || liveUrl || collaboration || tools || platform || confidentialityNote) && (
 							<div class="cs-hero__meta">
 								{metaRows.map(row => (
 									<div class="cs-meta-row">
@@ -155,19 +155,14 @@ const metaRows = [
 										<span class="cs-meta-row__value">{platform}</span>
 									</div>
 								)}
+								{confidentialityNote && <CaseConfidentialityNote />}
 							</div>
 						)}
 					</div>
 				</div>
 			</div>
 
-			{executiveSummary && (
-				<CaseExecutiveSummary items={executiveSummary}>
-					{confidentialityNote && <CaseConfidentialityNote slot="footnote" inSummary />}
-				</CaseExecutiveSummary>
-			)}
-
-			{confidentialityNote && !executiveSummary && <CaseConfidentialityNote />}
+			{executiveSummary && <CaseExecutiveSummary items={executiveSummary} />}
 
 			<!-- Article body ------------------------------------------ -->
 			<article class="cs-article">
