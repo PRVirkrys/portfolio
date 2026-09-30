@@ -8,6 +8,7 @@ import Tag from '../components/ui/Tag.astro';
 import NextCase from '../components/case/NextCase.astro';
 import CaseLightbox from '../components/case/CaseLightbox.astro';
 import CaseConfidentialityNote from '../components/case/CaseConfidentialityNote.astro';
+import CaseExecutiveSummary from '../components/case/CaseExecutiveSummary.astro';
 import { Clock, ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
 import { withBase } from '../lib/url';
@@ -32,6 +33,7 @@ const {
 	collaboration,
 	tools,
 	platform,
+	executiveSummary,
 	nextCase,
 	confidentialityNote,
 	readingMinutes,
@@ -156,6 +158,8 @@ const metaRows = [
 					</div>
 				</div>
 			</div>
+
+			{executiveSummary && <CaseExecutiveSummary items={executiveSummary} />}
 
 			{confidentialityNote && <CaseConfidentialityNote />}
 
@@ -389,6 +393,8 @@ const metaRows = [
 
 	/* ── Article ──────────────────────────────────────────────────────── */
 	.cs-article {
+		/* Numbers each CaseSection header (01, 02…) — see CaseSection.astro. */
+		counter-reset: case-section;
 		display: flex;
 		flex-direction: column;
 		flex: 1;

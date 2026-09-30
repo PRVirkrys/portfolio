@@ -39,6 +39,15 @@ const hasSecond = Astro.slots.has('second');
 		border-radius: var(--radius-md);
 		overflow: hidden;
 	}
+	/* On desktop CaseSection's side assets sit in the sticky-header grid
+	   with no sibling row height to stretch to, so the block sizes itself. */
+	@media (min-width: 961px) {
+		.cs-logo-block {
+			position: relative;
+			height: auto;
+			aspect-ratio: 16 / 9;
+		}
+	}
 	.cs-logo-tile {
 		flex: 1;
 		min-height: 0;

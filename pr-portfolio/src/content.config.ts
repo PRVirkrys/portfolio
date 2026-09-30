@@ -44,6 +44,10 @@ const blog = defineCollection({
 			collaboration: z.string().optional(),
 			tools: z.string().optional(),
 			platform: z.string().optional(),
+			executiveSummary: z.array(z.object({
+				label: z.string(),
+				text: z.string(),
+			})).min(2).max(5).optional(),
 			nextCase: z.object({ title: z.string(), slug: z.string() }).optional(),
 		}),
 });
