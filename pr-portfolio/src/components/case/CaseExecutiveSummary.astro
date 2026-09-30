@@ -1,0 +1,136 @@
+---
+export interface SummaryItem {
+	label: string;
+	text: string;
+}
+
+export interface Props {
+	items: SummaryItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="cs-summary" aria-labelledby="case-summary-title">
+	<div class="cs-summary__inner">
+		<div class="cs-summary__heading">
+			<span class="cs-summary__eyebrow">En breve</span>
+			<h2 id="case-summary-title">Resumen ejecutivo</h2>
+		</div>
+
+		<div class="cs-summary__grid">
+			{items.map((item, index) => (
+				<article class="cs-summary__item">
+					<span class="cs-summary__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+					<h3>{item.label}</h3>
+					<p>{item.text}</p>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.cs-summary {
+		background: var(--color-bg-subtle);
+		border-block: var(--border-width) solid var(--color-border);
+	}
+	.cs-summary__inner {
+		box-sizing: border-box;
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.2fr);
+		gap: calc(80px * var(--ui-scale));
+		width: 100%;
+		max-width: calc(1440px * var(--ui-scale));
+		margin-inline: auto;
+		padding: calc(96px * var(--ui-scale)) calc(64px * var(--ui-scale));
+	}
+	.cs-summary__heading {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: calc(16px * var(--ui-scale));
+	}
+	.cs-summary__eyebrow,
+	.cs-summary__number {
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 800;
+		line-height: 1.4;
+		letter-spacing: calc(5px * var(--ui-scale));
+		text-transform: uppercase;
+		color: var(--color-action-ghost-text);
+	}
+	.cs-summary__heading h2 {
+		max-width: 8ch;
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: calc(44px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.04em;
+		color: var(--color-text);
+	}
+	.cs-summary__grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		border-top: var(--border-width) solid var(--color-border);
+	}
+	.cs-summary__item {
+		display: flex;
+		flex-direction: column;
+		gap: calc(20px * var(--ui-scale));
+		min-width: 0;
+		padding: calc(32px * var(--ui-scale));
+		border-right: var(--border-width) solid var(--color-border);
+	}
+	.cs-summary__item:last-child {
+		border-right: 0;
+	}
+	.cs-summary__item h3 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: calc(24px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 1.25;
+		color: var(--color-text);
+	}
+	.cs-summary__item p {
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: calc(18px * var(--ui-scale));
+		font-weight: 400;
+		line-height: 1.65;
+		letter-spacing: 0.01em;
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+	}
+
+	@media (max-width: 1100px) {
+		.cs-summary__inner {
+			grid-template-columns: 1fr;
+			gap: calc(48px * var(--ui-scale));
+		}
+		.cs-summary__heading h2 {
+			max-width: none;
+		}
+	}
+	@media (max-width: 839px) {
+		.cs-summary__inner {
+			padding: calc(72px * var(--ui-scale)) var(--gutter-mobile);
+		}
+		.cs-summary__heading h2 {
+			font-size: calc(36px * var(--ui-scale));
+		}
+		.cs-summary__grid {
+			grid-template-columns: 1fr;
+		}
+		.cs-summary__item {
+			padding: calc(32px * var(--ui-scale)) 0;
+			border-right: 0;
+			border-bottom: var(--border-width) solid var(--color-border);
+		}
+		.cs-summary__item:last-child {
+			border-bottom: 0;
+		}
+	}
+</style>

@@ -8,6 +8,7 @@ import Tag from '../components/ui/Tag.astro';
 import NextCase from '../components/case/NextCase.astro';
 import CaseLightbox from '../components/case/CaseLightbox.astro';
 import CaseConfidentialityNote from '../components/case/CaseConfidentialityNote.astro';
+import CaseExecutiveSummary from '../components/case/CaseExecutiveSummary.astro';
 import { Clock, ExternalLink } from '@lucide/astro';
 import type { TagCategory } from '../data/work-navigation';
 import { withBase } from '../lib/url';
@@ -32,6 +33,8 @@ const {
 	collaboration,
 	tools,
 	platform,
+	caseLayout = 'default',
+	executiveSummary,
 	nextCase,
 	confidentialityNote,
 	readingMinutes,
@@ -63,7 +66,7 @@ const metaRows = [
 	</head>
 	<body>
 		<Header />
-		<div class="cs-page">
+		<div class="cs-page" data-case-layout={caseLayout === 'editorial' ? 'editorial' : undefined}>
 
 			{breadcrumbs && breadcrumbs.length > 0 && (
 				<nav class="cs-hero__breadcrumbs" aria-label="Breadcrumb">
@@ -156,6 +159,8 @@ const metaRows = [
 					</div>
 				</div>
 			</div>
+
+			{executiveSummary && <CaseExecutiveSummary items={executiveSummary} />}
 
 			{confidentialityNote && <CaseConfidentialityNote />}
 
@@ -394,6 +399,156 @@ const metaRows = [
 		flex: 1;
 	}
 
+	/* ── Editorial case-study variant ───────────────────────────────────
+	   Opt-in only. The content and the existing case components remain the
+	   source of truth; this layer changes composition and reading rhythm. */
+	.cs-page[data-case-layout='editorial'] .cs-hero {
+		border-bottom: var(--border-width) solid var(--color-border);
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__content {
+		order: -1;
+		margin-top: 0;
+		border-top: 0;
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__content-inner {
+		align-items: flex-start;
+		gap: calc(80px * var(--ui-scale));
+		padding-block: calc(96px * var(--ui-scale)) calc(72px * var(--ui-scale));
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__text {
+		flex: 1 1 calc(820px * var(--ui-scale));
+		max-width: calc(860px * var(--ui-scale));
+		overflow: visible;
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__title {
+		max-width: 18ch;
+		font-size: clamp(calc(48px * var(--ui-scale)), 5vw, calc(82px * var(--ui-scale)));
+		line-height: 1.02;
+		letter-spacing: -0.045em;
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__desc {
+		max-width: 64ch;
+		font-size: calc(22px * var(--ui-scale));
+		line-height: 1.6;
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__meta {
+		flex: 0 1 calc(420px * var(--ui-scale));
+		width: 100%;
+		padding: 0;
+		background: transparent;
+		border: 0;
+		border-top: var(--border-width) solid var(--color-border);
+	}
+	.cs-page[data-case-layout='editorial'] .cs-meta-row {
+		align-items: flex-start;
+		padding: calc(18px * var(--ui-scale)) 0;
+	}
+	.cs-page[data-case-layout='editorial'] .cs-meta-row__label {
+		flex-basis: calc(150px * var(--ui-scale));
+		letter-spacing: calc(4px * var(--ui-scale));
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__image-wrap {
+		padding: 0 calc(64px * var(--ui-scale)) calc(96px * var(--ui-scale));
+	}
+	.cs-page[data-case-layout='editorial'] .cs-hero__image-frame {
+		width: min(calc(1440px * var(--ui-scale)), 100%);
+		border-radius: var(--radius-md);
+	}
+
+	.cs-page[data-case-layout='editorial'] .cs-article {
+		counter-reset: case-section;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-section) {
+		counter-increment: case-section;
+		padding-block: calc(152px * var(--ui-scale));
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-section__inner) {
+		position: relative;
+		max-width: calc(1440px * var(--ui-scale));
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-section__header::before) {
+		content: counter(case-section, decimal-leading-zero);
+		font-family: var(--font-heading);
+		font-size: calc(72px * var(--ui-scale));
+		font-weight: 700;
+		line-height: 0.85;
+		letter-spacing: -0.05em;
+		color: var(--color-action-ghost-text);
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-section__heading) {
+		max-width: 17ch;
+		font-size: clamp(calc(38px * var(--ui-scale)), 3.5vw, calc(56px * var(--ui-scale)));
+		line-height: 1.08;
+		letter-spacing: -0.035em;
+	}
+
+	/* Every section follows the same pattern on desktop: the chapter header
+	   (number, tag, heading) owns a left column and stays sticky while its
+	   section scrolls; all copy and media flow in the right column. The copy
+	   wrapper becomes display: contents so its header and body children join
+	   the section grid directly — the MDX and component markup stay as-is.
+	   The header spans many implicit rows (empty ones collapse to 0 with
+	   row-gap 0), so its height never stretches the first content row; as a
+	   sticky grid item it travels within the whole section and rests at the
+	   section's bottom when it ends. */
+	@media (min-width: 961px) {
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__inner) {
+			display: grid;
+			grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+			column-gap: calc(96px * var(--ui-scale));
+			row-gap: 0;
+			align-items: start;
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__copy) {
+			display: contents;
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__header) {
+			grid-column: 1;
+			grid-row: 1 / span 99;
+			position: sticky;
+			top: calc(var(--component-header-height-desktop) + 32px * var(--ui-scale));
+			margin-bottom: 0;
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__copy > :not(.cs-section__header)),
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__assets) {
+			grid-column: 2;
+			width: 100%;
+			max-width: calc(820px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__assets) {
+			max-width: none;
+			margin: 0 0 calc(64px * var(--ui-scale));
+		}
+		/* Side layout's absolutely positioned cover image depends on a flex
+		   row sibling for its height; in the grid it sizes itself. */
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout='side'] .cs-section__assets > img) {
+			position: static;
+			height: auto;
+			border-radius: var(--radius-md);
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section__copy > .cs-image-row) {
+			max-width: none;
+			margin-block: calc(56px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section__heading) {
+			max-width: none;
+			font-size: clamp(calc(34px * var(--ui-scale)), 2.6vw, calc(46px * var(--ui-scale)));
+		}
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-image-row:has(> :only-child) img) {
+		width: 100%;
+		max-height: none;
+	}
+
+	@media (max-width: 1100px) {
+		.cs-page[data-case-layout='editorial'] .cs-hero__content-inner {
+			gap: calc(56px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] .cs-hero__meta {
+			flex-basis: auto;
+		}
+	}
+
 	/* ── Responsive ───────────────────────────────────────────────────── */
 	@media (max-width: 1100px) {
 		.cs-hero__content-inner {
@@ -440,6 +595,37 @@ const metaRows = [
 		.cs-meta-row__label {
 			flex: 0 0 120px;
 			font-size: calc(10px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] .cs-hero__content {
+			margin-top: 0;
+		}
+		.cs-page[data-case-layout='editorial'] .cs-hero__content-inner {
+			padding-block: calc(64px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] .cs-hero__title {
+			font-size: calc(42px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] .cs-hero__image-wrap {
+			padding: 0 var(--gutter-mobile) calc(64px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section) {
+			padding-block: calc(96px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section[data-layout] .cs-section__copy) {
+			display: block;
+			width: 100%;
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section__header) {
+			margin-bottom: calc(48px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section__header::before) {
+			font-size: calc(48px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section__heading) {
+			font-size: calc(36px * var(--ui-scale));
+		}
+		.cs-page[data-case-layout='editorial'] :global(.cs-section__copy > .cs-image-row) {
+			margin-block: calc(48px * var(--ui-scale));
 		}
 	}
 </style>
