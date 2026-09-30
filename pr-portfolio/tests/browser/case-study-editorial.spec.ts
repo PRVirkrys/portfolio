@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const medusaWatch = '/portfolio/work/medusawatch-caso-estudio/';
-const problemSummary = 'La investigación apoyó de forma preliminar la hipótesis e hizo visible una tensión relevante: las soluciones basadas en avistamientos son reactivas y dependen de que alguien reporte primero; la oportunidad de MedusaWatch estaba en ayudar a decidir con antelación.';
+const productSummary = 'MedusaWatch es una aplicación web que ayuda a elegir, antes de salir de casa, qué playas de Mallorca presentan menor probabilidad estimada de medusas.';
 const sectionHeadings = [
   'Overview',
   'Origen de la idea: convertir conocimiento local en una hipótesis de producto',
@@ -23,13 +23,12 @@ test('MedusaWatch presents the existing story in the editorial case-study layout
   const summary = page.getByRole('region', { name: 'Resumen ejecutivo' });
   await expect(summary).toBeVisible();
   await expect(summary.getByRole('heading', { name: 'Resumen ejecutivo' })).toBeVisible();
-  await expect(summary.getByText('Problema', { exact: true })).toBeVisible();
-  await expect(summary.getByText('Enfoque', { exact: true })).toBeVisible();
-  await expect(summary.getByText('Resultado', { exact: true })).toBeVisible();
-  await expect(summary.getByText(problemSummary, { exact: true })).toBeVisible();
-  await expect(summary).toContainText('El PRD reducía la ambigüedad antes de producir código.');
+  for (const label of ['Producto', 'Pregunta', 'Mi rol', 'Resultado']) {
+    await expect(summary.getByText(label, { exact: true })).toBeVisible();
+  }
+  await expect(summary.getByText(productSummary, { exact: true })).toBeVisible();
   await expect(summary).toContainText('227 playas de Mallorca con una estimación específica basada en el viento.');
-  await expect(page.locator('.cs-article')).toContainText(problemSummary);
+  await expect(page.locator('.cs-article')).toContainText(productSummary);
 });
 
 test('the editorial layout keeps the original narrative and fits desktop and mobile', async ({ page }) => {
@@ -45,9 +44,9 @@ test('the editorial layout keeps the original narrative and fits desktop and mob
   }
 });
 
-test('every case study uses sticky section headers; the summary only renders when provided', async ({ page }) => {
+test('every case study uses sticky section headers; each shows its executive summary', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/portfolio/work/base-caso-estudio/');
   await expect(page.locator('.cs-section__header').first()).toHaveCSS('position', 'sticky');
-  await expect(page.getByRole('region', { name: 'Resumen ejecutivo' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Resumen ejecutivo' })).toBeVisible();
 });

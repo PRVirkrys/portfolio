@@ -47,7 +47,7 @@ const blog = defineCollection({
 			executiveSummary: z.array(z.object({
 				label: z.string(),
 				text: z.string(),
-			})).length(3).optional(),
+			})).min(2).max(5).optional(),
 			nextCase: z.object({ title: z.string(), slug: z.string() }).optional(),
 		}),
 });
