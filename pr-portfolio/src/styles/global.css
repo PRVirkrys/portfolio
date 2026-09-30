@@ -177,6 +177,16 @@ hr {
 	border: none;
 	border-top: var(--border-width) solid var(--color-border);
 }
+/* SidebarNavigation becomes a fixed bottom tab bar on mobile. The page
+   footer used to sit under it and absorb that overlap; now that the footer
+   only shows in the mobile menu, reserve the bar's height explicitly so the
+   end of every page stays reachable. The home scroll handles its own
+   clearance (--home-bottom-nav in home-scroll.css). */
+@media (max-width: 839px) {
+	body:not(.home-page) {
+		padding-bottom: calc(84px * var(--ui-scale));
+	}
+}
 @media (max-width: 720px) {
 	body {
 		font-size: var(--typography-body-m-font-size);
