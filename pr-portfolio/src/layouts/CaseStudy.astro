@@ -489,7 +489,7 @@ const metaRows = [
 	}
 
 	/* Learnings read like the executive summary: one row per callout —
-	   its number (01, 02…) in the left column; icon + title, with the body
+	   its number (01, 02…) in the left column; title, with the body
 	   underneath, in the right column. Rows are separated by hairlines
 	   instead of boxed cards. */
 	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid) {
@@ -529,6 +529,9 @@ const metaRows = [
 		align-items: center;
 		padding-bottom: 0;
 		border-bottom: 0;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__icon) {
+		display: none;
 	}
 	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__body) {
 		grid-column: 2;
