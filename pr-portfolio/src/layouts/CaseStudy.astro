@@ -488,6 +488,55 @@ const metaRows = [
 		max-height: none;
 	}
 
+	/* Learnings read like the executive summary: one row per callout —
+	   icon, title, body — separated by hairlines instead of boxed cards.
+	   The callout header becomes display: contents so icon and title join
+	   the row grid directly. */
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid) {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout) {
+		display: grid;
+		grid-template-columns: calc(64px * var(--ui-scale)) minmax(0, 1fr) minmax(0, 2.4fr);
+		align-items: baseline;
+		gap: calc(24px * var(--ui-scale));
+		padding: calc(32px * var(--ui-scale)) 0;
+		background: transparent;
+		border: 0;
+		border-bottom: var(--border-width) solid var(--color-border);
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout:last-child) {
+		border-bottom: 0;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__header) {
+		display: contents;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__icon) {
+		align-self: start;
+		color: var(--color-action-ghost-text);
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__icon svg) {
+		color: inherit;
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__title) {
+		font-size: calc(24px * var(--ui-scale));
+		line-height: 1.25;
+		letter-spacing: normal;
+		text-transform: none;
+		color: var(--color-text);
+	}
+	.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout__body) {
+		font-size: calc(18px * var(--ui-scale));
+		line-height: 1.65;
+	}
+	@media (max-width: 839px) {
+		.cs-page[data-case-layout='editorial'] :global(.cs-learnings-grid .cs-callout) {
+			grid-template-columns: minmax(0, 1fr);
+			gap: calc(16px * var(--ui-scale));
+		}
+	}
+
 	/* ── Responsive ───────────────────────────────────────────────────── */
 	@media (max-width: 1100px) {
 		.cs-hero__content-inner {
