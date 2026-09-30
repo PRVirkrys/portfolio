@@ -161,9 +161,13 @@ const metaRows = [
 				</div>
 			</div>
 
-			{executiveSummary && <CaseExecutiveSummary items={executiveSummary} />}
+			{executiveSummary && (
+				<CaseExecutiveSummary items={executiveSummary}>
+					{confidentialityNote && <CaseConfidentialityNote slot="footnote" inSummary />}
+				</CaseExecutiveSummary>
+			)}
 
-			{confidentialityNote && <CaseConfidentialityNote />}
+			{confidentialityNote && !executiveSummary && <CaseConfidentialityNote />}
 
 			<!-- Article body ------------------------------------------ -->
 			<article class="cs-article">

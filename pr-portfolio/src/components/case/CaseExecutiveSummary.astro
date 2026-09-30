@@ -18,14 +18,18 @@ const { items } = Astro.props;
 			<h2 id="case-summary-title">Resumen ejecutivo</h2>
 		</div>
 
-		<div class="cs-summary__grid">
-			{items.map((item, index) => (
-				<article class="cs-summary__item">
-					<span class="cs-summary__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-					<h3>{item.label}</h3>
-					<p>{item.text}</p>
-				</article>
-			))}
+		<div class="cs-summary__body">
+			<div class="cs-summary__grid">
+				{items.map((item, index) => (
+					<article class="cs-summary__item">
+						<span class="cs-summary__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+						<h3>{item.label}</h3>
+						<p>{item.text}</p>
+					</article>
+				))}
+			</div>
+			{/* Optional closing row, e.g. CaseConfidentialityNote. */}
+			<slot name="footnote" />
 		</div>
 	</div>
 </section>

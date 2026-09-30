@@ -1,11 +1,20 @@
 ---
 import { Lock } from '@lucide/astro';
+
+export interface Props {
+	/** Rendered as the closing row of CaseExecutiveSummary. Otherwise it
+	 * sits on its own band using the summary's column layout. */
+	inSummary?: boolean;
+}
+
+const { inSummary = false } = Astro.props;
 ---
 
-<aside class="cs-confidentiality" aria-label="Nota de confidencialidad">
+<aside class="cs-confidentiality" data-in-summary={inSummary || undefined} aria-label="Nota de confidencialidad">
 	<div class="cs-confidentiality__inner">
-		<div class="cs-confidentiality__note">
-			<p class="cs-confidentiality__label"><Lock class="cs-confidentiality__icon" aria-hidden="true" />Nota de confidencialidad</p>
+		<div class="cs-confidentiality__row">
+			<Lock class="cs-confidentiality__icon" aria-hidden="true" />
+			<p class="cs-confidentiality__label">Nota de confidencialidad</p>
 			<p class="cs-confidentiality__text">
 				Algunas imágenes de este caso de estudio han sido modificadas o recreadas para proteger información confidencial. Se incluyen como apoyo visual para explicar el proceso y las decisiones de diseño.
 			</p>
@@ -14,26 +23,27 @@ import { Lock } from '@lucide/astro';
 </aside>
 
 <style>
-	.cs-confidentiality__inner {
-		box-sizing: border-box;
-		width: 100%;
-		max-width: calc(1440px * var(--ui-scale));
-		margin-inline: auto;
-		padding: calc(24px * var(--ui-scale)) calc(64px * var(--ui-scale)) calc(48px * var(--ui-scale));
+	/* Same columns as a CaseExecutiveSummary row (number · label · text), so
+	   the note reads as the summary's closing footnote rather than a loose
+	   paragraph: lock icon in the number column, label, italic text. */
+	.cs-confidentiality__row {
+		display: grid;
+		grid-template-columns: calc(64px * var(--ui-scale)) minmax(0, 1fr) minmax(0, 2.4fr);
+		align-items: baseline;
+		gap: calc(24px * var(--ui-scale));
+		padding-top: calc(32px * var(--ui-scale));
+		border-top: var(--border-width) solid var(--color-border);
 	}
-	/* Reads as an aside, not content: accent rule on the left, no fill,
-	   limited to the reading column. */
-	.cs-confidentiality__note {
-		max-width: calc(680px * var(--ui-scale));
-		padding-left: calc(20px * var(--ui-scale));
-		border-left: 2px solid var(--color-action-ghost-text);
+	.cs-confidentiality__icon {
+		align-self: start;
+		width: calc(16px * var(--ui-scale));
+		height: calc(16px * var(--ui-scale));
+		margin-top: calc(4px * var(--ui-scale));
+		color: var(--color-action-ghost-text);
 	}
 	/* Same type as CaseCallout's title. */
 	.cs-confidentiality__label {
-		display: flex;
-		align-items: center;
-		gap: var(--space-2);
-		margin: 0 0 calc(8px * var(--ui-scale));
+		margin: 0;
 		font-family: var(--font-heading);
 		font-size: calc(12px * var(--ui-scale));
 		font-weight: 700;
@@ -42,23 +52,50 @@ import { Lock } from '@lucide/astro';
 		text-transform: uppercase;
 		color: color-mix(in srgb, var(--color-text) 90%, transparent);
 	}
-	.cs-confidentiality__icon {
-		flex-shrink: 0;
-		width: calc(16px * var(--ui-scale));
-		height: calc(16px * var(--ui-scale));
-		color: var(--color-action-ghost-text);
-	}
 	.cs-confidentiality__text {
 		margin: 0;
 		font-family: var(--font-sans);
-		font-size: max(14px, calc(17px * var(--ui-scale)));
+		font-size: max(14px, calc(16px * var(--ui-scale)));
 		font-style: italic;
 		line-height: 1.65;
 		color: var(--color-text-secondary);
 	}
+
+	/* Standalone band (case without an executive summary): mirror the
+	   summary's outer grid so the row lands in the same right column. */
+	.cs-confidentiality:not([data-in-summary]) .cs-confidentiality__inner {
+		box-sizing: border-box;
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.2fr);
+		gap: calc(80px * var(--ui-scale));
+		width: 100%;
+		max-width: calc(1440px * var(--ui-scale));
+		margin-inline: auto;
+		padding: calc(48px * var(--ui-scale)) calc(64px * var(--ui-scale));
+	}
+	.cs-confidentiality:not([data-in-summary]) .cs-confidentiality__row {
+		grid-column: 2;
+	}
+
+	@media (max-width: 1100px) {
+		.cs-confidentiality:not([data-in-summary]) .cs-confidentiality__inner {
+			grid-template-columns: 1fr;
+		}
+		.cs-confidentiality:not([data-in-summary]) .cs-confidentiality__row {
+			grid-column: 1;
+		}
+	}
 	@media (max-width: 839px) {
-		.cs-confidentiality__inner {
+		.cs-confidentiality:not([data-in-summary]) .cs-confidentiality__inner {
 			padding-inline: var(--gutter-mobile);
+		}
+		.cs-confidentiality__row {
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: var(--space-2);
+			row-gap: calc(12px * var(--ui-scale));
+		}
+		.cs-confidentiality__text {
+			grid-column: 1 / -1;
 		}
 	}
 </style>
