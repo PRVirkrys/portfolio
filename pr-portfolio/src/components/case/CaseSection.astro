@@ -56,7 +56,9 @@ const hasImage = Astro.slots.has('image');
 
 <style>
 	.cs-section {
-		padding-block: calc(112px * var(--ui-scale));
+		/* Counter reset lives on .cs-article (CaseStudy.astro). */
+		counter-increment: case-section;
+		padding-block: calc(152px * var(--ui-scale));
 	}
 	.cs-section[data-variant='subtle'] {
 		background-color: var(--color-bg-subtle);
@@ -67,6 +69,7 @@ const hasImage = Astro.slots.has('image');
 		max-width: calc(1440px * var(--ui-scale));
 		margin-inline: auto;
 		padding-inline: calc(64px * var(--ui-scale));
+		position: relative;
 	}
 
 	/* ── Stacked: assets on top, copy centred below ── */
@@ -93,20 +96,24 @@ const hasImage = Astro.slots.has('image');
 		width: auto;
 		height: auto;
 	}
-	/* 'auto': a single image doesn't span the full row — it matches the copy
-	   column width below it. Explicit 'contained'/'full' below always win
-	   over this guess. */
-	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='auto']:has(> :only-child) {
-		width: min(calc(680px * var(--ui-scale)), 100%);
-		margin-inline: auto;
-	}
-	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='contained'] {
-		width: min(calc(680px * var(--ui-scale)), 100%);
-		margin-inline: auto;
-	}
-	.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='full'] {
-		width: min(calc(1280px * var(--ui-scale)), 100%);
-		margin-inline: auto;
+	/* Asset width variants only matter while stacked is a centred column
+	   (≤960px); on desktop assets fill the right grid column. */
+	@media (max-width: 960px) {
+		/* 'auto': a single image doesn't span the full row — it matches the copy
+		   column width below it. Explicit 'contained'/'full' below always win
+		   over this guess. */
+		.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='auto']:has(> :only-child) {
+			width: min(calc(680px * var(--ui-scale)), 100%);
+			margin-inline: auto;
+		}
+		.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='contained'] {
+			width: min(calc(680px * var(--ui-scale)), 100%);
+			margin-inline: auto;
+		}
+		.cs-section[data-layout='stacked'] .cs-section__assets[data-image-width='full'] {
+			width: min(calc(1280px * var(--ui-scale)), 100%);
+			margin-inline: auto;
+		}
 	}
 	.cs-section[data-layout='stacked'] .cs-section__copy {
 		width: min(calc(680px * var(--ui-scale)), 100%);
@@ -182,12 +189,23 @@ const hasImage = Astro.slots.has('image');
 		gap: calc(16px * var(--ui-scale));
 		margin-bottom: calc(16px * var(--ui-scale));
 	}
-	.cs-section__heading {
+	/* Chapter number (01, 02…) above the tag. */
+	.cs-section__header::before {
+		content: counter(case-section, decimal-leading-zero);
 		font-family: var(--font-heading);
-		font-size: calc(36px * var(--ui-scale));
+		font-size: calc(72px * var(--ui-scale));
 		font-weight: 700;
-		line-height: 1.3;
-		letter-spacing: -0.25px;
+		line-height: 0.85;
+		letter-spacing: -0.05em;
+		color: var(--color-action-ghost-text);
+	}
+	.cs-section__heading {
+		max-width: 17ch;
+		font-family: var(--font-heading);
+		font-size: clamp(calc(38px * var(--ui-scale)), 3.5vw, calc(56px * var(--ui-scale)));
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.035em;
 		color: var(--color-text);
 		margin: 0;
 	}
@@ -267,7 +285,7 @@ const hasImage = Astro.slots.has('image');
 	/* ── Responsive ── */
 	@media (max-width: 960px) {
 		.cs-section {
-			padding-block: calc(64px * var(--ui-scale));
+			padding-block: calc(96px * var(--ui-scale));
 		}
 		.cs-section__inner {
 			padding-inline: var(--gutter-mobile);
@@ -297,8 +315,83 @@ const hasImage = Astro.slots.has('image');
 			/* 375px * 0.8 = 300px real. */
 			max-height: calc(375px * var(--ui-scale));
 		}
+	}
+
+	/* ── Desktop: sticky chapter header ──
+	   Every layout follows the same pattern: the header (number, tag,
+	   heading) owns a left column and stays sticky while its section
+	   scrolls; all copy and media flow in the right column. The copy wrapper
+	   becomes display: contents so its header and body children join the
+	   section grid directly. The header spans many implicit rows (empty ones
+	   collapse to 0 with row-gap 0), so its height never stretches the first
+	   content row; as a sticky grid item it travels within the whole section
+	   and rests at the section's bottom when it ends. Below 961px the
+	   stacked/side rules above apply. */
+	@media (min-width: 961px) {
+		.cs-section[data-layout] .cs-section__inner {
+			display: grid;
+			grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+			column-gap: calc(96px * var(--ui-scale));
+			row-gap: 0;
+			align-items: start;
+		}
+		.cs-section[data-layout] .cs-section__copy {
+			display: contents;
+		}
+		.cs-section[data-layout] .cs-section__header {
+			grid-column: 1;
+			grid-row: 1 / span 99;
+			position: sticky;
+			top: calc(var(--component-header-height-desktop) + 32px * var(--ui-scale));
+			margin-bottom: 0;
+		}
+		.cs-section[data-layout] .cs-section__copy > :global(:not(.cs-section__header)) {
+			grid-column: 2;
+			width: 100%;
+			max-width: calc(820px * var(--ui-scale));
+		}
+		.cs-section[data-layout] .cs-section__assets {
+			grid-column: 2;
+			width: 100%;
+			margin: 0 0 calc(64px * var(--ui-scale));
+			justify-content: flex-start;
+		}
+		/* Side layout's absolutely positioned cover image depends on a flex
+		   row sibling for its height; in the grid it sizes itself. */
+		.cs-section[data-layout='side'] .cs-section__assets > :global(img) {
+			position: static;
+			height: auto;
+			border-radius: var(--radius-md);
+		}
+		.cs-section__copy > :global(.cs-image-row) {
+			max-width: none;
+			margin-block: calc(56px * var(--ui-scale));
+		}
 		.cs-section__heading {
-			font-size: calc(28px * var(--ui-scale));
+			max-width: none;
+			font-size: clamp(calc(34px * var(--ui-scale)), 2.6vw, calc(46px * var(--ui-scale)));
+		}
+	}
+	.cs-section :global(.cs-image-row:has(> :only-child) img) {
+		width: 100%;
+		max-height: none;
+	}
+
+	@media (max-width: 839px) {
+		.cs-section[data-layout] .cs-section__copy {
+			width: 100%;
+		}
+		.cs-section__header {
+			margin-bottom: calc(48px * var(--ui-scale));
+		}
+		.cs-section__header::before {
+			font-size: calc(48px * var(--ui-scale));
+		}
+		.cs-section__heading {
+			font-size: calc(36px * var(--ui-scale));
+		}
+		.cs-section__copy > :global(.cs-image-row) {
+			margin-block: calc(48px * var(--ui-scale));
 		}
 	}
 </style>

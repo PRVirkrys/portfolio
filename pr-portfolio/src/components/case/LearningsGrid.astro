@@ -1,7 +1,10 @@
 ---
-// Wrapper for the 3-col learnings grid in a case study.
-// Each child should be a <CaseCallout size="lg"> (same component the
-// section's inline callouts use, just with the larger icon variant).
+// Wrapper for the learnings list in a case study.
+// Each child should be a <CaseCallout size="lg">. The list reads like the
+// executive summary (CaseExecutiveSummary.astro): one row per learning —
+// its number (01, 02…) in the left column; title, with the body underneath,
+// in the right column — separated by hairlines instead of boxed cards.
+// Callout icons stay in the MDX but aren't shown here.
 ---
 
 <div class="cs-learnings-grid">
@@ -11,19 +14,57 @@
 <style>
 	.cs-learnings-grid {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: calc(16px * var(--ui-scale));
+		grid-template-columns: minmax(0, 1fr);
 		width: 100%;
 		margin-top: calc(16px * var(--ui-scale));
+		counter-reset: learning;
 	}
-	@media (max-width: 1280px) and (min-width: 641px) {
-		.cs-learnings-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
+	.cs-learnings-grid :global(.cs-callout[data-size]) {
+		counter-increment: learning;
+		display: grid;
+		grid-template-columns: calc(64px * var(--ui-scale)) minmax(0, 1fr);
+		column-gap: calc(24px * var(--ui-scale));
+		row-gap: calc(16px * var(--ui-scale));
+		margin: 0;
+		padding: calc(32px * var(--ui-scale)) 0;
+		background: transparent;
+		border: 0;
+		border-bottom: var(--border-width) solid var(--color-border);
 	}
-	@media (max-width: 640px) {
-		.cs-learnings-grid {
-			grid-template-columns: 1fr;
-		}
+	.cs-learnings-grid :global(.cs-callout[data-size]:last-child) {
+		border-bottom: 0;
+	}
+	/* Same type as .cs-summary__number. */
+	.cs-learnings-grid :global(.cs-callout[data-size]::before) {
+		content: counter(learning, decimal-leading-zero);
+		grid-column: 1;
+		grid-row: 1 / span 2;
+		padding-top: calc(6px * var(--ui-scale));
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 800;
+		line-height: 1.4;
+		letter-spacing: calc(5px * var(--ui-scale));
+		color: var(--color-action-ghost-text);
+	}
+	.cs-learnings-grid :global(.cs-callout__header) {
+		grid-column: 2;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+	.cs-learnings-grid :global(.cs-callout__icon) {
+		display: none;
+	}
+	.cs-learnings-grid :global(.cs-callout__title) {
+		font-size: calc(24px * var(--ui-scale));
+		line-height: 1.25;
+		letter-spacing: normal;
+		text-transform: none;
+		color: var(--color-text);
+	}
+	.cs-learnings-grid :global(.cs-callout__body) {
+		grid-column: 2;
+		font-size: calc(18px * var(--ui-scale));
+		line-height: 1.65;
 	}
 </style>

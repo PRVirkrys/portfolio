@@ -20,9 +20,6 @@ const sectionHeadings = [
 test('MedusaWatch presents the existing story in the editorial case-study layout', async ({ page }) => {
   await page.goto(medusaWatch);
 
-  const casePage = page.locator('[data-case-layout="editorial"]');
-  await expect(casePage).toBeVisible();
-
   const summary = page.getByRole('region', { name: 'Resumen ejecutivo' });
   await expect(summary).toBeVisible();
   await expect(summary.getByRole('heading', { name: 'Resumen ejecutivo' })).toBeVisible();
@@ -48,8 +45,9 @@ test('the editorial layout keeps the original narrative and fits desktop and mob
   }
 });
 
-test('case studies without an editorial summary keep their current layout', async ({ page }) => {
+test('every case study uses sticky section headers; the summary only renders when provided', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/portfolio/work/base-caso-estudio/');
-  await expect(page.locator('[data-case-layout="editorial"]')).toHaveCount(0);
+  await expect(page.locator('.cs-section__header').first()).toHaveCSS('position', 'sticky');
   await expect(page.getByRole('region', { name: 'Resumen ejecutivo' })).toHaveCount(0);
 });
