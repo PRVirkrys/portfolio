@@ -165,7 +165,7 @@ const metaRows = [
 			{executiveSummary && <CaseExecutiveSummary items={executiveSummary} />}
 
 			<!-- Article body ------------------------------------------ -->
-			<article class="cs-article">
+			<article class="cs-article" data-confidential-images={confidentialityNote || undefined}>
 				<slot />
 			</article>
 
