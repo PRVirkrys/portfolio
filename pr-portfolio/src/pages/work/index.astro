@@ -38,6 +38,8 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
       <noscript><p>Puedes explorar todos los casos. Activa JavaScript para usar los filtros.</p></noscript>
       <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><button type="button" class="work-page__clear" data-clear-filters hidden>Limpiar filtros</button><div class="work-view" role="group" aria-label="Vista" data-work-view><button type="button" data-view-option="grid" aria-pressed="true" aria-label="Cuadrícula"><LayoutGrid aria-hidden="true" /></button><button type="button" data-view-option="rows" aria-pressed="false" aria-label="Filas"><Rows3 aria-hidden="true" /></button></div></div>
       <div class="work-grid" data-work-grid data-view="grid">{cases.map((entry, index) => <CaseStudyCard entry={entry} eager={index < 2} />)}</div>
+      {/* Restore the saved view before first paint so rows don't flash as a grid. */}
+      <script is:inline>try { if (localStorage.getItem('work-view') === 'rows') document.querySelector('[data-work-grid]').dataset.view = 'rows'; } catch {}</script>
       <section class="work-empty" data-work-empty hidden aria-labelledby="empty-title"><h2 id="empty-title">No hay casos con esta selección</h2><p>Prueba otro foco o vuelve a explorar todos los proyectos.</p><Button data-clear-filters showLeadingIcon={false}>Ver todos los casos</Button></section>
       <section class="work-contact" aria-labelledby="contact-title"><h2 id="contact-title">¿Hablamos de tu próximo proyecto?</h2><Button href={withBase('/contacto/')} showLeadingIcon={false}>Contactar</Button></section>
     </main>
@@ -51,11 +53,16 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
   // Grid / rows view toggle (desktop only — mobile is always one column).
   const grid = document.querySelector<HTMLElement>('[data-work-grid]');
   const options = document.querySelectorAll<HTMLButtonElement>('[data-view-option]');
+  const syncPressed = () => {
+    for (const option of options) option.setAttribute('aria-pressed', String(option.dataset.viewOption === grid?.dataset.view));
+  };
+  syncPressed();
   for (const option of options) {
     option.addEventListener('click', () => {
-      if (!grid) return;
+      if (!grid || !option.dataset.viewOption) return;
       grid.dataset.view = option.dataset.viewOption;
-      for (const other of options) other.setAttribute('aria-pressed', String(other === option));
+      syncPressed();
+      try { localStorage.setItem('work-view', option.dataset.viewOption); } catch {}
     });
   }
 </script>
