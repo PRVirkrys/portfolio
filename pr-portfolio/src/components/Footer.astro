@@ -1,9 +1,17 @@
 ---
 // Figma: PR Brand (DS) → Footer (node 15984:183946)
 import { iconUrl } from '../lib/icons';
+
+export interface Props {
+	/** Rendered inside the mobile menu panel (Header.astro). On mobile that
+	 * is the only place the footer shows; page footers are hidden there. */
+	inMenu?: boolean;
+}
+
+const { inMenu = false } = Astro.props;
 ---
 
-<footer class="footer">
+<footer class="footer" data-in-menu={inMenu || undefined}>
 	<span class="footer__item">
 		<span>Made in Barcelona</span>
 		<img class="footer__flag" src={iconUrl('flag-spain.svg')} alt="" width="32" height="32" />
@@ -44,5 +52,6 @@ import { iconUrl } from '../lib/icons';
 	@media (max-width: 839px) {
 		.footer { justify-content: center; gap: var(--space-3); padding-inline: var(--gutter-mobile); }
 		.footer__sep { display: none; }
+		.footer:not([data-in-menu]) { display: none; }
 	}
 </style>

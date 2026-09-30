@@ -1521,7 +1521,8 @@ html.home-boot
   .home-page {
     --home-bottom-nav: calc(84px * var(--ui-scale));
     --home-header-height: var(--component-header-height-mobile);
-    --home-footer-height: 90px;
+    /* The footer only lives in the mobile menu panel (see Footer.astro). */
+    --home-footer-height: 0px;
   }
   .home-scene {
     padding: calc(var(--home-header-height) + 40px) 24px
@@ -1645,17 +1646,7 @@ html.home-boot
     top: 86%;
   }
   .home-footer {
-    left: 0;
-    bottom: var(--home-bottom-nav);
-  }
-  .home-footer .footer {
-    gap: 4px 12px;
-    padding: 8px 12px;
-    font-size: 10px;
-    letter-spacing: 0;
-  }
-  .home-footer .footer__item {
-    gap: 6px;
+    display: none;
   }
   .scroll-indicator {
     left: 50%;
