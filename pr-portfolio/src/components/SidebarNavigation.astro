@@ -10,7 +10,7 @@ const navigation = [
 	{ label: 'Work', href: withBase('/work'), Icon: BriefcaseBusiness },
 	{ label: 'About', href: withBase('/about'), Icon: CircleUserRound },
 	{ label: 'CV', href: withBase('/cv'), Icon: FileUser },
-	{ label: 'Contacto', href: withBase('/contacto'), Icon: Send },
+	{ label: 'Contacto', href: withBase('/#contact'), Icon: Send },
 ];
 const isActive = (href: string) => (href === withBase('/') ? pathname === withBase('/') : pathname === href || pathname.startsWith(`${href}/`));
 ---

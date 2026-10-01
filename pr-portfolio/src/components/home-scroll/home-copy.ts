@@ -37,6 +37,13 @@ export type HomeCopy = {
     tag: string; prefix: string; closingPrefix: string; roles: string[]; name: string;
     text: string; ctaPrimary: string; ctaSecondary: string;
   };
+  // Closing contact block after the pinned journey (Prefooter.astro). Replaces
+  // the old /contacto page: the home ends on the invitation, not a form.
+  prefooter: {
+    title: string; text: string;
+    email: string; linkedin: string; cv: string; github: string;
+    newTab: string;
+  };
   // First-person lines Paula "says" as the scrub reaches a point on the pinned
   // timeline — a beat: driven by scroll, reverts when scrubbed back. One phrase
   // per beat for now; an array so a beat can grow. Scene keys are optional and
@@ -168,6 +175,12 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
     },
+    prefooter: {
+      title: 'Good products start before the first screen',
+      text: 'I’m open to product design roles, freelance projects and collaborations.',
+      email: 'Email me', linkedin: 'LinkedIn', cv: 'View CV', github: 'GitHub',
+      newTab: '(se abre en una pestaña nueva)',
+    },
     narration: { transition: [{ say: 'Hey, ¡espérame!' }] },
     relatedProjects: 'Explorar proyectos relacionados', scroll: 'Haz scroll para explorar', skip: 'Ir a los proyectos',
   },
@@ -269,6 +282,12 @@ export const homeCopy: Record<Locale, HomeCopy> = {
       name: 'PAULA RODAS',
       text: 'I research, design and build to turn complex ideas into clear, useful and human products.',
       ctaPrimary: 'Explore my work', ctaSecondary: 'Let’s talk',
+    },
+    prefooter: {
+      title: 'Good products start before the first screen',
+      text: 'I’m open to product design roles, freelance projects and collaborations.',
+      email: 'Email me', linkedin: 'LinkedIn', cv: 'View CV', github: 'GitHub',
+      newTab: '(opens in a new tab)',
     },
     narration: { transition: [{ say: 'Hey, wait for me!' }] },
     relatedProjects: 'Explore related work', scroll: 'Scroll to explore', skip: 'Skip to projects',

@@ -10,6 +10,7 @@ import AIScene from './AIScene.astro';
 import ManifestoScene from './ManifestoScene.astro';
 import IdentityScene from './IdentityScene.astro';
 import ScrollIndicator from './ScrollIndicator.astro';
+import Prefooter from './Prefooter.astro';
 import Tag from '../ui/Tag.astro';
 import TextLink from '../ui/TextLink.astro';
 import { homeCopy, type Locale } from './home-copy';
@@ -77,6 +78,7 @@ const copy = homeCopy[locale];
   </div>
   <ScrollIndicator label={copy.scroll} />
 </main>
+<Prefooter copy={copy} />
 <script>
   import { mountHomeScroll } from './home-scroll';
   mountHomeScroll();

@@ -41,7 +41,7 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
       {/* Restore the saved view before first paint so rows don't flash as a grid. */}
       <script is:inline>try { if (localStorage.getItem('work-view') === 'rows') document.querySelector('[data-work-grid]').dataset.view = 'rows'; } catch {}</script>
       <section class="work-empty" data-work-empty hidden aria-labelledby="empty-title"><h2 id="empty-title">No hay casos con esta selección</h2><p>Prueba otro foco o vuelve a explorar todos los proyectos.</p><Button data-clear-filters showLeadingIcon={false}>Ver todos los casos</Button></section>
-      <section class="work-contact" aria-labelledby="contact-title"><h2 id="contact-title">¿Hablamos de tu próximo proyecto?</h2><Button href={withBase('/contacto/')} showLeadingIcon={false}>Contactar</Button></section>
+      <section class="work-contact" aria-labelledby="contact-title"><h2 id="contact-title">¿Hablamos de tu próximo proyecto?</h2><Button href={withBase('/#contact')} showLeadingIcon={false}>Contactar</Button></section>
     </main>
     <Footer />
   </body>
