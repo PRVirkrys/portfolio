@@ -1,0 +1,184 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import JourneyChapters from './JourneyChapters.astro';
+import SectionIntro from './SectionIntro.astro';
+
+interface StoryChapter {
+  period: string;
+  title: string;
+  body: string[];
+  journeyIndex: number;
+}
+
+interface JourneyChapter {
+  start: number;
+  end?: number;
+  status?: string;
+  kind?: 'work' | 'study';
+  name: string;
+  title: string;
+  tagline: string;
+  body: string;
+  tags: string[];
+  workCompany?: 'failfast' | 'lpa' | 'pelt8';
+}
+
+interface Props {
+  story: StoryChapter[];
+  journey: JourneyChapter[];
+}
+
+const { story, journey } = Astro.props;
+---
+
+<section class="journey-switch" aria-labelledby="evolution-title" data-journey-switch>
+  <div class="journey-switch__intro">
+    <SectionIntro
+      eyebrow="Diseñar y construir"
+      heading="Primero aprendí a dar forma."
+      headingMuted="Después, a construirla."
+      lede="Del diseño gráfico al código: cinco momentos que ampliaron mi manera de llevar una idea a la realidad."
+      headingId="evolution-title"
+    />
+  </div>
+
+  <div class="journey-switch__choice">
+    <p>¿Cómo quieres conocer mi recorrido?</p>
+    <div class="journey-switch__tabs" role="tablist" aria-label="Forma de recorrer la historia">
+      <button type="button" role="tab" id="story-tab" aria-controls="story-panel" aria-selected="true" data-view-tab="story">Seguir la historia</button>
+      <button type="button" role="tab" id="journey-tab" aria-controls="journey-panel" aria-selected="false" tabindex="-1" data-view-tab="journey">Explorar por etapas</button>
+    </div>
+  </div>
+
+  <div id="story-panel" role="tabpanel" aria-labelledby="story-tab" data-view-panel="story" data-story-panel>
+    <div class="story-layout">
+      <aside class="story-layout__aside" aria-hidden="true">
+        <span>Lectura lineal</span>
+        <strong>Del origen<br />al presente</strong>
+      </aside>
+      <div class="story-layout__chapters">
+        {story.map((chapter, index) => (
+          <article class="about-chapter">
+            <div class="about-chapter__meta">
+              <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <span>{chapter.period}</span>
+            </div>
+            <h3>{chapter.title}</h3>
+            <div class="about-prose">{chapter.body.map(paragraph => <p set:html={paragraph} />)}</div>
+            <button type="button" class="about-chapter__journey-link" data-open-journey={chapter.journeyIndex}>
+              Explorar esta etapa <ArrowRight aria-hidden="true" />
+            </button>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div id="journey-panel" role="tabpanel" aria-labelledby="journey-tab" data-view-panel="journey" data-journey-panel>
+    <JourneyChapters
+      chapters={journey}
+      eyebrow="Mi recorrido"
+      heading="Los caminos cambiaron."
+      headingMuted="La curiosidad se quedó."
+      intro=""
+      headingId="journey-title-about-2"
+      showIntro={false}
+    />
+  </div>
+
+  <footer class="journey-switch__coda">
+    <p>Los caminos cambiaron. <span>La curiosidad se quedó.</span></p>
+    <small>Cada etapa añadió una nueva forma de comprender, diseñar o construir. Hoy ya no las entiendo como caminos separados, sino como partes de una misma práctica.</small>
+  </footer>
+</section>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-journey-switch]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-view-tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-view-panel]')];
+
+    const activate = (view: string, chapterIndex?: number) => {
+      tabs.forEach(tab => {
+        const selected = tab.dataset.viewTab === view;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach(panel => { panel.hidden = panel.dataset.viewPanel !== view; });
+
+      if (view === 'journey') {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          window.dispatchEvent(new Event('resize'));
+          if (chapterIndex !== undefined) {
+            const row = root.querySelectorAll<HTMLElement>('[data-journey-panel] [data-career-chapter] .chapter__row')[chapterIndex];
+            row?.click();
+          }
+        }));
+      }
+    };
+
+    root.classList.add('is-ready');
+    activate('story');
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activate(tab.dataset.viewTab ?? 'story'));
+      tab.addEventListener('keydown', event => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+        tabs[next].focus();
+        activate(tabs[next].dataset.viewTab ?? 'story');
+      });
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-open-journey]').forEach(button => {
+      button.addEventListener('click', () => activate('journey', Number(button.dataset.openJourney)));
+    });
+  }
+</script>
+
+<style>
+  .journey-switch { padding-block: calc(120px * var(--ui-scale)); border-top: var(--border-width) solid var(--color-border); }
+  .journey-switch__intro { margin-bottom: var(--space-12); }
+  .journey-switch__choice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-5); margin-bottom: calc(72px * var(--ui-scale)); padding-block: var(--space-5); border-block: var(--border-width) solid var(--color-border); }
+  .journey-switch__choice p { margin: 0; font-family: var(--font-heading); font-size: calc(18px * var(--ui-scale)); font-weight: 600; }
+  .journey-switch__tabs { display: none; gap: var(--space-1); padding: var(--space-1); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-full); background: var(--color-bg-subtle); }
+  .is-ready .journey-switch__tabs { display: flex; }
+  .journey-switch__tabs button { padding: var(--space-3) var(--space-5); border: 0; border-radius: var(--radius-full); background: transparent; color: var(--color-text-secondary); font: 600 calc(15px * var(--ui-scale))/1.2 var(--font-heading); white-space: nowrap; cursor: pointer; }
+  .journey-switch__tabs button[aria-selected='true'] { background: var(--color-text); color: var(--color-bg); }
+  .journey-switch__tabs button:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  [data-view-panel][hidden] { display: none; }
+
+  .story-layout { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: calc(96px * var(--ui-scale)); align-items: start; }
+  .story-layout__aside { position: sticky; top: calc(var(--component-header-height-desktop) + var(--space-8)); display: grid; gap: var(--space-3); padding-top: var(--space-5); border-top: var(--border-width) solid var(--color-border-strong); }
+  .story-layout__aside span { font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(3px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
+  .story-layout__aside strong { font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); line-height: 1.2; }
+  .about-chapter + .about-chapter { margin-top: calc(96px * var(--ui-scale)); }
+  .about-chapter__meta { display: flex; justify-content: space-between; gap: var(--space-5); margin-bottom: var(--space-4); font-family: var(--font-heading); font-size: calc(15px * var(--ui-scale)); font-weight: 700; color: var(--color-action-ghost-text); font-variant-numeric: tabular-nums; }
+  .about-chapter h3 { margin: 0 0 var(--space-4); font-family: var(--font-heading); font-size: calc(30px * var(--ui-scale)); font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; }
+  .about-prose { max-width: calc(820px * var(--ui-scale)); }
+  .about-prose p { margin: 0 0 calc(36px * var(--ui-scale)); font-size: calc(20px * var(--ui-scale)); line-height: 1.65; letter-spacing: 0.01em; color: color-mix(in srgb, var(--color-text) 90%, transparent); }
+  .about-prose p:last-child { margin-bottom: 0; }
+  .about-prose :global(strong) { color: var(--color-text); font-weight: 700; }
+  .about-chapter__journey-link { display: inline-flex; align-items: center; gap: var(--space-2); margin-top: var(--space-6); padding: 0 0 var(--space-1); border: 0; border-bottom: var(--border-width) solid currentColor; background: transparent; color: var(--color-action-ghost-text); font: 700 calc(15px * var(--ui-scale))/1.4 var(--font-heading); cursor: pointer; }
+  .about-chapter__journey-link :global(svg) { width: var(--icon-sm); height: var(--icon-sm); transition: transform var(--duration-medium) var(--ease-standard); }
+  .about-chapter__journey-link:hover :global(svg) { transform: translateX(var(--space-1)); }
+
+  [data-journey-panel] { padding: var(--space-4) 0; }
+  .journey-switch__coda { max-width: calc(980px * var(--ui-scale)); margin: calc(112px * var(--ui-scale)) auto 0; padding-top: var(--space-8); border-top: var(--border-width) solid var(--color-border-strong); text-align: center; }
+  .journey-switch__coda p { margin: 0 0 var(--space-4); font-family: var(--font-heading); font-size: clamp(calc(32px * var(--ui-scale)), 4vw, calc(56px * var(--ui-scale))); font-weight: 700; line-height: 1.1; letter-spacing: -0.035em; }
+  .journey-switch__coda p span { color: var(--color-text-muted); }
+  .journey-switch__coda small { display: block; max-width: 62ch; margin-inline: auto; font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
+
+  @media (max-width: 960px) {
+    .journey-switch { padding-block: calc(80px * var(--ui-scale)); }
+    .story-layout { grid-template-columns: minmax(0, 1fr); }
+    .story-layout__aside { display: none; }
+  }
+  @media (max-width: 960px) {
+    .journey-switch__choice { align-items: stretch; }
+    .journey-switch__choice p { width: 100%; }
+    .journey-switch__tabs { width: 100%; border-radius: var(--radius-lg); }
+    .journey-switch__tabs button { flex: 1; padding-inline: var(--space-3); border-radius: var(--radius-md); }
+    .journey-switch__coda { text-align: left; }
+  }
+</style>

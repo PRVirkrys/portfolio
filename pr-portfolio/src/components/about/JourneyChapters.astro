@@ -39,8 +39,10 @@ interface Props {
   headingMuted?: string;
   intro?: string;
   headingId: string;
+  /** Keeps the current component reusable when a parent already introduces the journey. */
+  showIntro?: boolean;
 }
-const { chapters, eyebrow, heading, headingMuted, intro, headingId } = Astro.props;
+const { chapters, eyebrow, heading, headingMuted, intro, headingId, showIntro = true } = Astro.props;
 
 const cases = await getCollection('blog', ({ data }) => data.type === 'case-study');
 const casesFor = (company?: WorkCompanyId) => company ? cases.filter(entry => entry.data.company === company) : [];
@@ -55,9 +57,11 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
 ---
 
 <div class="career">
-  <div class="career__intro">
-    <SectionIntro eyebrow={eyebrow} heading={heading} headingMuted={headingMuted} lede={intro} headingId={headingId} />
-  </div>
+  {showIntro && (
+    <div class="career__intro">
+      <SectionIntro eyebrow={eyebrow} heading={heading} headingMuted={headingMuted} lede={intro} headingId={headingId} />
+    </div>
+  )}
   <div class="career__hold" data-career>
   <div class="career__stage" data-career-stage>
     <div class="career__head">
