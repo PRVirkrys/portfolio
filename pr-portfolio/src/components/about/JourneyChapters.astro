@@ -47,6 +47,8 @@ const casesFor = (company?: WorkCompanyId) => company ? cases.filter(entry => en
 // Case titles read "Customer · Subtitle"; the chip only needs the customer.
 const caseLabel = (title: string) => title.split(' · ')[0];
 
+const reel = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 const axisStart = Math.min(...chapters.map(chapter => chapter.start));
 const axisEnd = new Date().getFullYear();
 const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStart)) * 100;
@@ -61,7 +63,14 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
     <div class="career__head">
       <div class="career__marker" aria-hidden="true">
         <span class="career__label">Capítulo</span>
-        <strong class="career__year" data-career-year>{chapters[0].start}</strong>
+        {/* Odometer: one 0–9 reel per digit; only the digits that change roll. */}
+        <strong class="career__year" data-career-year>
+          {String(chapters[0].start).split('').map(digit => (
+            <span class="career__digit" style={`--digit: ${digit};`}>
+              <span class="career__reel">{reel.map(n => <span>{n}</span>)}</span>
+            </span>
+          ))}
+        </strong>
         <div class="career__axis">
           <i data-career-dot style={`left: ${axisPosition(chapters[0].start)}%;`}></i>
           <span>{axisStart}</span><span>Hoy</span>
@@ -76,7 +85,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
             <button type="button" class="chapter__row" id={`chapter-${index}`} aria-expanded="true" aria-controls={`chapter-body-${index}`}>
               <span class="chapter__period">{chapter.start} – {chapter.end ?? 'Hoy'}</span>
               <span class="chapter__label">
-                <strong>{chapter.kind === 'study' && <GraduationCap class="chapter__kind" aria-hidden="true" />}{chapter.kind === 'study' && <span class="sr-only">Formación: </span>}{chapter.name}</strong>
+                <strong>{chapter.kind === 'study' && <span class="sr-only">Formación: </span>}{chapter.name}{chapter.kind === 'study' && <GraduationCap class="chapter__kind" aria-hidden="true" />}</strong>
                 <span class="chapter__title">{chapter.title}</span>
               </span>
               <ChevronDown class="chapter__icon" aria-hidden="true" />
@@ -135,7 +144,6 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
 
     const open = (index: number) => {
       if (index === active) return;
-      const previous = active;
       active = index;
       chapters.forEach((chapter, i) => {
         const isOpen = i === index;
@@ -146,17 +154,10 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
       const chapter = chapters[index];
       alignMarker();
       dot.style.left = `${chapter.dataset.position}%`;
-      if (year.textContent === chapter.dataset.year) return;
-      year.textContent = chapter.dataset.year ?? '';
-      // Later chapters are earlier years: moving down the list rolls the year
-      // up out of view, moving back rolls it down.
-      if (previous >= 0 && !reduceMotion.matches) {
-        const from = index > previous ? '40%' : '-40%';
-        year.animate(
-          [{ opacity: 0, transform: `translateY(${from})` }, { opacity: 1, transform: 'none' }],
-          { duration: 400, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
-        );
-      }
+      const digits = (chapter.dataset.year ?? '').split('');
+      year.querySelectorAll<HTMLElement>('.career__digit').forEach((column, i) => {
+        column.style.setProperty('--digit', digits[i] ?? '0');
+      });
     };
 
     // While a click scrolls to a chapter's slot, the chapters passed on the
@@ -240,7 +241,17 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   /* ── Marker: current chapter's year on a timeline ── */
   .career__marker { display: grid; gap: var(--space-4); padding-top: var(--space-6); border-top: var(--border-width) solid var(--color-border); transition: transform var(--duration-slow) var(--ease-standard); }
   .career__label { font-family: var(--font-heading); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(4px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
-  .career__year { display: block; overflow: hidden; font-family: var(--font-heading); font-size: clamp(calc(96px * var(--ui-scale)), 9vw, calc(160px * var(--ui-scale))); font-weight: 700; line-height: 1; letter-spacing: -0.05em; color: var(--color-text); font-variant-numeric: tabular-nums; }
+  .career__year { display: flex; font-family: var(--font-heading); font-size: clamp(calc(96px * var(--ui-scale)), 9vw, calc(160px * var(--ui-scale))); font-weight: 700; line-height: 1; letter-spacing: -0.05em; color: var(--color-text); font-variant-numeric: tabular-nums; }
+  /* Clip only top and bottom: overflow: hidden also clipped the sides, and
+     with the tight negative tracking a digit's ink overhangs its box and
+     got shaved (most visibly the last one). */
+  .career__digit { height: 1em; clip-path: inset(0 -0.25em); }
+  .career__reel { display: flex; flex-direction: column; transform: translateY(calc(var(--digit) * -1em)); transition: transform var(--duration-slow) var(--ease-standard); }
+  .career__reel > span { height: 1em; }
+  /* A slight left-to-right stagger reads as a mechanism, not a swap. */
+  .career__digit:nth-child(2) .career__reel { transition-delay: 40ms; }
+  .career__digit:nth-child(3) .career__reel { transition-delay: 80ms; }
+  .career__digit:nth-child(4) .career__reel { transition-delay: 120ms; }
   .career__axis { position: relative; display: flex; justify-content: space-between; padding-top: var(--space-4); border-top: var(--border-width) solid var(--color-border-strong); font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
   .career__axis i { position: absolute; top: calc(-5px * var(--ui-scale)); width: calc(9px * var(--ui-scale)); height: calc(9px * var(--ui-scale)); margin-left: calc(-4.5px * var(--ui-scale)); border-radius: var(--radius-full); background: var(--color-action-ghost-text); transition: left var(--duration-slow) var(--ease-standard); }
 
@@ -249,14 +260,14 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .chapter { border-bottom: var(--border-width) solid var(--color-border); }
   /* One line per row: label | period | chevron — keeps four rows plus an open
      chapter short enough to pin on laptop-height screens. */
-  .chapter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-1) var(--space-6); width: 100%; padding: var(--space-3) 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .chapter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-1) var(--space-6); width: 100%; padding: var(--space-4) 0 var(--space-6); border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
   .chapter__row:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
   .chapter__period { grid-column: 2; grid-row: 1; font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
-  /* Name and title share one line (title truncates) so seven chapters plus
-     an open one still fit a laptop-height screen while pinned. */
-  .chapter__label { grid-column: 1; grid-row: 1; display: flex; align-items: baseline; gap: var(--space-3); min-width: 0; }
-  .chapter__label strong { display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; font-family: var(--font-heading); font-size: calc(24px * var(--ui-scale)); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: var(--color-text); }
-  .chapter__title { min-width: 0; overflow: hidden; font-size: calc(16px * var(--ui-scale)); color: var(--color-text-secondary); white-space: nowrap; text-overflow: ellipsis; }
+  /* Name on top, role or programme below; kept tight so seven chapters
+     plus an open one fit while pinned. */
+  .chapter__label { grid-column: 1; grid-row: 1; display: grid; gap: var(--space-2); min-width: 0; }
+  .chapter__label strong { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-heading); font-size: calc(24px * var(--ui-scale)); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: var(--color-text); }
+  .chapter__title { font-size: calc(15px * var(--ui-scale)); line-height: 1.35; color: var(--color-text-secondary); }
   .chapter__label :global(.chapter__kind) { width: var(--icon-md); height: var(--icon-md); color: var(--color-action-ghost-text); }
 
   .chapter__row :global(.chapter__icon) { grid-column: 3; grid-row: 1; width: var(--icon-md); height: var(--icon-md); color: var(--color-text-muted); transition: transform var(--duration-medium) var(--ease-standard); }
@@ -265,7 +276,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
 
   .chapter__body { display: grid; gap: var(--space-3); padding-bottom: var(--space-6); animation: chapter-in var(--duration-slow) var(--ease-standard); }
   .chapter__body[hidden] { display: none; }
-  .chapter__body h3 { margin: 0; font-family: var(--font-heading); font-size: calc(24px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.2px; }
+  .chapter__body h3 { margin: 0; font-family: var(--font-heading); font-size: calc(19px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.2px; }
   .chapter__body .chapter__status { font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-action-ghost-text); }
   .chapter__body p { max-width: calc(760px * var(--ui-scale)); margin: 0; font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
   .chapter__tags, .chapter__projects ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; padding: 0; list-style: none; }
@@ -283,11 +294,9 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   }
   @media (max-width: 839px) {
     .career__intro { margin-bottom: var(--space-12); }
-    .chapter__label { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
-    .chapter__title { white-space: normal; }
   }
   @media (prefers-reduced-motion: reduce) {
     .chapter__body { animation: none; }
-    .career__marker, .career__axis i, .chapter__row :global(.chapter__icon) { transition: none; }
+    .career__marker, .career__reel, .career__axis i, .chapter__row :global(.chapter__icon) { transition: none; }
   }
 </style>
