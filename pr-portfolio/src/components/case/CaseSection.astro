@@ -365,18 +365,15 @@ const hasImage = Astro.slots.has('image');
 		}
 		.cs-section__copy > :global(.cs-image-row) {
 			max-width: none;
-			margin-block: calc(56px * var(--ui-scale));
+			/* Top stays small: grid items don't collapse margins, so the
+			   preceding paragraph's margin-bottom already adds to it. */
+			margin-block: calc(8px * var(--ui-scale)) calc(56px * var(--ui-scale));
 		}
 		.cs-section__heading {
 			max-width: none;
 			font-size: clamp(calc(34px * var(--ui-scale)), 2.6vw, calc(46px * var(--ui-scale)));
 		}
 	}
-	.cs-section :global(.cs-image-row:has(> :only-child) img) {
-		width: 100%;
-		max-height: none;
-	}
-
 	@media (max-width: 839px) {
 		.cs-section[data-layout] .cs-section__copy {
 			width: 100%;
