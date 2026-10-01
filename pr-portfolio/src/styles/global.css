@@ -226,6 +226,67 @@ hr {
 	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
+/* Tooltip — visual-only hint hanging below an icon button. Wrap the button
+   and a `.tooltip` sibling in `.tooltip-anchor`; mark the tooltip
+   aria-hidden and give the button an equivalent aria-label. Inverse of the
+   page (dark chip in light theme, light chip in dark), so it reads in both.
+   Grows out of its button; entry waits a beat so sweeping the cursor across
+   the header doesn't flash it, exit is quick and immediate. Add
+   `.tooltip--end` when the button sits at the viewport's right edge, so the
+   tooltip aligns to the button's right side instead of centring past it. */
+.tooltip-anchor {
+	position: relative;
+	display: inline-flex;
+}
+.tooltip {
+	position: absolute;
+	top: calc(100% + var(--space-2));
+	left: 50%;
+	--tooltip-x: -50%;
+	z-index: 1;
+	padding: calc(4px * var(--ui-scale)) calc(8px * var(--ui-scale));
+	border-radius: var(--radius-sm);
+	background: var(--color-text);
+	color: var(--color-text-inverse);
+	font-family: var(--font-sans);
+	font-size: calc(12px * var(--ui-scale));
+	font-weight: 600;
+	line-height: calc(16px * var(--ui-scale));
+	white-space: nowrap;
+	box-shadow: var(--elevation-floating);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(var(--tooltip-x), calc(-6px * var(--ui-scale))) scale(0.9);
+	transform-origin: top center;
+	transition:
+		opacity var(--duration-fast) var(--ease-standard),
+		transform var(--duration-fast) var(--ease-standard);
+}
+@media (hover: hover) {
+	.tooltip-anchor:hover > .tooltip {
+		opacity: 1;
+		transform: translate(var(--tooltip-x), 0) scale(1);
+		transition-duration: var(--duration-medium);
+		transition-delay: 300ms;
+	}
+}
+.tooltip-anchor:has(:focus-visible) > .tooltip {
+	opacity: 1;
+	transform: translate(var(--tooltip-x), 0) scale(1);
+	transition-duration: var(--duration-medium);
+	transition-delay: 300ms;
+}
+.tooltip--end {
+	left: auto;
+	right: 0;
+	--tooltip-x: 0;
+	transform-origin: top right;
+}
+@media (prefers-reduced-motion: reduce) {
+	.tooltip {
+		transition: none;
+	}
+}
 /*
   ---break---
  */

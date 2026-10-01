@@ -1,7 +1,6 @@
 ---
 import WorkNavigation from './WorkNavigation.astro';
 import SidebarNavigation from './SidebarNavigation.astro';
-import HeaderSettingsMenu from './HeaderSettingsMenu.astro';
 import Button from './ui/Button.astro';
 import Tag from './ui/Tag.astro';
 import Logo from './ui/Logo.astro';
@@ -40,8 +39,11 @@ const selectorItems = [
 	</nav>
 	<div class="header__actions">
 		<WorkNavigation />
-		<Button href={withBase('/work/')} size="lg" showLeadingIcon={false}>See all my work</Button>
-		<HeaderSettingsMenu />
+		<Button href="#contact" size="lg" showLeadingIcon={false}>Let's talk</Button>
+		<div class="header__prefs">
+			<ThemeToggle variant="icon" />
+			<LanguageToggle variant="icon" />
+		</div>
 	</div>
 
 	<!-- Mobile (≤839px) — Figma node 16067:57688. Replaces the desktop row
@@ -56,21 +58,24 @@ const selectorItems = [
 		</a>
 	)}
 	<a class="header__mobile-brand" href={withBase('/')} aria-label="Inicio"><Logo class="header__mobile-logo" /></a>
-	<button
-		type="button"
-		class="header__mobile-trigger"
-		aria-haspopup="true"
-		aria-expanded="false"
-		aria-controls="header-mobile-panel"
-		aria-label="Abrir menú"
-	>
-		<Menu class="header__mobile-trigger-icon header__mobile-trigger-icon--open" />
-		<X class="header__mobile-trigger-icon header__mobile-trigger-icon--close" />
-	</button>
+	<div class="header__mobile-actions">
+		<ThemeToggle variant="icon" />
+		<button
+			type="button"
+			class="header__mobile-trigger"
+			aria-haspopup="true"
+			aria-expanded="false"
+			aria-controls="header-mobile-panel"
+			aria-label="Abrir menú"
+		>
+			<Menu class="header__mobile-trigger-icon header__mobile-trigger-icon--open" />
+			<X class="header__mobile-trigger-icon header__mobile-trigger-icon--close" />
+		</button>
+	</div>
 
 	<div class="header__mobile-overlay" aria-hidden="true"></div>
 	<div class="header__mobile-panel" id="header-mobile-panel" role="menu" hidden>
-		<Button class="header__mobile-cta" href={withBase('/work/')} size="lg" showLeadingIcon={false}>Explore my work</Button>
+		<Button class="header__mobile-cta" href="#contact" size="lg" showLeadingIcon={false}>Let's talk</Button>
 		<div class="header__mobile-links">
 			<a class="header__mobile-link" href="mailto:bypaularodas@gmail.com">
 				<Mail />
@@ -86,8 +91,7 @@ const selectorItems = [
 			</a>
 		</div>
 		<div class="header__mobile-prefs">
-			<ThemeToggle />
-			<LanguageToggle />
+			<LanguageToggle variant="row" />
 		</div>
 		<Footer inMenu />
 	</div>
@@ -100,7 +104,7 @@ const selectorItems = [
 	   SidebarNavigation's brand block — see --component-header-height-desktop.
 	   That keeps the sidebar's brand divider and this bar's bottom border on
 	   the same line regardless of either side's content. */
-	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
+	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop) var(--space-4); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
 	/* The mobile menu panel is a child of .header, which is itself a
 	   stacking context — its z-index can't out-rank SidebarNavigation
 	   (z-index 40) from inside there, so bump .header's own z-index instead
@@ -124,8 +128,15 @@ const selectorItems = [
 	.header__selector-item--active { background: var(--sidebar-item-text-active); color: var(--color-base-white); }
 	.header__selector-item :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
 	.header__selector-item:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
-	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); }
-	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header > :global(.header__identity) { display: none; } }
+	.header__actions { display: flex; align-self: stretch; align-items: center; justify-content: flex-end; gap: var(--space-6); }
+	/* Divider sets the preferences apart from the nav/CTA group; stretches
+	   (with .header__actions) to the bar's full height. Mirrors the sidebar's
+	   cell on the opposite edge: border + --space-4 inset on both sides, same
+	   as the sidebar's own padding (the header's right padding matches it).
+	   The margin tops up .header__actions' --space-6 gap so the CTA sits the
+	   header's own left gutter away from the divider. */
+	.header__prefs { margin-left: calc(var(--gutter-desktop) - var(--space-6)); display: flex; align-self: stretch; align-items: center; gap: var(--space-3); padding-left: var(--space-4); border-left: var(--border-width) solid var(--color-border); }
+	@media (max-width: 1120px) { .header > :global(.header__identity) { display: none; } }
 
 	@media (prefers-reduced-motion: reduce) {
 		.header { transition: none !important; }
@@ -134,7 +145,7 @@ const selectorItems = [
 	/* ── Mobile (≤839px) — Figma node 16067:57688 / 16077:69757 ──────────── */
 	.header__mobile-back,
 	.header__mobile-brand,
-	.header__mobile-trigger,
+	.header__mobile-actions,
 	.header__mobile-overlay,
 	.header__mobile-panel {
 		display: none;
@@ -170,8 +181,21 @@ const selectorItems = [
 			display: grid;
 			grid-template-columns: 1fr auto 1fr;
 		}
-		.header:has(.header__mobile-back) .header__mobile-trigger {
+		.header:has(.header__mobile-back) .header__mobile-actions {
 			justify-self: end;
+		}
+		/* Theme bulb rides beside the menu trigger — one tap, no menu — at
+		   the trigger's size. Its tooltip is hover-only, so it stays out of
+		   the way on touch. */
+		.header__mobile-actions {
+			display: flex;
+			align-items: center;
+			gap: var(--space-2);
+		}
+		.header__mobile-actions :global(.theme-toggle__control--icon) {
+			width: calc(52px * var(--ui-scale));
+			height: calc(52px * var(--ui-scale));
+			border-radius: var(--radius-full);
 		}
 		/* Same uppercase, tracked voice as the case study breadcrumbs. */
 		.header__mobile-back {
@@ -191,8 +215,11 @@ const selectorItems = [
 			color: var(--header-icon);
 			text-decoration: none;
 		}
-		.header__mobile-back:hover {
-			background: var(--color-action-secondary-bg-hover);
+		/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+		@media (hover: hover) {
+			.header__mobile-back:hover {
+				background: var(--color-action-secondary-bg-hover);
+			}
 		}
 		.header__mobile-back:focus-visible {
 			outline: var(--focus-width) solid var(--color-focus);
@@ -219,8 +246,11 @@ const selectorItems = [
 			color: var(--header-icon);
 			cursor: pointer;
 		}
-		.header__mobile-trigger:hover {
-			background: var(--color-action-secondary-bg-hover);
+		/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+		@media (hover: hover) {
+			.header__mobile-trigger:hover {
+				background: var(--color-action-secondary-bg-hover);
+			}
 		}
 		.header__mobile-trigger:focus-visible {
 			outline: var(--focus-width) solid var(--color-focus);
@@ -320,8 +350,11 @@ const selectorItems = [
 			font-weight: 500;
 			text-decoration: none;
 		}
-		.header__mobile-link:hover {
-			background: var(--color-action-secondary-bg-hover);
+		/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+		@media (hover: hover) {
+			.header__mobile-link:hover {
+				background: var(--color-action-secondary-bg-hover);
+			}
 		}
 		.header__mobile-link :global(svg),
 		.header__mobile-link img {

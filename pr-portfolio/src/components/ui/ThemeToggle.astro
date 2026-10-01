@@ -8,11 +8,23 @@ import { Lightbulb } from '@lucide/astro';
 export interface Props {
 	label?: string;
 	showLabel?: boolean;
+	/** 'icon': a plain icon button (header bar) — same bulb and behavior,
+	 * without the switch track. */
+	variant?: 'switch' | 'icon';
 }
 
-const { label = 'Encender las luces', showLabel = true } = Astro.props;
+const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = Astro.props;
 ---
 
+{variant === 'icon' ? (
+	<span class="theme-toggle theme-toggle--icon tooltip-anchor">
+		<button type="button" class="theme-toggle__control theme-toggle__control--icon" role="switch" aria-checked="true" aria-label="Encender las luces">
+			<Lightbulb class="theme-toggle__icon" aria-hidden="true" />
+		</button>
+		<!-- Visual-only: the button's aria-label already says the same thing. -->
+		<span class="tooltip theme-toggle__tooltip" data-theme-label aria-hidden="true">Encender las luces</span>
+	</span>
+) : (
 <div class="theme-toggle">
 	<button type="button" class="theme-toggle__control" role="switch" aria-checked="true" aria-label="Encender las luces">
 		<span class="theme-toggle__track">
@@ -23,8 +35,9 @@ const { label = 'Encender las luces', showLabel = true } = Astro.props;
 			</span>
 		</span>
 	</button>
-	{showLabel && <span class="theme-toggle__label">{label}</span>}
+	{showLabel && <span class="theme-toggle__label" data-theme-label>{label}</span>}
 </div>
+)}
 
 <style>
 	.theme-toggle {
@@ -97,6 +110,30 @@ const { label = 'Encender las luces', showLabel = true } = Astro.props;
 		outline-offset: var(--space-1);
 		border-radius: var(--radius-full);
 	}
+	/* Icon variant — same footprint as the header's other icon buttons. */
+	.theme-toggle__control--icon {
+		display: grid;
+		width: var(--control-lg);
+		height: var(--control-lg);
+		place-items: center;
+		padding: 0;
+		border-radius: var(--radius-sm);
+	}
+	/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+	@media (hover: hover) {
+		.theme-toggle__control--icon:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
+	}
+	.theme-toggle__control--icon:focus-visible {
+		border-radius: var(--radius-sm);
+	}
+	/* No white thumb behind it here, so the ink follows the header's. */
+	.theme-toggle__control--icon .theme-toggle__icon {
+		width: var(--icon-lg);
+		height: var(--icon-lg);
+		color: var(--header-icon);
+	}
 	.theme-toggle__label {
 		font-family: var(--font-sans);
 		font-size: calc(14px * var(--ui-scale));
@@ -105,7 +142,23 @@ const { label = 'Encender las luces', showLabel = true } = Astro.props;
 		color: var(--color-text);
 		white-space: nowrap;
 	}
+	.theme-toggle--icon {
+		height: auto;
+	}
+	/* Already open when the theme flips (cursor still on the button): the
+	   new text pops in instead of just swapping. Class set by the script. */
+	.theme-toggle__tooltip.is-swapping {
+		animation: theme-tooltip-swap var(--duration-medium) var(--ease-standard);
+	}
+	@keyframes theme-tooltip-swap {
+		from {
+			transform: translate(var(--tooltip-x), 0) scale(0.9);
+		}
+	}
 	@media (prefers-reduced-motion: reduce) {
+		.theme-toggle__tooltip.is-swapping {
+			animation: none;
+		}
 		.theme-toggle__thumb,
 		.theme-toggle__icon {
 			transition: none;
@@ -137,8 +190,14 @@ const { label = 'Encender las luces', showLabel = true } = Astro.props;
 		controls.forEach((control) => {
 			control.setAttribute('aria-checked', String(isDark));
 			control.setAttribute('aria-label', text);
-			const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('.theme-toggle__label');
-			if (label) label.textContent = text;
+			const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('[data-theme-label]');
+			if (label && label.textContent !== text) {
+				label.textContent = text;
+				// Restart the swap pop (tooltip variant only; no-op elsewhere).
+				label.classList.remove('is-swapping');
+				void label.offsetWidth;
+				label.classList.add('is-swapping');
+			}
 		});
 	}
 
