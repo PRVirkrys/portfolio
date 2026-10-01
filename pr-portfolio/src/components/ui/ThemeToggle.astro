@@ -1,149 +1,56 @@
 ---
-// Figma: PR Brand (DS) → ThemeToggle (node 15705:1179), used inside the
-// header's "Language menu" panel (node 16067:68076). Functional: flips
-// `.dark` on <html> and persists the choice — see BaseHead.astro's blocking
-// init script for how the saved value is applied before first paint.
+// Theme icon button (header bar + mobile bar): a lightbulb that's lit
+// (yellow) in light theme and plain in dark. Functional: flips `.dark` on
+// <html> and persists the choice — see BaseHead.astro's blocking init script
+// for how the saved value is applied before first paint.
 import { Lightbulb } from '@lucide/astro';
-
-export interface Props {
-	label?: string;
-	showLabel?: boolean;
-	/** 'icon': a plain icon button (header bar) — same bulb and behavior,
-	 * without the switch track. */
-	variant?: 'switch' | 'icon';
-}
-
-const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = Astro.props;
 ---
 
-{variant === 'icon' ? (
-	<span class="theme-toggle theme-toggle--icon tooltip-anchor">
-		<button type="button" class="theme-toggle__control theme-toggle__control--icon" role="switch" aria-checked="true" aria-label="Encender las luces">
-			<Lightbulb class="theme-toggle__icon" aria-hidden="true" />
-		</button>
-		<!-- Visual-only: the button's aria-label already says the same thing. -->
-		<span class="tooltip theme-toggle__tooltip" data-theme-label aria-hidden="true">Encender las luces</span>
-	</span>
-) : (
-<div class="theme-toggle">
+<span class="theme-toggle tooltip-anchor">
 	<button type="button" class="theme-toggle__control" role="switch" aria-checked="true" aria-label="Encender las luces">
-		<span class="theme-toggle__track">
-			<!-- Only the thumb carries an icon; the track stays empty. The same
-			     bulb lights up (yellow) in light theme and goes dark in dark. -->
-			<span class="theme-toggle__thumb" aria-hidden="true">
-				<Lightbulb class="theme-toggle__icon" />
-			</span>
-		</span>
+		<Lightbulb class="theme-toggle__icon" aria-hidden="true" />
 	</button>
-	{showLabel && <span class="theme-toggle__label" data-theme-label>{label}</span>}
-</div>
-)}
+	<!-- Visual-only: the button's aria-label already says the same thing. -->
+	<span class="tooltip theme-toggle__tooltip" aria-hidden="true">Encender las luces</span>
+</span>
 
 <style>
-	.theme-toggle {
-		display: flex;
-		align-items: center;
-		gap: var(--space-2);
-		height: calc(44px * var(--ui-scale));
-	}
+	/* Same footprint as the header's other icon buttons. */
 	.theme-toggle__control {
-		display: block;
-		flex-shrink: 0;
-		padding: calc(6px * var(--ui-scale)) 0;
+		display: grid;
+		width: var(--control-lg);
+		height: var(--control-lg);
+		place-items: center;
+		padding: 0;
 		border: 0;
+		border-radius: var(--radius-sm);
 		background: transparent;
 		cursor: pointer;
 	}
-	.theme-toggle__track {
-		position: relative;
-		display: block;
-		width: calc(52px * var(--ui-scale));
-		height: calc(32px * var(--ui-scale));
-		border: var(--border-width) solid var(--color-border);
-		border-radius: var(--radius-full);
-		background: var(--color-surface-raised);
+	/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+	@media (hover: hover) {
+		.theme-toggle__control:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
 	}
-	.theme-toggle__thumb {
-		position: absolute;
-		top: calc(3px * var(--ui-scale));
-		left: calc(3px * var(--ui-scale));
-		width: calc(24px * var(--ui-scale));
-		height: calc(24px * var(--ui-scale));
-		display: grid;
-		place-items: center;
-		border-radius: var(--radius-full);
-		/* Border, not just the shadow: the thumb is always pure white and the
-		   light-theme track is #fafafb (--color-surface-raised) — near enough
-		   to white that with light theme's shadows now flat (none), the two
-		   were indistinguishable. The border is what actually separates them;
-		   the shadow below is extra depth on top of that, not the only cue. */
-		border: var(--border-width) solid var(--color-border);
-		background: var(--color-base-white);
-		box-shadow: var(--elevation-button-adaptive);
-		transition: transform var(--duration-fast) var(--ease-standard);
+	.theme-toggle__control:focus-visible {
+		outline: var(--focus-width) solid var(--color-focus);
+		outline-offset: var(--space-1);
 	}
-	/* Dark is the "on" position — thumb slides to the right. */
-	.theme-toggle__control[aria-checked='true'] .theme-toggle__thumb {
-		transform: translateX(calc(20px * var(--ui-scale)));
-	}
-	/* Icon riding inside the thumb crossfades to match whichever side it's
-	   currently parked on. */
 	.theme-toggle__icon {
-		width: calc(14px * var(--ui-scale));
-		height: calc(14px * var(--ui-scale));
-		/* The thumb is white in both themes, so its icon needs a fixed dark
-		   ink — --color-text-inverse flips to white in light theme. */
-		color: var(--color-neutral-950);
+		width: var(--icon-lg);
+		height: var(--icon-lg);
+		color: var(--header-icon);
 		fill: transparent;
 		transition:
 			fill var(--duration-fast) var(--ease-standard),
 			filter var(--duration-fast) var(--ease-standard);
 	}
 	/* Light theme = lights on: the bulb glows with yellow glass and a soft
-	   halo. Stroke keeps its ink so the shape still reads on the white thumb. */
+	   halo; the stroke keeps its ink so the shape still reads. */
 	.theme-toggle__control:not([aria-checked='true']) .theme-toggle__icon {
 		fill: var(--color-brand-yellow-500);
 		filter: drop-shadow(0 0 3px var(--color-brand-yellow-500));
-	}
-	.theme-toggle__control:focus-visible {
-		outline: var(--focus-width) solid var(--color-focus);
-		outline-offset: var(--space-1);
-		border-radius: var(--radius-full);
-	}
-	/* Icon variant — same footprint as the header's other icon buttons. */
-	.theme-toggle__control--icon {
-		display: grid;
-		width: var(--control-lg);
-		height: var(--control-lg);
-		place-items: center;
-		padding: 0;
-		border-radius: var(--radius-sm);
-	}
-	/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
-	@media (hover: hover) {
-		.theme-toggle__control--icon:hover {
-			background: var(--color-action-secondary-bg-hover);
-		}
-	}
-	.theme-toggle__control--icon:focus-visible {
-		border-radius: var(--radius-sm);
-	}
-	/* No white thumb behind it here, so the ink follows the header's. */
-	.theme-toggle__control--icon .theme-toggle__icon {
-		width: var(--icon-lg);
-		height: var(--icon-lg);
-		color: var(--header-icon);
-	}
-	.theme-toggle__label {
-		font-family: var(--font-sans);
-		font-size: calc(14px * var(--ui-scale));
-		font-weight: 600;
-		line-height: calc(20px * var(--ui-scale));
-		color: var(--color-text);
-		white-space: nowrap;
-	}
-	.theme-toggle--icon {
-		height: auto;
 	}
 	/* Already open when the theme flips (cursor still on the button): the
 	   new text pops in instead of just swapping. Class set by the script. */
@@ -159,7 +66,6 @@ const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = A
 		.theme-toggle__tooltip.is-swapping {
 			animation: none;
 		}
-		.theme-toggle__thumb,
 		.theme-toggle__icon {
 			transition: none;
 		}
@@ -181,8 +87,8 @@ const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = A
 <script>
 	const controls = document.querySelectorAll<HTMLElement>('.theme-toggle__control');
 
-	// Every toggle on the page (desktop settings menu + mobile drawer) mirrors
-	// the same <html> class, so they all resync after any one is clicked.
+	// Every toggle on the page (desktop header + mobile bar) mirrors the same
+	// <html> class, so they all resync after any one is clicked.
 	function syncAll() {
 		const isDark = document.documentElement.classList.contains('dark');
 		// Label names the action, like a light switch: dark → "turn them on".
@@ -190,10 +96,10 @@ const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = A
 		controls.forEach((control) => {
 			control.setAttribute('aria-checked', String(isDark));
 			control.setAttribute('aria-label', text);
-			const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('[data-theme-label]');
+			const label = control.closest('.theme-toggle')?.querySelector<HTMLElement>('.theme-toggle__tooltip');
 			if (label && label.textContent !== text) {
 				label.textContent = text;
-				// Restart the swap pop (tooltip variant only; no-op elsewhere).
+				// Restart the swap pop.
 				label.classList.remove('is-swapping');
 				void label.offsetWidth;
 				label.classList.add('is-swapping');
@@ -218,7 +124,7 @@ const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = A
 			applyTheme();
 			return;
 		}
-		// Circle grows from the switch's center until it covers the farthest
+		// Circle grows from the button's center until it covers the farthest
 		// viewport corner, like light spreading from where it was flipped.
 		const rect = control.getBoundingClientRect();
 		const x = rect.left + rect.width / 2;
