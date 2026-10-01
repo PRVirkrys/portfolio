@@ -1,6 +1,6 @@
 ---
 // Mobile-only section navigator for case studies: a floating pill under the
-// header showing the current section ("Contenido · 04 Heading…") that opens
+// header showing the current section ("04 Heading…") that opens
 // a list of every numbered CaseSection. Desktop doesn't need it — each
 // section's sticky chapter header already orients the reader there.
 //
@@ -18,8 +18,7 @@ import { ChevronDown } from '@lucide/astro';
 		aria-expanded="false"
 		aria-controls="cs-nav-panel"
 	>
-		<span class="cs-nav__eyebrow">Contenido</span>
-		<span class="cs-nav__sep" aria-hidden="true">·</span>
+		<span class="sr-only">Secciones, actual:</span>
 		<span class="cs-nav__current">
 			<span class="cs-nav__num" data-cs-nav-num></span>
 			<span class="cs-nav__title" data-cs-nav-title></span>
@@ -90,19 +89,6 @@ import { ChevronDown } from '@lucide/astro';
 	.cs-nav__toggle:focus-visible {
 		outline: 2px solid var(--color-action-ghost-text);
 		outline-offset: 2px;
-	}
-	/* Same eyebrow voice as the hero meta labels. */
-	.cs-nav__eyebrow {
-		flex-shrink: 0;
-		font-size: calc(12px * var(--ui-scale));
-		font-weight: 800;
-		letter-spacing: calc(4px * var(--ui-scale));
-		text-transform: uppercase;
-		color: color-mix(in srgb, var(--color-text) 80%, transparent);
-	}
-	.cs-nav__sep {
-		flex-shrink: 0;
-		color: color-mix(in srgb, var(--color-text) 50%, transparent);
 	}
 	.cs-nav__current {
 		display: flex;
