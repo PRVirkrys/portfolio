@@ -6,6 +6,7 @@ import Prefooter from '../components/Prefooter.astro';
 import FlashPolaroids from '../components/about/FlashPolaroids.astro';
 import Polaroid from '../components/about/Polaroid.astro';
 import CareerChapters from '../components/about/CareerChapters.astro';
+import Tag from '../components/ui/Tag.astro';
 import portrait from '../assets/about/paula.webp';
 import flash01 from '../assets/about/flash/flash-01.jpg';
 import flash02 from '../assets/about/flash/flash-02.jpg';
@@ -112,7 +113,7 @@ const flashPhotos = [
     <main class="about">
       <header class="about-hero">
         <div class="about-hero__intro">
-          <p class="about-eyebrow">About me</p>
+          <Tag category="Neutral">About me</Tag>
           <h1>Diseño para dar dirección a las ideas. Construyo para acercarlas a la realidad.</h1>
           <p class="about-lead">Siempre me han atraído dos formas de dar vida a una idea: diseñarla y construirla. Durante mucho tiempo avanzaron por caminos distintos. Hoy forman parte de una misma manera de trabajar.</p>
         </div>
@@ -223,9 +224,8 @@ const flashPhotos = [
   /* ── Hero ── */
   /* Intro + body on the left, portrait spanning both rows on the right. */
   .about-hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: calc(96px * var(--ui-scale)); row-gap: var(--space-16); align-items: start; padding-bottom: var(--space-24); }
-  .about-hero__intro { display: grid; gap: var(--space-8); }
+  .about-hero__intro { display: grid; justify-items: start; gap: var(--space-8); }
   .about-hero__photo { grid-column: 2; grid-row: 1 / span 2; width: min(100%, calc(520px * var(--ui-scale))); justify-self: center; margin-top: var(--space-8); }
-  .about-eyebrow { margin: 0; font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(4px * var(--ui-scale)); text-transform: uppercase; color: var(--color-action-ghost-text); }
   h1 { max-width: 20ch; margin: 0; font-family: var(--font-heading); font-size: clamp(calc(48px * var(--ui-scale)), 5vw, calc(80px * var(--ui-scale))); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; }
   .about-hero__body { grid-column: 1; }
   .about-lead { margin: 0; font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; color: var(--color-text); }

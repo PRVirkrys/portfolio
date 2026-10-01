@@ -6,6 +6,7 @@
 import type { ImageMetadata } from 'astro';
 import Polaroid from './Polaroid.astro';
 import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import Button from '../ui/Button.astro';
 
 interface Photo { src: ImageMetadata; alt: string; caption: string }
 interface Props { photos: Photo[] }
@@ -26,9 +27,9 @@ const tilts = [-3, 4, -6, 2, 6, -2];
   <div class="polaroids__controls">
     <p class="polaroids__hint">Arrastra la foto para ver la siguiente</p>
     <div class="polaroids__nav">
-      <button type="button" class="polaroids__arrow" data-polaroids-prev aria-label="Foto anterior"><ChevronLeft aria-hidden="true" /></button>
+      <Button variant="secondary" showTrailingIcon={false} data-polaroids-prev aria-label="Foto anterior">Anterior<ChevronLeft slot="icon-leading" /></Button>
       <span class="polaroids__count" data-polaroids-count aria-live="polite">1 / {photos.length}</span>
-      <button type="button" class="polaroids__arrow" data-polaroids-next aria-label="Foto siguiente"><ChevronRight aria-hidden="true" /></button>
+      <Button variant="secondary" showLeadingIcon={false} data-polaroids-next aria-label="Foto siguiente">Siguiente<ChevronRight slot="icon-trailing" /></Button>
     </div>
   </div>
 </div>
@@ -135,10 +136,6 @@ const tilts = [-3, 4, -6, 2, 6, -2];
   .polaroids__controls { display: grid; justify-items: center; gap: var(--space-2); }
   .polaroids__hint { margin: 0; font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
   .polaroids__nav { display: flex; align-items: center; gap: var(--space-4); }
-  .polaroids__arrow { display: grid; place-items: center; width: var(--control-lg); height: var(--control-lg); padding: 0; border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-full); background: transparent; color: var(--color-text); cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard); }
-  .polaroids__arrow :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
-  @media (hover: hover) { .polaroids__arrow:hover { background: var(--color-action-secondary-bg-hover); } }
   .polaroids__count { min-width: 4ch; text-align: center; font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 600; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
-  .polaroids__arrow:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
   @media (prefers-reduced-motion: reduce) { .polaroids__card { transition: none; } }
 </style>
