@@ -142,15 +142,20 @@ $typography: (
 	'ui-link-md': (
 		'font-family': $font-family-space-grotesk,
 		'font-weight': 500,
-		'font-size': 14px,
-		'line-height': 20px,
+		// 17.5px source * --ui-scale (0.8) = 14px real, the floor for UI
+		// text; 24px line-height keeps the hit area above WCAG 2.5.8's 24px.
+		// Was 14px source (11.2px real).
+		'font-size': 17.5px,
+		'line-height': 24px,
 		'letter-spacing': 0,
 	),
 	'ui-link-lg': (
 		'font-family': $font-family-space-grotesk,
 		'font-weight': 500,
-		'font-size': 16px,
-		'line-height': 24px,
+		// 20px source * 0.8 = 16px real, matching body-l so a link never reads
+		// smaller than the copy around it. Was 16px source (12.8px real).
+		'font-size': 20px,
+		'line-height': 28px,
 		'letter-spacing': 0,
 	),
 );
