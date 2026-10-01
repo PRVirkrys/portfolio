@@ -262,7 +262,14 @@ hr {
 		opacity var(--duration-fast) var(--ease-standard),
 		transform var(--duration-fast) var(--ease-standard);
 }
-.tooltip-anchor:hover > .tooltip,
+@media (hover: hover) {
+	.tooltip-anchor:hover > .tooltip {
+		opacity: 1;
+		transform: translate(var(--tooltip-x), 0) scale(1);
+		transition-duration: var(--duration-medium);
+		transition-delay: 300ms;
+	}
+}
 .tooltip-anchor:has(:focus-visible) > .tooltip {
 	opacity: 1;
 	transform: translate(var(--tooltip-x), 0) scale(1);

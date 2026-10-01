@@ -119,8 +119,11 @@ const { label = 'Encender las luces', showLabel = true, variant = 'switch' } = A
 		padding: 0;
 		border-radius: var(--radius-sm);
 	}
-	.theme-toggle__control--icon:hover {
-		background: var(--color-action-secondary-bg-hover);
+	/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+	@media (hover: hover) {
+		.theme-toggle__control--icon:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
 	}
 	.theme-toggle__control--icon:focus-visible {
 		border-radius: var(--radius-sm);

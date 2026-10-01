@@ -58,21 +58,24 @@ const selectorItems = [
 		</a>
 	)}
 	<a class="header__mobile-brand" href={withBase('/')} aria-label="Inicio"><Logo class="header__mobile-logo" /></a>
-	<button
-		type="button"
-		class="header__mobile-trigger"
-		aria-haspopup="true"
-		aria-expanded="false"
-		aria-controls="header-mobile-panel"
-		aria-label="Abrir menú"
-	>
-		<Menu class="header__mobile-trigger-icon header__mobile-trigger-icon--open" />
-		<X class="header__mobile-trigger-icon header__mobile-trigger-icon--close" />
-	</button>
+	<div class="header__mobile-actions">
+		<ThemeToggle variant="icon" />
+		<button
+			type="button"
+			class="header__mobile-trigger"
+			aria-haspopup="true"
+			aria-expanded="false"
+			aria-controls="header-mobile-panel"
+			aria-label="Abrir menú"
+		>
+			<Menu class="header__mobile-trigger-icon header__mobile-trigger-icon--open" />
+			<X class="header__mobile-trigger-icon header__mobile-trigger-icon--close" />
+		</button>
+	</div>
 
 	<div class="header__mobile-overlay" aria-hidden="true"></div>
 	<div class="header__mobile-panel" id="header-mobile-panel" role="menu" hidden>
-		<Button class="header__mobile-cta" href={withBase('/work/')} size="lg" showLeadingIcon={false}>Explore my work</Button>
+		<Button class="header__mobile-cta" href="#contact" size="lg" showLeadingIcon={false}>Let's talk</Button>
 		<div class="header__mobile-links">
 			<a class="header__mobile-link" href="mailto:bypaularodas@gmail.com">
 				<Mail />
@@ -88,8 +91,7 @@ const selectorItems = [
 			</a>
 		</div>
 		<div class="header__mobile-prefs">
-			<ThemeToggle />
-			<LanguageToggle />
+			<LanguageToggle variant="row" />
 		</div>
 		<Footer inMenu />
 	</div>
@@ -143,7 +145,7 @@ const selectorItems = [
 	/* ── Mobile (≤839px) — Figma node 16067:57688 / 16077:69757 ──────────── */
 	.header__mobile-back,
 	.header__mobile-brand,
-	.header__mobile-trigger,
+	.header__mobile-actions,
 	.header__mobile-overlay,
 	.header__mobile-panel {
 		display: none;
@@ -179,8 +181,21 @@ const selectorItems = [
 			display: grid;
 			grid-template-columns: 1fr auto 1fr;
 		}
-		.header:has(.header__mobile-back) .header__mobile-trigger {
+		.header:has(.header__mobile-back) .header__mobile-actions {
 			justify-self: end;
+		}
+		/* Theme bulb rides beside the menu trigger — one tap, no menu — at
+		   the trigger's size. Its tooltip is hover-only, so it stays out of
+		   the way on touch. */
+		.header__mobile-actions {
+			display: flex;
+			align-items: center;
+			gap: var(--space-2);
+		}
+		.header__mobile-actions :global(.theme-toggle__control--icon) {
+			width: calc(52px * var(--ui-scale));
+			height: calc(52px * var(--ui-scale));
+			border-radius: var(--radius-full);
 		}
 		/* Same uppercase, tracked voice as the case study breadcrumbs. */
 		.header__mobile-back {
@@ -200,8 +215,11 @@ const selectorItems = [
 			color: var(--header-icon);
 			text-decoration: none;
 		}
-		.header__mobile-back:hover {
-			background: var(--color-action-secondary-bg-hover);
+		/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+		@media (hover: hover) {
+			.header__mobile-back:hover {
+				background: var(--color-action-secondary-bg-hover);
+			}
 		}
 		.header__mobile-back:focus-visible {
 			outline: var(--focus-width) solid var(--color-focus);
@@ -228,8 +246,11 @@ const selectorItems = [
 			color: var(--header-icon);
 			cursor: pointer;
 		}
-		.header__mobile-trigger:hover {
-			background: var(--color-action-secondary-bg-hover);
+		/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+		@media (hover: hover) {
+			.header__mobile-trigger:hover {
+				background: var(--color-action-secondary-bg-hover);
+			}
 		}
 		.header__mobile-trigger:focus-visible {
 			outline: var(--focus-width) solid var(--color-focus);
@@ -329,8 +350,11 @@ const selectorItems = [
 			font-weight: 500;
 			text-decoration: none;
 		}
-		.header__mobile-link:hover {
-			background: var(--color-action-secondary-bg-hover);
+		/* Hover-capable pointers only: on touch, :hover sticks after a tap. */
+		@media (hover: hover) {
+			.header__mobile-link:hover {
+				background: var(--color-action-secondary-bg-hover);
+			}
 		}
 		.header__mobile-link :global(svg),
 		.header__mobile-link img {

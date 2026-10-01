@@ -9,7 +9,9 @@ export interface Props {
 	showLabel?: boolean;
 	/** 'icon': header icon button showing the language you'd switch TO, with
 	 * a tooltip naming it in that language (pairs with ThemeToggle's icon). */
-	variant?: 'switch' | 'icon';
+	/** 'row': full-width menu row (mobile menu panel) — the tooltip's text
+	 * shown inline, since touch has no hover. */
+	variant?: 'switch' | 'icon' | 'row';
 }
 
 const { label = 'Español', showLabel = true, variant = 'switch' } = Astro.props;
@@ -22,6 +24,12 @@ const { label = 'Español', showLabel = true, variant = 'switch' } = Astro.props
 		<button type="button" class="language-toggle__icon-button" aria-disabled="true" aria-label="View in English (coming soon)" lang="en">EN</button>
 		<span class="tooltip tooltip--end" aria-hidden="true" lang="en">View in English · coming soon</span>
 	</span>
+) : variant === 'row' ? (
+	<button type="button" class="language-toggle__row" aria-disabled="true" lang="en">
+		<span class="language-toggle__row-code" aria-hidden="true">EN</span>
+		View in English
+		<span class="language-toggle__row-soon" lang="es">Próximamente</span>
+	</button>
 ) : (
 <div class="language-toggle">
 	<button type="button" class="language-toggle__control" disabled aria-disabled="true" title="Próximamente">
@@ -115,6 +123,41 @@ const { label = 'Español', showLabel = true, variant = 'switch' } = Astro.props
 	.language-toggle__icon-button:focus-visible {
 		outline: var(--focus-width) solid var(--color-focus);
 		outline-offset: var(--space-1);
+	}
+	/* Matches Header's .header__mobile-link rows it sits under; muted and
+	   inert until i18n lands. */
+	.language-toggle__row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		width: 100%;
+		height: calc(44px * var(--ui-scale));
+		padding-inline: calc(24px * var(--ui-scale));
+		border: 0;
+		border-radius: var(--radius-sm);
+		background: transparent;
+		color: var(--color-text-muted);
+		font-family: var(--font-heading);
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 500;
+		cursor: default;
+	}
+	.language-toggle__row:focus-visible {
+		outline: var(--focus-width) solid var(--color-focus);
+		outline-offset: var(--space-1);
+	}
+	.language-toggle__row-code {
+		width: calc(18px * var(--ui-scale));
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 600;
+		text-align: center;
+	}
+	.language-toggle__row-soon {
+		margin-left: auto;
+		font-family: var(--font-sans);
+		font-size: calc(12px * var(--ui-scale));
+		font-weight: 600;
 	}
 	.language-toggle__label {
 		font-family: var(--font-sans);
