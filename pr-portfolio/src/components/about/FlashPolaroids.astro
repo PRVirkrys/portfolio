@@ -6,7 +6,7 @@
 import type { ImageMetadata } from 'astro';
 import Polaroid from './Polaroid.astro';
 import { ChevronLeft, ChevronRight } from '@lucide/astro';
-import Button from '../ui/Button.astro';
+import IconButton from '../ui/IconButton.astro';
 
 interface Photo { src: ImageMetadata; alt: string; caption: string }
 interface Props { photos: Photo[] }
@@ -27,9 +27,9 @@ const tilts = [-3, 4, -6, 2, 6, -2];
   <div class="polaroids__controls">
     <p class="polaroids__hint">Arrastra la foto para ver la siguiente</p>
     <div class="polaroids__nav">
-      <Button variant="secondary" showTrailingIcon={false} data-polaroids-prev aria-label="Foto anterior">Anterior<ChevronLeft slot="icon-leading" /></Button>
+      <IconButton label="Foto anterior" data-polaroids-prev><ChevronLeft aria-hidden="true" /></IconButton>
       <span class="polaroids__count" data-polaroids-count aria-live="polite">1 / {photos.length}</span>
-      <Button variant="secondary" showLeadingIcon={false} data-polaroids-next aria-label="Foto siguiente">Siguiente<ChevronRight slot="icon-trailing" /></Button>
+      <IconButton label="Foto siguiente" data-polaroids-next><ChevronRight aria-hidden="true" /></IconButton>
     </div>
   </div>
 </div>

@@ -7,6 +7,8 @@ import FlashPolaroids from '../components/about/FlashPolaroids.astro';
 import Polaroid from '../components/about/Polaroid.astro';
 import CareerChapters from '../components/about/CareerChapters.astro';
 import Tag from '../components/ui/Tag.astro';
+import CaseCallout from '../components/case/CaseCallout.astro';
+import LearningsGrid from '../components/case/LearningsGrid.astro';
 import portrait from '../assets/about/paula.webp';
 import flash01 from '../assets/about/flash/flash-01.jpg';
 import flash02 from '../assets/about/flash/flash-02.jpg';
@@ -166,14 +168,9 @@ const flashPhotos = [
       <section class="about-section" aria-labelledby="process-title">
         <div class="about-section__head"><h2 id="process-title">Cómo pienso y trabajo</h2></div>
         <div class="about-section__content">
-          <ol class="about-principles">
-            {principles.map(principle => (
-              <li class="about-principle">
-                <h3>{principle.title}</h3>
-                <p>{principle.body}</p>
-              </li>
-            ))}
-          </ol>
+          <LearningsGrid>
+            {principles.map(principle => <CaseCallout size="lg" title={principle.title} body={principle.body} />)}
+          </LearningsGrid>
         </div>
       </section>
 
@@ -247,11 +244,6 @@ const flashPhotos = [
 
   .about-quote { max-width: calc(820px * var(--ui-scale)); margin: calc(56px * var(--ui-scale)) 0 0; padding-left: var(--space-6); border-left: var(--focus-width) solid var(--color-action-ghost-text); font-family: var(--font-heading); font-size: calc(30px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; color: var(--color-text); }
 
-  /* ── Principles ── */
-  .about-principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); margin: 0; padding: 0; list-style: none; counter-reset: principle; }
-  .about-principle { counter-increment: principle; padding: var(--space-8); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
-  .about-principle::before { content: counter(principle, decimal-leading-zero); display: block; margin-bottom: var(--space-6); font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 700; color: var(--color-action-ghost-text); }
-  .about-principle p { margin: 0; font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
 
   /* ── Experience: CareerChapters owns its grid; the section keeps the rhythm ── */
   /* Experience sits on a full-bleed band (subtle bg, like CaseSection's subtle
@@ -279,8 +271,6 @@ const flashPhotos = [
     .about-hero { padding-bottom: var(--space-16); }
     h2 { font-size: calc(36px * var(--ui-scale)); }
     .about-lead { font-size: calc(24px * var(--ui-scale)); }
-    .about-principles { grid-template-columns: minmax(0, 1fr); }
-    .about-principle { padding: var(--space-6); }
-    .about-quote { font-size: calc(24px * var(--ui-scale)); }
+        .about-quote { font-size: calc(24px * var(--ui-scale)); }
   }
 </style>
