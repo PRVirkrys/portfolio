@@ -1,0 +1,326 @@
+---
+// Mobile-only section navigator for case studies: a floating pill under the
+// header showing the current section ("04 Heading…") that opens
+// a list of every numbered CaseSection. Desktop doesn't need it — each
+// section's sticky chapter header already orients the reader there.
+//
+// The list is built client-side from the rendered `.cs-section[id]` nodes
+// (ids come from CaseSection's heading), because sections live inside the
+// MDX body and their headings are component props, not markdown headings.
+// Without JS the pill stays hidden; the article reads fine without it.
+import { ArrowUp, ChevronDown } from '@lucide/astro';
+---
+
+<div class="cs-nav" data-cs-nav hidden>
+	<button type="button" class="cs-nav__top" aria-label="Volver arriba" data-cs-nav-top>
+		<ArrowUp class="cs-nav__top-icon" aria-hidden="true" />
+	</button>
+	<button
+		type="button"
+		class="cs-nav__toggle"
+		aria-expanded="false"
+		aria-controls="cs-nav-panel"
+	>
+		<span class="sr-only">Secciones, actual:</span>
+		<span class="cs-nav__current">
+			<span class="cs-nav__num" data-cs-nav-num></span>
+			<span class="cs-nav__title" data-cs-nav-title></span>
+		</span>
+		<ChevronDown class="cs-nav__chevron" aria-hidden="true" />
+	</button>
+	<nav id="cs-nav-panel" class="cs-nav__panel" aria-label="Secciones del caso de estudio" hidden>
+		<ol class="cs-nav__list" data-cs-nav-list></ol>
+	</nav>
+</div>
+
+<style>
+	.cs-nav {
+		display: none;
+	}
+
+	@media (max-width: 839px) {
+		/* Back-to-top button + section pill on one row; the panel spans both. */
+		.cs-nav:not([hidden]) {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: calc(8px * var(--ui-scale));
+			position: fixed;
+			top: calc(var(--component-header-height-mobile) + calc(12px * var(--ui-scale)));
+			left: var(--gutter-mobile);
+			right: var(--gutter-mobile);
+			/* Same layer as the reading progress bar: under the header (30) so
+			   the open mobile menu covers it, under the sidebar tab bar (40). */
+			z-index: 29;
+			opacity: 1;
+			transition:
+				transform 200ms var(--ease-standard),
+				opacity 200ms var(--ease-standard),
+				visibility 0s;
+		}
+		/* Follows the smart header up, like CaseReadingProgress. */
+		:global(body:has(.header.is-scroll-hidden)) .cs-nav {
+			transform: translateY(calc(-1 * var(--component-header-height-mobile)));
+		}
+		/* Above the first section (hero, summary) there is nothing to jump
+		   between yet — fade out, then drop out of taps and tab order. */
+		.cs-nav[data-idle] {
+			opacity: 0;
+			visibility: hidden;
+			transition:
+				transform 200ms var(--ease-standard),
+				opacity 200ms var(--ease-standard),
+				visibility 0s 200ms;
+		}
+	}
+
+	/* Shares the pill's surface so the two read as one floating control. */
+	.cs-nav__top,
+	.cs-nav__toggle {
+		box-sizing: border-box;
+		min-height: calc(56px * var(--ui-scale));
+		background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-full);
+		box-shadow: var(--elevation-floating);
+		color: var(--color-text);
+		cursor: pointer;
+	}
+	.cs-nav__top {
+		display: grid;
+		place-items: center;
+		width: calc(56px * var(--ui-scale));
+		padding: 0;
+	}
+	.cs-nav__top-icon {
+		width: calc(20px * var(--ui-scale));
+		height: calc(20px * var(--ui-scale));
+	}
+	.cs-nav__top:focus-visible {
+		outline: 2px solid var(--color-action-ghost-text);
+		outline-offset: 2px;
+	}
+	.cs-nav__toggle {
+		display: flex;
+		align-items: center;
+		gap: calc(10px * var(--ui-scale));
+		width: 100%;
+		padding: calc(10px * var(--ui-scale)) calc(20px * var(--ui-scale));
+		font-family: var(--font-sans);
+		text-align: left;
+	}
+	.cs-nav__toggle:focus-visible {
+		outline: 2px solid var(--color-action-ghost-text);
+		outline-offset: 2px;
+	}
+	.cs-nav__current {
+		display: flex;
+		align-items: baseline;
+		gap: calc(8px * var(--ui-scale));
+		flex: 1;
+		min-width: 0;
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 600;
+	}
+	/* Section numbers use the same accent as CaseSection's big counters. */
+	.cs-nav__num {
+		flex-shrink: 0;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		color: var(--color-action-ghost-text);
+	}
+	.cs-nav__title {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.cs-nav__chevron {
+		flex-shrink: 0;
+		width: calc(20px * var(--ui-scale));
+		height: calc(20px * var(--ui-scale));
+		transition: transform 200ms var(--ease-standard);
+	}
+	.cs-nav__toggle[aria-expanded='true'] .cs-nav__chevron {
+		transform: rotate(180deg);
+	}
+
+	.cs-nav__panel {
+		grid-column: 1 / -1;
+		box-sizing: border-box;
+		margin-top: calc(8px * var(--ui-scale));
+		/* Scrolls on its own when a case has many sections; the bottom
+		   inset keeps it clear of the sidebar's mobile tab bar. */
+		max-height: calc(100dvh - var(--component-header-height-mobile) - calc(200px * var(--ui-scale)));
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: calc(8px * var(--ui-scale));
+		background: var(--color-bg);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--elevation-floating);
+	}
+	.cs-nav__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.cs-nav__list :global(a) {
+		display: flex;
+		gap: calc(12px * var(--ui-scale));
+		padding: calc(12px * var(--ui-scale));
+		border-radius: var(--radius-md);
+		font-family: var(--font-sans);
+		font-size: calc(16px * var(--ui-scale));
+		font-weight: 500;
+		line-height: 1.4;
+		color: color-mix(in srgb, var(--color-text) 90%, transparent);
+		text-decoration: none;
+	}
+	.cs-nav__list :global(a:hover) {
+		background: var(--color-action-ghost-bg-hover);
+	}
+	.cs-nav__list :global(a:focus-visible) {
+		outline: 2px solid var(--color-action-ghost-text);
+		outline-offset: -2px;
+	}
+	.cs-nav__list :global(.cs-nav__item-num) {
+		flex-shrink: 0;
+		min-width: 2ch;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		color: color-mix(in srgb, var(--color-text) 60%, transparent);
+	}
+	/* Active row mirrors the sidebar's active item (purple text on a tinted
+	   surface), so "you are here" reads the same across the site. */
+	.cs-nav__list :global(a[aria-current='true']) {
+		background: var(--sidebar-item-icon-surface-active);
+		color: var(--sidebar-item-text-active);
+		font-weight: 700;
+	}
+	.cs-nav__list :global(a[aria-current='true'] .cs-nav__item-num) {
+		color: inherit;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cs-nav,
+		.cs-nav__chevron {
+			transition: none !important;
+		}
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-cs-nav]');
+	const sections = [...document.querySelectorAll<HTMLElement>('.cs-article .cs-section')];
+	const anchored = sections
+		.map((section, index) => ({
+			section,
+			// Matches CaseSection's CSS counter, which counts every section.
+			num: String(index + 1).padStart(2, '0'),
+			title: section.querySelector('.cs-section__heading')?.textContent?.trim() ?? '',
+		}))
+		.filter((entry) => entry.section.id && entry.title);
+
+	if (root && anchored.length > 1) {
+		const toggle = root.querySelector<HTMLButtonElement>('.cs-nav__toggle')!;
+		const panel = root.querySelector<HTMLElement>('.cs-nav__panel')!;
+		const list = root.querySelector<HTMLOListElement>('[data-cs-nav-list]')!;
+		const currentNum = root.querySelector<HTMLElement>('[data-cs-nav-num]')!;
+		const currentTitle = root.querySelector<HTMLElement>('[data-cs-nav-title]')!;
+		const query = window.matchMedia('(max-width: 839px)');
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+		const links = anchored.map(({ section, num, title }) => {
+			const item = document.createElement('li');
+			const link = document.createElement('a');
+			link.href = `#${section.id}`;
+			const numEl = document.createElement('span');
+			numEl.className = 'cs-nav__item-num';
+			numEl.textContent = num;
+			const titleEl = document.createElement('span');
+			titleEl.textContent = title;
+			link.append(numEl, titleEl);
+			item.append(link);
+			list.append(item);
+			return link;
+		});
+
+		const setOpen = (open: boolean) => {
+			toggle.setAttribute('aria-expanded', String(open));
+			panel.hidden = !open;
+		};
+		const isOpen = () => !panel.hidden;
+
+		toggle.addEventListener('click', () => setOpen(!isOpen()));
+		root.querySelector<HTMLButtonElement>('[data-cs-nav-top]')!.addEventListener('click', () => {
+			setOpen(false);
+			window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+			// Hand focus to the top of the page; the pill idles away up there.
+			const title = document.querySelector<HTMLElement>('.cs-hero__title');
+			title?.setAttribute('tabindex', '-1');
+			title?.focus({ preventScroll: true });
+		});
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && isOpen()) {
+				setOpen(false);
+				toggle.focus();
+			}
+		});
+		document.addEventListener('pointerdown', (event) => {
+			if (isOpen() && !root.contains(event.target as Node)) setOpen(false);
+		});
+		query.addEventListener('change', () => {
+			if (!query.matches) setOpen(false);
+		});
+
+		links.forEach((link, index) => {
+			link.addEventListener('click', (event) => {
+				event.preventDefault();
+				setOpen(false);
+				const target = anchored[index].section;
+				target.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+				history.replaceState(null, '', `#${target.id}`);
+				// Move focus to the section without a second scroll jump.
+				target.setAttribute('tabindex', '-1');
+				target.focus({ preventScroll: true });
+			});
+		});
+
+		// Current section = the last one whose top has crossed a line a third
+		// of the way down the viewport. Before the first section the pill
+		// idles (hidden) — the hero and summary have nothing to jump to.
+		let active = -1;
+		let ticking = false;
+		const update = () => {
+			ticking = false;
+			const line = window.innerHeight / 3;
+			const firstTop = anchored[0].section.getBoundingClientRect().top;
+			let next = -1;
+			anchored.forEach(({ section }, index) => {
+				if (section.getBoundingClientRect().top <= line) next = index;
+			});
+			const idle = firstTop > line;
+			root.toggleAttribute('data-idle', idle);
+			if (idle && isOpen()) setOpen(false);
+			if (next === active) return;
+			if (active >= 0) links[active].removeAttribute('aria-current');
+			active = next;
+			const shown = anchored[Math.max(active, 0)];
+			currentNum.textContent = shown.num;
+			currentTitle.textContent = shown.title;
+			if (active >= 0) links[active].setAttribute('aria-current', 'true');
+		};
+		const schedule = () => {
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(update);
+			}
+		};
+		window.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', schedule);
+
+		root.hidden = false;
+		update();
+	}
+</script>

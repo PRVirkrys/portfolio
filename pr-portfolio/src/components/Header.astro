@@ -10,7 +10,15 @@ import LanguageToggle from './ui/LanguageToggle.astro';
 import Footer from './Footer.astro';
 import { iconUrl } from '../lib/icons';
 import { withBase } from '../lib/url';
-import { MousePointer2, Hand, MessageCircle, Type, Menu, X, Mail } from '@lucide/astro';
+import { MousePointer2, Hand, MessageCircle, Type, Menu, X, Mail, ChevronLeft } from '@lucide/astro';
+
+interface Props {
+	/** Mobile-only "up" link to the page's parent (top-left, iOS/Material
+	 * convention). Labelled with its destination, not a bare arrow. */
+	back?: { label: string; href: string };
+}
+
+const { back } = Astro.props;
 
 const selectorItems = [
 	{ label: 'Puntero', Icon: MousePointer2, active: true },
@@ -41,6 +49,12 @@ const selectorItems = [
 	     its own component, untouched, and stays visible under this bar while
 	     the menu panel below is closed; opening the panel (16077:69757)
 	     covers it full-height, since the panel's own Footer takes its place. -->
+	{back && (
+		<a class="header__mobile-back" href={back.href} data-header-back aria-label={`Volver a ${back.label}`}>
+			<ChevronLeft class="header__mobile-back-icon" aria-hidden="true" />
+			<span>{back.label}</span>
+		</a>
+	)}
 	<a class="header__mobile-brand" href={withBase('/')} aria-label="Inicio"><Logo class="header__mobile-logo" /></a>
 	<button
 		type="button"
@@ -118,6 +132,7 @@ const selectorItems = [
 	}
 
 	/* ── Mobile (≤839px) — Figma node 16067:57688 / 16077:69757 ──────────── */
+	.header__mobile-back,
 	.header__mobile-brand,
 	.header__mobile-trigger,
 	.header__mobile-overlay,
@@ -148,6 +163,45 @@ const selectorItems = [
 		.header__mobile-brand {
 			display: grid;
 			place-items: center;
+		}
+		/* With a back link the bar becomes back · logo · menu, logo centred
+		   (equal 1fr side columns keep it centred whatever the label width). */
+		.header:has(.header__mobile-back) {
+			display: grid;
+			grid-template-columns: 1fr auto 1fr;
+		}
+		.header:has(.header__mobile-back) .header__mobile-trigger {
+			justify-self: end;
+		}
+		/* Same uppercase, tracked voice as the case study breadcrumbs. */
+		.header__mobile-back {
+			display: inline-flex;
+			align-items: center;
+			gap: calc(4px * var(--ui-scale));
+			justify-self: start;
+			min-height: 44px;
+			margin-left: calc(-8px * var(--ui-scale));
+			padding-inline: calc(4px * var(--ui-scale)) calc(8px * var(--ui-scale));
+			border-radius: var(--radius-full);
+			font-family: var(--font-sans);
+			font-size: calc(14px * var(--ui-scale));
+			font-weight: 600;
+			letter-spacing: calc(3px * var(--ui-scale));
+			text-transform: uppercase;
+			color: var(--header-icon);
+			text-decoration: none;
+		}
+		.header__mobile-back:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
+		.header__mobile-back:focus-visible {
+			outline: var(--focus-width) solid var(--color-focus);
+			outline-offset: var(--space-1);
+		}
+		.header__mobile-back-icon {
+			width: var(--icon-lg);
+			height: var(--icon-lg);
+			flex-shrink: 0;
 		}
 		.header__mobile-logo {
 			width: calc(35px * var(--ui-scale));
