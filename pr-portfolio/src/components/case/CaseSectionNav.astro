@@ -8,10 +8,13 @@
 // (ids come from CaseSection's heading), because sections live inside the
 // MDX body and their headings are component props, not markdown headings.
 // Without JS the pill stays hidden; the article reads fine without it.
-import { ChevronDown } from '@lucide/astro';
+import { ArrowUp, ChevronDown } from '@lucide/astro';
 ---
 
 <div class="cs-nav" data-cs-nav hidden>
+	<button type="button" class="cs-nav__top" aria-label="Volver arriba" data-cs-nav-top>
+		<ArrowUp class="cs-nav__top-icon" aria-hidden="true" />
+	</button>
 	<button
 		type="button"
 		class="cs-nav__toggle"
@@ -36,8 +39,11 @@ import { ChevronDown } from '@lucide/astro';
 	}
 
 	@media (max-width: 839px) {
+		/* Back-to-top button + section pill on one row; the panel spans both. */
 		.cs-nav:not([hidden]) {
-			display: block;
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: calc(8px * var(--ui-scale));
 			position: fixed;
 			top: calc(var(--component-header-height-mobile) + calc(12px * var(--ui-scale)));
 			left: var(--gutter-mobile);
@@ -67,14 +73,11 @@ import { ChevronDown } from '@lucide/astro';
 		}
 	}
 
+	/* Shares the pill's surface so the two read as one floating control. */
+	.cs-nav__top,
 	.cs-nav__toggle {
 		box-sizing: border-box;
-		display: flex;
-		align-items: center;
-		gap: calc(10px * var(--ui-scale));
-		width: 100%;
 		min-height: calc(56px * var(--ui-scale));
-		padding: calc(10px * var(--ui-scale)) calc(20px * var(--ui-scale));
 		background: color-mix(in srgb, var(--color-bg) 88%, transparent);
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
@@ -82,9 +85,30 @@ import { ChevronDown } from '@lucide/astro';
 		border-radius: var(--radius-full);
 		box-shadow: var(--elevation-floating);
 		color: var(--color-text);
+		cursor: pointer;
+	}
+	.cs-nav__top {
+		display: grid;
+		place-items: center;
+		width: calc(56px * var(--ui-scale));
+		padding: 0;
+	}
+	.cs-nav__top-icon {
+		width: calc(20px * var(--ui-scale));
+		height: calc(20px * var(--ui-scale));
+	}
+	.cs-nav__top:focus-visible {
+		outline: 2px solid var(--color-action-ghost-text);
+		outline-offset: 2px;
+	}
+	.cs-nav__toggle {
+		display: flex;
+		align-items: center;
+		gap: calc(10px * var(--ui-scale));
+		width: 100%;
+		padding: calc(10px * var(--ui-scale)) calc(20px * var(--ui-scale));
 		font-family: var(--font-sans);
 		text-align: left;
-		cursor: pointer;
 	}
 	.cs-nav__toggle:focus-visible {
 		outline: 2px solid var(--color-action-ghost-text);
@@ -122,6 +146,7 @@ import { ChevronDown } from '@lucide/astro';
 	}
 
 	.cs-nav__panel {
+		grid-column: 1 / -1;
 		box-sizing: border-box;
 		margin-top: calc(8px * var(--ui-scale));
 		/* Scrolls on its own when a case has many sections; the bottom
@@ -228,6 +253,14 @@ import { ChevronDown } from '@lucide/astro';
 		const isOpen = () => !panel.hidden;
 
 		toggle.addEventListener('click', () => setOpen(!isOpen()));
+		root.querySelector<HTMLButtonElement>('[data-cs-nav-top]')!.addEventListener('click', () => {
+			setOpen(false);
+			window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+			// Hand focus to the top of the page; the pill idles away up there.
+			const title = document.querySelector<HTMLElement>('.cs-hero__title');
+			title?.setAttribute('tabindex', '-1');
+			title?.focus({ preventScroll: true });
+		});
 		document.addEventListener('keydown', (event) => {
 			if (event.key === 'Escape' && isOpen()) {
 				setOpen(false);
