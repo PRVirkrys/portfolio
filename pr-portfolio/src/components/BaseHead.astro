@@ -21,7 +21,7 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <!-- Every page's <html> hardcodes class="dark" as the SSR default. This runs
      synchronously before first paint to correct it from a saved preference
-     (HeaderSettingsMenu → ThemeToggle writes it), so switching to light never
+     (ThemeToggle writes it), so switching to light never
      flashes dark first. -->
 <script is:inline>
 	(function () {
