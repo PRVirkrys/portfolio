@@ -66,7 +66,7 @@ const metaRows = [
 		<BaseHead title={title} description={description} />
 	</head>
 	<body>
-		<Header />
+		<Header back={{ label: 'Work', href: withBase('/work/') }} />
 		<CaseReadingProgress />
 		<CaseSectionNav />
 		<div class="cs-page">
@@ -180,12 +180,28 @@ const metaRows = [
 
 <script>
 	import { readWorkFilters, updateWorkQuery } from '../lib/work-filters';
-	const returnLink = document.querySelector<HTMLAnchorElement>('[data-work-return]');
+	const returnLinks = document.querySelectorAll<HTMLAnchorElement>('[data-work-return], [data-header-back]');
 	const from = new URLSearchParams(location.search).get('from');
-	if (returnLink && from) {
+	if (from) {
 		const filters = readWorkFilters(from);
-		returnLink.href = `${new URL(returnLink.href).pathname}${updateWorkQuery('', filters)}`;
+		returnLinks.forEach((link) => {
+			link.href = `${new URL(link.href).pathname}${updateWorkQuery('', filters)}`;
+		});
 	}
+
+	// Header back link: when the previous page is the Work list on this site,
+	// go back through history so its scroll position and filters survive.
+	// Otherwise (arrived from LinkedIn, Google, a new tab…) follow the href,
+	// which keeps the visitor on the portfolio instead of leaving it.
+	const headerBack = document.querySelector<HTMLAnchorElement>('[data-header-back]');
+	headerBack?.addEventListener('click', (event) => {
+		if (!document.referrer || history.length < 2) return;
+		const previous = new URL(document.referrer);
+		if (previous.origin === location.origin && previous.pathname === new URL(headerBack.href).pathname) {
+			event.preventDefault();
+			history.back();
+		}
+	});
 </script>
 
 <style>
