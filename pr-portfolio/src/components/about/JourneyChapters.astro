@@ -192,10 +192,19 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
     // otherwise sticky would hide part of it and it stays click-to-open.
     const layout = () => {
       root.style.height = '';
+      stage.style.minHeight = '';
       stage.classList.add('is-pinned');
-      pinned = scrollMode.matches && tallestStage() <= window.innerHeight - stickyTop();
+      const tallest = tallestStage();
+      pinned = scrollMode.matches && tallest <= window.innerHeight - stickyTop();
       if (pinned) {
-        root.style.height = `${stage.offsetHeight + step() * (chapters.length - 1) + step() * 0.5}px`;
+        // Hold the stage at its tallest height while pinned. Otherwise its
+        // height changes with each chapter, the scroll room reserved for it
+        // goes out of sync (a dead stretch after the last chapter) and the
+        // stage jumps when sticky releases it.
+        stage.style.minHeight = `${tallest}px`;
+        // One step per chapter, plus a short beat on the last one before
+        // the block scrolls away.
+        root.style.height = `${tallest + step() * (chapters.length - 1) + step() * 0.25}px`;
         syncToScroll();
       } else {
         stage.classList.remove('is-pinned');
