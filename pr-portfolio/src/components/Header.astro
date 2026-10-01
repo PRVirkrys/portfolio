@@ -130,9 +130,11 @@ const selectorItems = [
 	/* Divider sets the preferences apart from the nav/CTA group; stretches
 	   (with .header__actions) to the bar's full height. Mirrors the sidebar's
 	   cell on the opposite edge: border + --space-4 inset on both sides, same
-	   as the sidebar's own padding (the header's right padding matches it). */
-	.header__prefs { display: flex; align-self: stretch; align-items: center; gap: var(--space-3); padding-left: var(--space-4); border-left: var(--border-width) solid var(--color-border); }
-	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet) var(--space-4); } .header > :global(.header__identity) { display: none; } }
+	   as the sidebar's own padding (the header's right padding matches it).
+	   The margin tops up .header__actions' --space-6 gap so the CTA sits the
+	   header's own left gutter away from the divider. */
+	.header__prefs { margin-left: calc(var(--gutter-desktop) - var(--space-6)); display: flex; align-self: stretch; align-items: center; gap: var(--space-3); padding-left: var(--space-4); border-left: var(--border-width) solid var(--color-border); }
+	@media (max-width: 1120px) { .header > :global(.header__identity) { display: none; } }
 
 	@media (prefers-reduced-motion: reduce) {
 		.header { transition: none !important; }
