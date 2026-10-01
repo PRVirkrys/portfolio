@@ -8,7 +8,7 @@ import Button from './ui/Button.astro';
 import TextLink from './ui/TextLink.astro';
 import { withBase } from '../lib/url';
 interface Props {
-  /** 'case' matches the case-study column (CaseSection / NextCase). */
+  /** 'default' matches the /work column; 'case' the case-study column (CaseSection / NextCase). */
   width?: 'default' | 'case';
 }
 const { width = 'default' } = Astro.props;
@@ -55,7 +55,8 @@ const external = { target: '_blank', rel: 'noopener noreferrer' };
     box-sizing: border-box;
     display: grid;
     gap: var(--space-8);
-    max-width: 1200px;
+    /* Same column as the /work page (.work-page): padding sits inside this box. */
+    max-width: calc(1616px * var(--ui-scale));
     margin-inline: auto;
     padding-inline: var(--gutter-desktop);
   }
