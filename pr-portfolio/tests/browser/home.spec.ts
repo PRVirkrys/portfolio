@@ -91,7 +91,7 @@ test('static home is complete when JavaScript is unavailable', async ({ browser 
   await expect(page.locator('[data-flap-row] [data-flap]').first()).toBeVisible();
   await expect(page.locator('.identity-roles-list')).toContainText('BUILDER');
   await expect(page.locator('.identity-roles-list')).toContainText('FULL-STACK DEVELOPER');
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '#contact');
   await expect(page.getByRole('link', { name: 'Explorar proyectos relacionados' }).first()).toHaveAttribute('href', /\/work$/);
   await expect(page.getByRole('link', { name: 'Explore my work' }).first()).toHaveAttribute('href', /\/work$/);
   await context.close();
@@ -198,7 +198,7 @@ test('intro hands over to a reversible journey through every chapter, kept on re
   expect(await flapText(page)).toBe('PAULA RODAS DEV DESIGNER');      // name / role close
   await expect(page.locator('[data-motion="identity-head-b"]')).toBeVisible();
   await expect(page.locator('[data-motion="identity-ctas"] .button')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '#contact');
   await expect(page.locator('.identity-roles-list li.is-in')).toHaveCount(7);
   await seekFlapWord(page, 'BRAND DESIGNER');                     // back up → previous role
   await seekScene(page, 'identity', .95);
@@ -317,7 +317,7 @@ test('reduced motion exposes the full story without an automatic intro or a pinn
     'FULL-STACK DEVELOPER', 'BUILDER', 'BRAND DESIGNER',
   ]);
   await expect(page.locator('.identity-ctas .button')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', /\/contacto$/);
+  await expect(page.getByRole('link', { name: 'Let’s talk' })).toHaveAttribute('href', '#contact');
   // Decorative tool windows stay out of the accessibility tree.
   for (const w of ['.figma-window', '.code-window', '.ai-window'])
     await expect(page.locator(w)).toHaveAttribute('aria-hidden', 'true');

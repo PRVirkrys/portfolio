@@ -1,6 +1,6 @@
 ---
 import Logo from './ui/Logo.astro';
-import { House, BriefcaseBusiness, CircleUserRound, FileUser, Send, Mail } from '@lucide/astro';
+import { House, BriefcaseBusiness, CircleUserRound, FileUser, Mail } from '@lucide/astro';
 import { iconUrl } from '../lib/icons';
 import { withBase } from '../lib/url';
 
@@ -10,7 +10,6 @@ const navigation = [
 	{ label: 'Work', href: withBase('/work'), Icon: BriefcaseBusiness },
 	{ label: 'About', href: withBase('/about'), Icon: CircleUserRound },
 	{ label: 'CV', href: withBase('/cv'), Icon: FileUser },
-	{ label: 'Contacto', href: withBase('/contacto'), Icon: Send },
 ];
 const isActive = (href: string) => (href === withBase('/') ? pathname === withBase('/') : pathname === href || pathname.startsWith(`${href}/`));
 ---

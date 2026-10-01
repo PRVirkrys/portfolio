@@ -1301,6 +1301,11 @@ html:not(.dark) .home-page {
 .home-scroll:not([data-mode="cinematic"]) .identity-head__a {
   display: none;
 }
+/* The global prefooter (Prefooter.astro) follows the pinned journey; on the
+   home it must also clear the fixed footer and the mobile bottom nav. */
+body.home-page .prefooter {
+  padding-bottom: calc(var(--home-footer-height) + var(--home-bottom-nav) + var(--space-16));
+}
 .home-footer {
   position: fixed;
   z-index: 25;
