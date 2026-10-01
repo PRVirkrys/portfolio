@@ -6,6 +6,7 @@ import Prefooter from '../components/Prefooter.astro';
 import FlashPolaroids from '../components/about/FlashPolaroids.astro';
 import Polaroid from '../components/about/Polaroid.astro';
 import CareerChapters from '../components/about/CareerChapters.astro';
+import SectionIntro from '../components/about/SectionIntro.astro';
 import Tag from '../components/ui/Tag.astro';
 import CaseCallout from '../components/case/CaseCallout.astro';
 import LearningsGrid from '../components/case/LearningsGrid.astro';
@@ -97,6 +98,28 @@ const experience = [
   },
 ];
 
+// Newest first. Lighter than Experience: every entry stays open.
+const education = [
+  {
+    period: '2025–2026', institution: 'Grupo Atrium', program: 'Máster en Full Stack Development', status: 'En curso',
+    tagline: 'Comprender cómo se construye lo que diseño.',
+    body: 'Profundizo en cómo se construyen los productos más allá de la interfaz: frontend, backend, APIs y datos. Es una continuación natural de mi curiosidad por acercar diseño e implementación.',
+    tags: ['Java · Spring Boot', 'Angular · TypeScript', 'APIs REST', 'MySQL · MongoDB'],
+  },
+  {
+    period: '2018–2019', institution: 'ELISAVA', program: 'Máster en Diseño y Dirección de Proyectos para Internet',
+    tagline: 'Del diseño visual al producto digital.',
+    body: 'Amplié mi formación visual hacia la experiencia, la estrategia y la dirección de productos digitales. Este recorrido me ayudó a comprender cómo conectar una idea con las personas, el negocio y su implementación.',
+    tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos'],
+  },
+  {
+    period: '2010–2015', institution: 'Universidad del Azuay', program: 'Licenciatura en Diseño Gráfico',
+    tagline: 'Donde aprendí a dar forma y significado a las ideas.',
+    body: 'Mi base en diseño me enseñó a conceptualizar antes de ejecutar: construir significado, comunicar con intención y tomar decisiones visuales capaces de dar identidad a una idea.',
+    tags: ['Diseño gráfico', 'Identidad', 'Comunicación visual', 'Conceptualización', 'Dirección general'],
+  },
+];
+
 // First item is the top of the pile.
 const flashPhotos = [
   { src: flash05, alt: 'Flash sentado en la arena de la playa, con arnés amarillo, mirando a cámara.', caption: 'Flash, jefe de pausas' },
@@ -132,7 +155,7 @@ const flashPhotos = [
       </header>
 
       <section class="about-section" aria-labelledby="story-title">
-        <div class="about-section__head"><h2 id="story-title">Diseñar y construir</h2></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Diseñar y construir" heading="Primero aprendí a dar forma." headingMuted="Después, a construirla." lede="Del diseño gráfico al código: cinco momentos que ampliaron mi manera de llevar una idea a la realidad." headingId="story-title" /></div>
         <div class="about-section__content">
           {story.map((chapter, index) => (
             <article class="about-chapter">
@@ -145,17 +168,16 @@ const flashPhotos = [
       </section>
 
       <section class="about-section" aria-labelledby="curiosity-title">
-        <div class="about-section__head"><h2 id="curiosity-title">La curiosidad sigue ampliando lo que puedo construir</h2></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Full stack" heading="La curiosidad sigue ampliando" headingMuted="lo que puedo construir." lede="Exploro el otro lado del producto para diseñar con una visión más completa." headingId="curiosity-title" /></div>
         <div class="about-section__content about-prose">
-          <p>Actualmente curso un <strong>Máster en Full Stack Development</strong> como continuación de la curiosidad que siempre me ha acompañado.</p>
-          <p>Quiero comprender qué ocurre después del diseño: cómo se estructura la información, cómo se conectan el frontend y el backend, cómo se comportan los datos y qué decisiones permiten que una experiencia llegue realmente a producción.</p>
+          <p>Actualmente curso un <strong>Máster en Full Stack Development</strong> como continuación de la curiosidad que siempre me ha acompañado. Quiero comprender cómo se estructura la información, cómo se conectan el frontend y el backend, cómo se comportan los datos y qué decisiones permiten que una experiencia llegue realmente a producción.</p>
           <p>Proyectos propios como <strong>MedusaWatch</strong> y <strong>Mundial Predictions</strong> me permiten recorrer ese camino completo. En ellos puedo pasar de una pregunta inicial a la lógica, los datos, la interfaz y una solución funcional. Construir me ayuda a validar lo que imagino, descubrir restricciones y volver a diseñar con una comprensión más profunda.</p>
           <blockquote class="about-quote">El diseño me ayuda a decidir qué merece existir y por qué. El código amplía mi capacidad para hacerlo posible.</blockquote>
         </div>
       </section>
 
       <section class="about-section" aria-labelledby="ai-title">
-        <div class="about-section__head"><h2 id="ai-title">Diseñar en un mundo con IA</h2></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Diseñar con IA" heading="Crear es cada vez más rápido." headingMuted="El criterio importa más que nunca." lede="Más capacidad para explorar y construir exige más responsabilidad al decidir." headingId="ai-title" /></div>
         <div class="about-section__content about-prose">
           <p>La IA ha multiplicado lo que puedo explorar y construir.</p>
           <p>La utilizo para acelerar procesos de research y síntesis de información, detectar patrones, explorar alternativas y documentar decisiones. También me ayuda a transformar ideas en prototipos funcionales para testing y a apoyar tareas de programación, debugging y refactoring.</p>
@@ -166,7 +188,7 @@ const flashPhotos = [
       </section>
 
       <section class="about-section" aria-labelledby="process-title">
-        <div class="about-section__head"><h2 id="process-title">Cómo pienso y trabajo</h2></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Cómo pienso y trabajo" heading="Comprender antes de dar forma." headingMuted="Construir para volver a preguntar." lede="Cuatro movimientos que se repiten en cada proyecto, sea cual sea la herramienta." headingId="process-title" /></div>
         <div class="about-section__content">
           <LearningsGrid>
             {principles.map(principle => <CaseCallout size="lg" title={principle.title} body={principle.body} />)}
@@ -178,19 +200,40 @@ const flashPhotos = [
         <CareerChapters chapters={experience} eyebrow="Experiencia" heading="Los roles cambiaron." headingMuted="La curiosidad se quedó." intro="Más de nueve años conectando diseño, producto y código para acercar ideas a la realidad." headingId="experience-title" />
       </section>
 
+      <section class="about-section" aria-labelledby="education-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Formación" heading="Aprender también fue parte del recorrido." headingMuted="Y sigue siéndolo." lede="Tres etapas que ampliaron mi forma de diseñar, pensar y construir." headingId="education-title" /></div>
+        <ol class="about-section__content about-education">
+          {education.map(item => (
+            <li class="about-study">
+              <p class="about-study__meta">
+                <span>{item.period}</span>
+                <span>{item.institution}</span>
+                {item.status && <span class="about-study__status">{item.status}</span>}
+              </p>
+              <h3>{item.program}</h3>
+              <p class="about-study__tagline">{item.tagline}</p>
+              <p class="about-study__body">{item.body}</p>
+              <ul class="about-study__tags" aria-label="Áreas principales">
+                {item.tags.map(tag => <li><Tag category="Neutral">{tag}</Tag></li>)}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section class="about-section" aria-labelledby="beyond-title">
-        <div class="about-section__head"><h2 id="beyond-title">Más allá del cargo</h2></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Más allá del cargo" heading="Una colección de ideas" headingMuted="que también me construyeron a mí." headingId="beyond-title" /></div>
         <div class="about-section__content about-prose">
           <p>Lo que más disfruto es ese momento en el que algo todavía difuso empieza a adquirir sentido.</p>
           <p>Me entusiasman las ideas que me obligan a aprender: un dominio que no conozco, un sistema con muchas relaciones, una interacción que necesito comprender o una tecnología que abre una posibilidad nueva.</p>
-          <p>Cada proyecto deja algo en mi manera de pensar y amplía lo que seré capaz de construir la próxima vez. Por eso mi historia no es solamente una secuencia de roles. Es una colección de ideas que también me han ido construyendo a mí.</p>
+          <p>Cada proyecto deja algo en mi manera de pensar y amplía lo que seré capaz de construir la próxima vez. Por eso mi historia no es solamente una secuencia de roles, sino una forma de mirar que continúa evolucionando con cada idea.</p>
           <blockquote class="about-quote">Cada vez que una idea me ha pedido mirar un poco más lejos, he aprendido una nueva manera de hacerla realidad.</blockquote>
         </div>
       </section>
 
       <section class="about-section about-flash" aria-labelledby="flash-title">
         <div class="about-flash__copy">
-          <h2 id="flash-title">Flash, mi recordatorio de volver al mundo real</h2>
+          <SectionIntro size="sm" eyebrow="Flash" heading="Mi recordatorio" headingMuted="de volver al mundo real." headingId="flash-title" />
           <div class="about-prose">
             <p>Flash es mi perro, mi compañero y quien se ocupa de que me despegue de la pantalla de vez en cuando.</p>
             <p>Me obliga a salir, caminar y tomar distancia. Aunque también se aguanta mis carreras de vuelta a casa cuando se me ocurre una idea y necesito comprobar si funciona. Él preferiría continuar el paseo; yo necesito abrir el ordenador “solo un momento”.</p>
@@ -201,7 +244,7 @@ const flashPhotos = [
       </section>
 
       <section class="about-section" aria-labelledby="now-title">
-        <div class="about-section__head"><h2 id="now-title">Ahora</h2></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Ahora" heading="Ideas que necesitan dirección." headingMuted="Equipos preparados para construirlas." headingId="now-title" /></div>
         <div class="about-section__content about-prose">
           <p>Hoy estoy profundizando en desarrollo full stack y explorando cómo la IA puede ampliar el espacio entre imaginar, diseñar y construir.</p>
           <p>Me interesan los equipos en los que diseño e ingeniería colaboran desde el principio; los productos con sistemas, datos o dominios complejos; y los problemas que exigen tanto una mirada estratégica como atención a los detalles.</p>
@@ -235,8 +278,9 @@ const flashPhotos = [
 
   /* ── Sections: sticky title column + content column, like case studies ── */
   .about-section { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: calc(96px * var(--ui-scale)); align-items: start; padding-block: calc(120px * var(--ui-scale)); border-top: var(--border-width) solid var(--color-border); }
+  /* Like case studies: the intro sticks in the left column while the
+     content scrolls past in the right one. */
   .about-section__head { position: sticky; top: calc(var(--component-header-height-desktop) + var(--space-8)); }
-  h2 { margin: 0; font-family: var(--font-heading); font-size: clamp(calc(34px * var(--ui-scale)), 2.6vw, calc(46px * var(--ui-scale))); font-weight: 700; line-height: 1.08; letter-spacing: -0.035em; }
   h3 { margin: 0 0 var(--space-4); font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.2px; }
 
   .about-chapter + .about-chapter { margin-top: calc(80px * var(--ui-scale)); }
@@ -254,9 +298,21 @@ const flashPhotos = [
   .about-career { padding-block: calc(120px * var(--ui-scale)); background: var(--color-bg-subtle); box-shadow: 0 0 0 100vmax var(--color-bg-subtle); clip-path: inset(0 -100vmax); }
   .about-career + .about-section { border-top: 0; }
 
+  /* ── Education: compact, always open — lighter than Experience ── */
+  .about-education { margin: 0; padding: 0; list-style: none; border-top: var(--border-width) solid var(--color-border); }
+  .about-study { display: grid; gap: var(--space-3); padding-block: var(--space-8); border-bottom: var(--border-width) solid var(--color-border); }
+  .about-study h3 { margin: 0; font-size: calc(26px * var(--ui-scale)); line-height: 1.2; letter-spacing: -0.02em; }
+  .about-study p { margin: 0; }
+  .about-study__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+  .about-study__meta span + span::before { content: '·'; margin-right: var(--space-3); color: var(--color-border-strong); }
+  .about-study__status { color: var(--color-action-ghost-text); }
+  .about-study__tagline { font-family: var(--font-heading); font-size: calc(20px * var(--ui-scale)); font-weight: 600; line-height: 1.35; color: var(--color-text); }
+  .about-study__body { max-width: calc(760px * var(--ui-scale)); font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
+  .about-study__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-1) 0 0; padding: 0; list-style: none; }
+
   /* ── Flash: copy + polaroid stack side by side ── */
   .about-flash { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; }
-  .about-flash__copy h2 { margin-bottom: var(--space-8); max-width: 16ch; }
+  .about-flash__copy > :global(.section-intro) { margin-bottom: var(--space-8); }
 
   @media (max-width: 960px) {
     .about-hero, .about-section, .about-flash { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-8); }
@@ -269,7 +325,6 @@ const flashPhotos = [
   @media (max-width: 839px) {
     .about { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-12); }
     .about-hero { padding-bottom: var(--space-16); }
-    h2 { font-size: calc(36px * var(--ui-scale)); }
     .about-lead { font-size: calc(24px * var(--ui-scale)); }
         .about-quote { font-size: calc(24px * var(--ui-scale)); }
   }
