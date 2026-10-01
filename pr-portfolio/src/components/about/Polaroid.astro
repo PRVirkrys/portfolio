@@ -1,0 +1,42 @@
+---
+// A photo printed as a polaroid: paper frame, slight tilt, handwritten-ish
+// caption. Shared by the About hero portrait and the Flash stack.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  /** Rotation in degrees. */
+  tilt?: number;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+const { src, alt, caption, tilt = 0, widths = [320, 640], sizes = '320px', loading = 'lazy', fetchpriority } = Astro.props;
+---
+
+<figure class="polaroid" style={`--tilt: ${tilt}deg;`}>
+  <Image src={src} alt={alt} widths={widths} sizes={sizes} loading={loading} fetchpriority={fetchpriority} draggable="false" />
+  {caption && <figcaption class="polaroid__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .polaroid {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-3) var(--space-3) var(--space-4);
+    background: var(--color-surface-raised);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    /* Elevation tokens are flat in light theme; a polaroid still needs to
+       sit on the page, so it carries its own soft paper shadow. */
+    box-shadow: 0 calc(12px * var(--ui-scale)) calc(32px * var(--ui-scale)) -8px color-mix(in srgb, var(--color-neutral-950) 22%, transparent);
+    transform: rotate(var(--tilt));
+  }
+  .polaroid :global(img) { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 0; pointer-events: none; user-select: none; }
+  .polaroid__caption { font-family: var(--font-heading); font-size: calc(18px * var(--ui-scale)); font-weight: 500; text-align: center; color: var(--color-text-secondary); }
+</style>
