@@ -1,0 +1,115 @@
+---
+// Site-wide prefooter, rendered right before <Footer /> on every page. It is
+// the site's only contact surface (no form, no /contacto page): one primary
+// action (email) and three secondary destinations. Any "contact" CTA links to
+// #contact, which always resolves on the current page.
+import { ArrowUpRight } from '@lucide/astro';
+import Button from './ui/Button.astro';
+import TextLink from './ui/TextLink.astro';
+import { withBase } from '../lib/url';
+
+const newTab = '(se abre en una pestaña nueva)';
+const external = { target: '_blank', rel: 'noopener noreferrer' };
+---
+<section id="contact" class="prefooter" aria-labelledby="prefooter-title">
+  <div class="prefooter__inner">
+    <h2 id="prefooter-title" class="prefooter__title">Good products start before the first screen</h2>
+    <div class="prefooter__body">
+      <p class="prefooter__text">I’m open to product design roles, freelance projects and collaborations.</p>
+      <ul class="prefooter__links">
+        <li class="prefooter__primary">
+          <Button href="mailto:bypaularodas@gmail.com" variant="primary" size="lg" showLeadingIcon={false}>
+            Email me
+            <ArrowUpRight slot="icon-trailing" />
+          </Button>
+        </li>
+        <li>
+          <TextLink href="https://www.linkedin.com/in/paularodas/" size="lg" {...external}>
+            LinkedIn<span class="sr-only"> {newTab}</span>
+          </TextLink>
+        </li>
+        <li><TextLink href={withBase('/cv')} size="lg">View CV</TextLink></li>
+        <li>
+          <TextLink href="https://github.com/PRVirkrys" size="lg" {...external}>
+            GitHub<span class="sr-only"> {newTab}</span>
+          </TextLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .prefooter {
+    box-sizing: border-box;
+    padding: var(--space-24) var(--gutter-desktop);
+    background: var(--color-bg);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+  .prefooter__inner {
+    display: grid;
+    gap: var(--space-8);
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+  .prefooter__title {
+    margin: 0;
+    max-width: 22ch;
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: clamp(1.75rem, 1.6vw + 1.1rem, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .prefooter__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6) var(--space-12);
+  }
+  .prefooter__text {
+    margin: 0;
+    max-width: 42ch;
+    color: var(--color-text-secondary);
+    font-family: var(--typography-body-l-font-family);
+    font-size: var(--typography-body-l-font-size);
+    line-height: var(--typography-body-l-line-height);
+  }
+  .prefooter__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .prefooter__primary {
+    margin-right: var(--space-2);
+  }
+  /* 44px hit area for the secondary links; the underline stays under the label. */
+  .prefooter__links :global(.text-link) {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  @media (max-width: 839px) {
+    .prefooter {
+      padding: var(--space-16) var(--gutter-mobile);
+    }
+    /* Email takes its own full-width row; the secondary links wrap below it. */
+    .prefooter__primary {
+      flex-basis: 100%;
+      margin-right: 0;
+    }
+    .prefooter__primary :global(.button) {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 48px;
+    }
+  }
+</style>

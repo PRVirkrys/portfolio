@@ -1,6 +1,7 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import Prefooter from '../components/Prefooter.astro';
 import Header from '../components/Header.astro';
 import HomeScrollExperience from '../components/home-scroll/HomeScrollExperience.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
@@ -20,6 +21,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
   <body class="home-page">
     <Header />
     <HomeScrollExperience locale="es" />
+    <Prefooter />
     <div class="home-footer"><Footer /></div>
   </body>
 </html>

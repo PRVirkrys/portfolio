@@ -1107,14 +1107,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
   const panels = [...root.querySelectorAll<HTMLElement>("[data-scene-panel]")];
   const q = gsap.utils.selector(root);
   const saved = restore ?? parseSnapshot(read(SAVED));
-  // A deep link past the journey (e.g. /#contact from the nav) wins over the
-  // intro and any saved position: land on that element instead.
-  const hashTarget = location.hash
-    ? document.getElementById(decodeURIComponent(location.hash.slice(1)))
-    : null;
-  const deepLink = hashTarget && !root.contains(hashTarget) ? hashTarget : null;
-  const needsIntro =
-    !reduce.matches && !read(SEEN) && !saved && !deepLink && scrollY < 5;
+  const needsIntro = !reduce.matches && !read(SEEN) && !saved && scrollY < 5;
 
   try {
     context = gsap.context(() => {
@@ -1663,7 +1656,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
           showHint();
           armIdle();
         };
-      } else if (!saved && !deepLink) {
+      } else if (!saved) {
         // Reloads and revisits open at the greeting with the UI already in.
         const target = introEnd();
         if (scrollY < target - 1) {
@@ -1675,10 +1668,7 @@ async function initialize(root: HTMLElement, restore?: Snapshot) {
       }
     }, root);
     document.documentElement.classList.remove("home-boot");
-    if (deepLink) {
-      deepLink.scrollIntoView({ block: "start", behavior: "instant" });
-      ScrollTrigger.update();
-    } else if (trigger && saved) {
+    if (trigger && saved) {
       const progress = progressFor(saved, bounds);
       window.scrollTo({
         top: trigger.start + progress * (trigger.end - trigger.start),

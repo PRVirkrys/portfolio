@@ -1301,62 +1301,10 @@ html:not(.dark) .home-page {
 .home-scroll:not([data-mode="cinematic"]) .identity-head__a {
   display: none;
 }
-/* Prefooter — the narrative close after the pinned journey (Prefooter.astro).
-   Same dot field as the stage so it reads as the last chapter, not an add-on;
-   the bottom padding clears the fixed footer / mobile bottom nav. */
-.home-prefooter {
-  --typography-ui-link-lg-font-size: var(--home-body);
-  box-sizing: border-box;
-  padding: clamp(96px, 16vh, 176px) 64px
-    calc(var(--home-footer-height) + var(--home-bottom-nav) + clamp(80px, 12vh, 144px));
-  background-color: var(--color-bg);
-  background-image: radial-gradient(circle, var(--hero-dot-color) 0.5px, transparent 1px);
-  background-size: 36px 36px;
-}
-.home-prefooter__inner {
-  display: grid;
-  gap: clamp(40px, 6vw, 80px);
-  max-width: 1200px;
-  margin-inline: auto;
-}
-.home-prefooter__title {
-  margin: 0;
-  max-width: 15ch;
-  color: var(--color-text);
-  font: 500 clamp(2.5rem, 6.6vw, 6.75rem) / 0.96 var(--font-heading);
-  letter-spacing: -0.035em;
-  text-transform: uppercase;
-  text-wrap: balance;
-}
-.home-prefooter__body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px 64px;
-}
-.home-prefooter__text {
-  margin: 0;
-  max-width: 36ch;
-  color: var(--color-text-secondary);
-  font: 400 var(--home-lead) / var(--home-body-lh) var(--font-sans);
-}
-.home-prefooter__links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 28px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.home-prefooter__primary {
-  margin-right: 8px;
-}
-/* 44px hit area for the secondary links; the underline stays under the label. */
-.home-prefooter .home-prefooter__links .text-link {
-  min-height: 44px;
-  justify-content: center;
+/* The global prefooter (Prefooter.astro) follows the pinned journey; on the
+   home it must also clear the fixed footer and the mobile bottom nav. */
+body.home-page .prefooter {
+  padding-bottom: calc(var(--home-footer-height) + var(--home-bottom-nav) + var(--space-16));
 }
 .home-footer {
   position: fixed;
@@ -1564,8 +1512,7 @@ html.home-boot
   opacity: 0;
 }
 @media (max-width: 1100px) {
-  .home-scene,
-  .home-prefooter {
+  .home-scene {
     padding-inline: 40px;
   }
   .home-board,
@@ -1726,23 +1673,6 @@ html.home-boot
   }
   .home-skip {
     left: 12px;
-  }
-  .home-prefooter {
-    padding-top: 72px;
-    padding-inline: 24px;
-  }
-  /* Email takes its own full-width row; the secondary links wrap below it. */
-  .home-prefooter__primary {
-    flex-basis: 100%;
-    margin-right: 0;
-  }
-  .home-prefooter__primary .button {
-    box-sizing: border-box;
-    width: 100%;
-    min-height: 48px;
-  }
-  .home-prefooter__links {
-    gap: 8px 24px;
   }
 
   /* Pinned journey on a phone: every chapter must fit one clipped viewport, so
