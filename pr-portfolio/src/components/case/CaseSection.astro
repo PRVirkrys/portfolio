@@ -28,10 +28,18 @@ const {
 } = Astro.props;
 
 const hasImage = Astro.slots.has('image');
+// Anchor target for CaseSectionNav (and shareable deep links).
+const id = heading
+	?.normalize('NFD')
+	.replace(/[\u0300-\u036f]/g, '')
+	.toLowerCase()
+	.replace(/[^a-z0-9]+/g, '-')
+	.replace(/^-|-$/g, '');
 ---
 
 <section
 	class="cs-section"
+	id={id || undefined}
 	data-variant={variant}
 	data-layout={layout}
 	data-wide={wide || undefined}
