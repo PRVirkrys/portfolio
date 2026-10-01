@@ -102,7 +102,7 @@ const selectorItems = [
 	   SidebarNavigation's brand block — see --component-header-height-desktop.
 	   That keeps the sidebar's brand divider and this bar's bottom border on
 	   the same line regardless of either side's content. */
-	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
+	.header { box-sizing: border-box; display: flex; position: fixed; inset: 0 0 auto var(--component-sidebar-width); z-index: 30; height: var(--component-header-height-desktop); align-items: center; justify-content: space-between; gap: var(--space-6); padding-inline: var(--gutter-desktop) var(--space-4); background: var(--color-bg); border-bottom: var(--border-width) solid var(--color-border); pointer-events: none; }
 	/* The mobile menu panel is a child of .header, which is itself a
 	   stacking context — its z-index can't out-rank SidebarNavigation
 	   (z-index 40) from inside there, so bump .header's own z-index instead
@@ -126,10 +126,13 @@ const selectorItems = [
 	.header__selector-item--active { background: var(--sidebar-item-text-active); color: var(--color-base-white); }
 	.header__selector-item :global(svg) { width: var(--icon-sm); height: var(--icon-sm); }
 	.header__selector-item:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
-	.header__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-6); }
-	/* Divider sets the preferences apart from the nav/CTA group. */
-	.header__prefs { display: flex; align-items: center; gap: var(--space-3); padding-left: var(--space-6); border-left: var(--border-width) solid var(--color-border); }
-	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet); } .header > :global(.header__identity) { display: none; } }
+	.header__actions { display: flex; align-self: stretch; align-items: center; justify-content: flex-end; gap: var(--space-6); }
+	/* Divider sets the preferences apart from the nav/CTA group; stretches
+	   (with .header__actions) to the bar's full height. Mirrors the sidebar's
+	   cell on the opposite edge: border + --space-4 inset on both sides, same
+	   as the sidebar's own padding (the header's right padding matches it). */
+	.header__prefs { display: flex; align-self: stretch; align-items: center; gap: var(--space-3); padding-left: var(--space-4); border-left: var(--border-width) solid var(--color-border); }
+	@media (max-width: 1120px) { .header { padding-inline: var(--gutter-tablet) var(--space-4); } .header > :global(.header__identity) { display: none; } }
 
 	@media (prefers-reduced-motion: reduce) {
 		.header { transition: none !important; }
