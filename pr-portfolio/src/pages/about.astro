@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import Prefooter from '../components/Prefooter.astro';
 import FlashPolaroids from '../components/about/FlashPolaroids.astro';
 import Polaroid from '../components/about/Polaroid.astro';
-import CareerChapters from '../components/about/CareerChapters.astro';
+import JourneyChapters from '../components/about/JourneyChapters.astro';
 import SectionIntro from '../components/about/SectionIntro.astro';
 import Tag from '../components/ui/Tag.astro';
 import CaseCallout from '../components/case/CaseCallout.astro';
@@ -71,49 +71,46 @@ const principles = [
   { title: 'Construir y aprender', body: 'Cuando aporta claridad, utilizo frontend, Framer, no-code, automatización o IA para probar una solución. Construir revela nuevas preguntas y vuelve a alimentar el diseño.' },
 ];
 
-const experience = [
+// Work and studies on one timeline, newest first.
+const journey = [
   {
-    start: 2023, end: 2025, company: 'Pelt8', role: 'Lead Product Designer', workCompany: 'pelt8' as const,
-    tagline: 'Todas las capas en un mismo lugar.',
-    body: 'Lideré el diseño de un producto B2B SaaS de reporting ESG, su sistema de diseño y la colaboración con producto e ingeniería. También trabajé en frontend, marca, web y automatización para ayudar a que el producto y el equipo avanzaran con mayor autonomía.',
-    tags: ['B2B SaaS · ESG', '+25 empresas', 'Design system', 'Componentes React', 'Web en Framer', 'Tally + Make'],
-  },
-  {
-    start: 2021, end: 2023, company: 'Fail Fast', role: 'UX/UI Designer', workCompany: 'failfast' as const,
-    tagline: 'Entrar en dominios desconocidos.',
-    body: 'Gestioné proyectos UX para salud, educación, deporte y servicios corporativos. Convertí investigación, necesidades de negocio y contextos complejos en arquitecturas, flujos, prototipos y experiencias listas para implementar.',
-    tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'La Meva Salut', 'TimeChef', 'Culers · FC Barcelona'],
-  },
-  {
-    start: 2018, end: 2020, company: 'LPA', role: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
-    tagline: 'El código como herramienta de diseño.',
-    body: 'Diseñé e implementé interfaces para productos financieros B2B. Trabajar entre UX/UI y frontend consolidó mi forma de utilizar el código como parte del proceso de diseño y colaborar con ingeniería.',
-    tags: ['Fintech B2B', 'Dashboards y datos densos', 'HTML · CSS · Sass', 'Angular'],
-  },
-  {
-    start: 2016, end: 2018, company: 'BigPromo', role: 'Fundadora & Product/Web Designer',
-    tagline: 'Mi primera idea convertida en producto.',
-    body: 'Convertí una idea en una plataforma web y móvil, conectando propuesta de valor, experiencia, tecnología, identidad y lanzamiento.',
-    tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad'],
-  },
-];
-
-// Newest first. Lighter than Experience: every entry stays open.
-const education = [
-  {
-    period: '2025–2026', institution: 'Grupo Atrium', program: 'Máster en Full Stack Development', status: 'En curso',
+    start: 2025, end: 2026, status: 'En curso', kind: 'study' as const, name: 'Grupo Atrium', title: 'Máster en Full Stack Development',
     tagline: 'Comprender cómo se construye lo que diseño.',
     body: 'Profundizo en cómo se construyen los productos más allá de la interfaz: frontend, backend, APIs y datos. Es una continuación natural de mi curiosidad por acercar diseño e implementación.',
     tags: ['Java · Spring Boot', 'Angular · TypeScript', 'APIs REST', 'MySQL · MongoDB'],
   },
   {
-    period: '2018–2019', institution: 'ELISAVA', program: 'Máster en Diseño y Dirección de Proyectos para Internet',
+    start: 2023, end: 2025, name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
+    tagline: 'Todas las capas en un mismo lugar.',
+    body: 'Lideré el diseño de un producto B2B SaaS de reporting ESG, su sistema de diseño y la colaboración con producto e ingeniería. También trabajé en frontend, marca, web y automatización para ayudar a que el producto y el equipo avanzaran con mayor autonomía.',
+    tags: ['B2B SaaS · ESG', '+25 empresas', 'Design system', 'Componentes React', 'Web en Framer', 'Tally + Make'],
+  },
+  {
+    start: 2021, end: 2023, name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
+    tagline: 'Entrar en dominios desconocidos.',
+    body: 'Gestioné proyectos UX para salud, educación, deporte y servicios corporativos. Convertí investigación, necesidades de negocio y contextos complejos en arquitecturas, flujos, prototipos y experiencias listas para implementar.',
+    tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'La Meva Salut', 'TimeChef', 'Culers · FC Barcelona'],
+  },
+  {
+    start: 2018, end: 2020, name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
+    tagline: 'El código como herramienta de diseño.',
+    body: 'Diseñé e implementé interfaces para productos financieros B2B. Trabajar entre UX/UI y frontend consolidó mi forma de utilizar el código como parte del proceso de diseño y colaborar con ingeniería.',
+    tags: ['Fintech B2B', 'Dashboards y datos densos', 'HTML · CSS · Sass', 'Angular'],
+  },
+  {
+    start: 2018, end: 2019, kind: 'study' as const, name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
     tagline: 'Del diseño visual al producto digital.',
     body: 'Amplié mi formación visual hacia la experiencia, la estrategia y la dirección de productos digitales. Este recorrido me ayudó a comprender cómo conectar una idea con las personas, el negocio y su implementación.',
     tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos'],
   },
   {
-    period: '2010–2015', institution: 'Universidad del Azuay', program: 'Licenciatura en Diseño Gráfico',
+    start: 2016, end: 2018, name: 'BigPromo', title: 'Fundadora & Product/Web Designer',
+    tagline: 'Mi primera idea convertida en producto.',
+    body: 'Convertí una idea en una plataforma web y móvil, conectando propuesta de valor, experiencia, tecnología, identidad y lanzamiento.',
+    tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad'],
+  },
+  {
+    start: 2010, end: 2015, kind: 'study' as const, name: 'Universidad del Azuay', title: 'Licenciatura en Diseño Gráfico',
     tagline: 'Donde aprendí a dar forma y significado a las ideas.',
     body: 'Mi base en diseño me enseñó a conceptualizar antes de ejecutar: construir significado, comunicar con intención y tomar decisiones visuales capaces de dar identidad a una idea.',
     tags: ['Diseño gráfico', 'Identidad', 'Comunicación visual', 'Conceptualización', 'Dirección general'],
@@ -196,29 +193,8 @@ const flashPhotos = [
         </div>
       </section>
 
-      <section class="about-career" aria-labelledby="experience-title">
-        <CareerChapters chapters={experience} eyebrow="Experiencia" heading="Los roles cambiaron." headingMuted="La curiosidad se quedó." intro="Más de nueve años conectando diseño, producto y código para acercar ideas a la realidad." headingId="experience-title" />
-      </section>
-
-      <section class="about-section" aria-labelledby="education-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Formación" heading="Aprender también fue parte del recorrido." headingMuted="Y sigue siéndolo." lede="Tres etapas que ampliaron mi forma de diseñar, pensar y construir." headingId="education-title" /></div>
-        <ol class="about-section__content about-education">
-          {education.map(item => (
-            <li class="about-study">
-              <p class="about-study__meta">
-                <span>{item.period}</span>
-                <span>{item.institution}</span>
-                {item.status && <span class="about-study__status">{item.status}</span>}
-              </p>
-              <h3>{item.program}</h3>
-              <p class="about-study__tagline">{item.tagline}</p>
-              <p class="about-study__body">{item.body}</p>
-              <ul class="about-study__tags" aria-label="Áreas principales">
-                {item.tags.map(tag => <li><Tag category="Neutral">{tag}</Tag></li>)}
-              </ul>
-            </li>
-          ))}
-        </ol>
+      <section class="about-career" aria-labelledby="journey-title">
+        <JourneyChapters chapters={journey} eyebrow="Mi recorrido" heading="Los caminos cambiaron." headingMuted="La curiosidad se quedó." intro="Estudios, roles y proyectos que, año a año, fueron ampliando mi manera de diseñar, pensar y construir." headingId="journey-title" />
       </section>
 
       <section class="about-section" aria-labelledby="beyond-title">
@@ -289,26 +265,14 @@ const flashPhotos = [
   .about-quote { max-width: calc(820px * var(--ui-scale)); margin: calc(56px * var(--ui-scale)) 0 0; padding-left: var(--space-6); border-left: var(--focus-width) solid var(--color-action-ghost-text); font-family: var(--font-heading); font-size: calc(30px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; color: var(--color-text); }
 
 
-  /* ── Experience: CareerChapters owns its grid; the section keeps the rhythm ── */
-  /* Experience sits on a full-bleed band (subtle bg, like CaseSection's subtle
+  /* ── Journey: JourneyChapters owns its grid; the section keeps the rhythm ── */
+  /* The journey sits on a full-bleed band (subtle bg, like CaseSection's subtle
      variant): content stays in the page column while the background runs
      edge to edge. The spread shadow paints the bleed and clip-path keeps it
      to the band's height; neither adds horizontal scroll, and the fixed
      sidebar covers the part that runs under it. */
   .about-career { padding-block: calc(120px * var(--ui-scale)); background: var(--color-bg-subtle); box-shadow: 0 0 0 100vmax var(--color-bg-subtle); clip-path: inset(0 -100vmax); }
   .about-career + .about-section { border-top: 0; }
-
-  /* ── Education: compact, always open — lighter than Experience ── */
-  .about-education { margin: 0; padding: 0; list-style: none; border-top: var(--border-width) solid var(--color-border); }
-  .about-study { display: grid; gap: var(--space-3); padding-block: var(--space-8); border-bottom: var(--border-width) solid var(--color-border); }
-  .about-study h3 { margin: 0; font-size: calc(26px * var(--ui-scale)); line-height: 1.2; letter-spacing: -0.02em; }
-  .about-study p { margin: 0; }
-  .about-study__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
-  .about-study__meta span + span::before { content: '·'; margin-right: var(--space-3); color: var(--color-border-strong); }
-  .about-study__status { color: var(--color-action-ghost-text); }
-  .about-study__tagline { font-family: var(--font-heading); font-size: calc(20px * var(--ui-scale)); font-weight: 600; line-height: 1.35; color: var(--color-text); }
-  .about-study__body { max-width: calc(760px * var(--ui-scale)); font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
-  .about-study__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-1) 0 0; padding: 0; list-style: none; }
 
   /* ── Flash: copy + polaroid stack side by side ── */
   .about-flash { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; }

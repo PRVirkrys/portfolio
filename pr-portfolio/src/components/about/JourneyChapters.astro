@@ -1,12 +1,12 @@
 ---
-// Experience as chapters: a full-width SectionIntro, then an accordion of
-// roles beside a marker that shows the open chapter's start year on a
-// timeline. On tall-enough desktops the block
+// The journey as chapters — work and studies on one timeline, newest first:
+// a full-width SectionIntro, then an accordion beside a marker that shows the
+// open chapter's start year on a timeline. On tall-enough desktops the block
 // pins while you scroll through it and scrolling opens each chapter in turn;
 // elsewhere it's a plain click-to-open accordion. Without JS every chapter
 // renders open.
 import { getCollection } from 'astro:content';
-import { ChevronDown } from '@lucide/astro';
+import { ChevronDown, GraduationCap } from '@lucide/astro';
 import Tag from '../ui/Tag.astro';
 import SectionIntro from './SectionIntro.astro';
 import TextLink from '../ui/TextLink.astro';
@@ -15,10 +15,16 @@ import type { WorkCompanyId } from '../../data/work-companies';
 
 interface Chapter {
   start: number;
-  /** Omit for an ongoing role. */
+  /** Omit for an ongoing chapter. */
   end?: number;
-  company: string;
-  role: string;
+  /** e.g. 'En curso'. */
+  status?: string;
+  /** Studies are marked with a cap; work is the default. */
+  kind?: 'work' | 'study';
+  /** Company or institution. */
+  name: string;
+  /** Role or programme. */
+  title: string;
   tagline: string;
   body: string;
   tags: string[];
@@ -69,10 +75,14 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
           <li class="chapter" data-career-chapter data-year={chapter.start} data-position={axisPosition(chapter.start)}>
             <button type="button" class="chapter__row" id={`chapter-${index}`} aria-expanded="true" aria-controls={`chapter-body-${index}`}>
               <span class="chapter__period">{chapter.start} – {chapter.end ?? 'Hoy'}</span>
-              <span class="chapter__label"><strong>{chapter.company}</strong><span>{chapter.role}</span></span>
+              <span class="chapter__label">
+                <strong>{chapter.kind === 'study' && <GraduationCap class="chapter__kind" aria-hidden="true" />}{chapter.kind === 'study' && <span class="sr-only">Formación: </span>}{chapter.name}</strong>
+                <span class="chapter__title">{chapter.title}</span>
+              </span>
               <ChevronDown class="chapter__icon" aria-hidden="true" />
             </button>
             <div class="chapter__body" id={`chapter-body-${index}`} role="region" aria-labelledby={`chapter-${index}`}>
+              {chapter.status && <p class="chapter__status">{chapter.status}</p>}
               <h3>{chapter.tagline}</h3>
               <p>{chapter.body}</p>
               <ul class="chapter__tags" aria-label="Ámbitos">
@@ -111,7 +121,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
     let active = -1;
     let pinned = false;
     // Scroll distance that advances one chapter while pinned.
-    const step = () => window.innerHeight * 0.45;
+    const step = () => window.innerHeight * 0.35;
     const stickyTop = () => parseFloat(getComputedStyle(stage).top) || 0;
 
     // The marker travels down beside the open chapter, kept inside the list.
@@ -239,12 +249,16 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .chapter { border-bottom: var(--border-width) solid var(--color-border); }
   /* One line per row: label | period | chevron — keeps four rows plus an open
      chapter short enough to pin on laptop-height screens. */
-  .chapter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-1) var(--space-6); width: 100%; padding: var(--space-4) 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .chapter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-1) var(--space-6); width: 100%; padding: var(--space-3) 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
   .chapter__row:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
   .chapter__period { grid-column: 2; grid-row: 1; font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
-  .chapter__label { grid-column: 1; grid-row: 1; display: grid; gap: var(--space-1); }
-  .chapter__label strong { font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: var(--color-text); }
-  .chapter__label span { font-size: calc(16px * var(--ui-scale)); color: var(--color-text-secondary); }
+  /* Name and title share one line (title truncates) so seven chapters plus
+     an open one still fit a laptop-height screen while pinned. */
+  .chapter__label { grid-column: 1; grid-row: 1; display: flex; align-items: baseline; gap: var(--space-3); min-width: 0; }
+  .chapter__label strong { display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; font-family: var(--font-heading); font-size: calc(24px * var(--ui-scale)); font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: var(--color-text); }
+  .chapter__title { min-width: 0; overflow: hidden; font-size: calc(16px * var(--ui-scale)); color: var(--color-text-secondary); white-space: nowrap; text-overflow: ellipsis; }
+  .chapter__label :global(.chapter__kind) { width: var(--icon-md); height: var(--icon-md); color: var(--color-action-ghost-text); }
+
   .chapter__row :global(.chapter__icon) { grid-column: 3; grid-row: 1; width: var(--icon-md); height: var(--icon-md); color: var(--color-text-muted); transition: transform var(--duration-medium) var(--ease-standard); }
   .chapter.is-open :global(.chapter__icon) { transform: rotate(180deg); color: var(--color-action-ghost-text); }
   @media (hover: hover) { .chapter__row:hover .chapter__label strong { color: var(--color-action-ghost-text); } }
@@ -252,6 +266,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .chapter__body { display: grid; gap: var(--space-3); padding-bottom: var(--space-6); animation: chapter-in var(--duration-slow) var(--ease-standard); }
   .chapter__body[hidden] { display: none; }
   .chapter__body h3 { margin: 0; font-family: var(--font-heading); font-size: calc(24px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.2px; }
+  .chapter__body .chapter__status { font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-action-ghost-text); }
   .chapter__body p { max-width: calc(760px * var(--ui-scale)); margin: 0; font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
   .chapter__tags, .chapter__projects ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; padding: 0; list-style: none; }
   .chapter__projects { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
@@ -268,7 +283,8 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   }
   @media (max-width: 839px) {
     .career__intro { margin-bottom: var(--space-12); }
-      .chapter__label strong { font-size: calc(26px * var(--ui-scale)); }
+    .chapter__label { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+    .chapter__title { white-space: normal; }
   }
   @media (prefers-reduced-motion: reduce) {
     .chapter__body { animation: none; }
