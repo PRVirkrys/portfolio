@@ -9,6 +9,7 @@ export type TagCategory =
   | "UI Design"
   | "Engineering"
   | "Design Systems"
+  | "Branding"
   | "Neutral";
 
 export type Client = {
