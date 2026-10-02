@@ -147,32 +147,6 @@ const id = heading
 	.cs-section[data-layout='side'] .cs-section__copy {
 		flex: 0 0 min(calc(680px * var(--ui-scale)), 50%);
 	}
-	/* Side layout: .cs-section__assets must take its height from
-	   .cs-section__copy, not the other way round. A flex item's own natural
-	   (pre-stretch) height still feeds into how tall the row gets — an <img>
-	   sized off its own intrinsic ratio would make the row (and therefore the
-	   "stretched" assets column) as tall as the IMAGE, not the text. Taking
-	   the image out of flow with position: absolute removes that feedback
-	   loop entirely: the assets column then has no intrinsic height of its
-	   own, so the row's height comes only from the copy column, and
-	   align-self: stretch above sizes assets to exactly that — which this
-	   absolutely positioned, object-fit: cover image then fills.
-
-	   Direct-child combinator on purpose: a bare <Image> dropped straight
-	   into the slot should get this treatment, but CaseLogoBlock's own
-	   nested tile images must not — CaseLogoBlock already manages its own
-	   absolute positioning at the wrapper level, and this rule matching
-	   its descendants too would strip each tile's own layout (flex
-	   centering, padding, sizing) and stretch/crop the logo to fill the
-	   whole assets column instead. */
-	.cs-section[data-layout='side'] .cs-section__assets > :global(img) {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
 	/* ── Text only: just copy, centred ── */
 	.cs-section[data-layout='text-only'] .cs-section__inner {
 		display: flex;
@@ -300,21 +274,23 @@ const id = heading
 		}
 		.cs-section[data-layout='side'] .cs-section__inner {
 			flex-direction: column;
+			align-items: center;
 		}
+		/* Single column: every layout shares stacked's reading column, so
+		   side copy and 'wide' copy don't run the full width while the
+		   sections around them are centred. Side assets stack above the
+		   copy at the same width and size to their content, as on desktop:
+		   an image keeps its own ratio and CaseLogoBlock gives itself a box. */
 		.cs-section[data-layout='side'] .cs-section__copy {
 			flex: unset;
-			width: 100%;
+			width: min(calc(680px * var(--ui-scale)), 100%);
 		}
-		/* Below the row breakpoint, assets stacks above copy instead of
-		   sitting beside it — there's no longer a sibling row-height to
-		   stretch to (see the desktop rule above), and the image is
-		   position: absolute so it contributes no height of its own. Without
-		   an explicit height here the column collapses to 0 and the image
-		   disappears; give it a sensible aspect ratio instead, matching how
-		   'stacked' layout images size themselves on mobile. */
+		.cs-section[data-layout][data-wide] .cs-section__copy {
+			width: min(calc(680px * var(--ui-scale)), 100%);
+		}
 		.cs-section[data-layout='side'] .cs-section__assets {
-			width: 100%;
-			aspect-ratio: 4 / 3;
+			align-self: center;
+			width: min(calc(680px * var(--ui-scale)), 100%);
 		}
 		.cs-section[data-layout='stacked'] .cs-section__assets {
 			flex-direction: column;
@@ -364,11 +340,7 @@ const id = heading
 			margin: 0 0 calc(64px * var(--ui-scale));
 			justify-content: flex-start;
 		}
-		/* Side layout's absolutely positioned cover image depends on a flex
-		   row sibling for its height; in the grid it sizes itself. */
 		.cs-section[data-layout='side'] .cs-section__assets > :global(img) {
-			position: static;
-			height: auto;
 			border-radius: var(--radius-md);
 		}
 		.cs-section__copy > :global(.cs-image-row) {

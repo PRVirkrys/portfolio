@@ -5,9 +5,9 @@
 // unlike a flattened raster of the same idea, the mark always renders at its
 // own aspect ratio). Pass a single logo via the default slot for a one-brand
 // tile, or add a second via slot="second" + background2 for a client/agency
-// pair. Self-positions (absolute, inset: 0) so it drops straight into a
-// side-layout CaseSection's assets column and inherits the copy column's
-// height exactly like a real <img> would.
+// pair. Sizes itself (4:3 stacked on smaller screens, 16:9 on desktop),
+// since a side-layout CaseSection's assets column takes its height from
+// its content.
 export interface Props {
 	background: string;
 	background2?: string;
@@ -30,23 +30,15 @@ const hasSecond = Astro.slots.has('second');
 
 <style>
 	.cs-logo-block {
-		position: absolute;
-		inset: 0;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		height: 100%;
+		aspect-ratio: 4 / 3;
 		border-radius: var(--radius-md);
 		overflow: hidden;
 	}
-	/* On desktop CaseSection's side assets sit in the sticky-header grid
-	   with no sibling row height to stretch to, so the block sizes itself. */
 	@media (min-width: 961px) {
-		.cs-logo-block {
-			position: relative;
-			height: auto;
-			aspect-ratio: 16 / 9;
-		}
+		.cs-logo-block { aspect-ratio: 16 / 9; }
 	}
 	.cs-logo-tile {
 		flex: 1;
