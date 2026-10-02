@@ -44,6 +44,12 @@ html {
 	   bar when no fixed element qualifies — without it the bar goes
 	   translucent and page text shows through behind it. */
 	background: var(--color-bg);
+	/* Classic (non-overlay) scrollbars: reserve the gutter so the fixed
+	   header doesn't shift between short and long pages, and keep the bar
+	   thin with a bg-coloured track so it doesn't read as a grey strip. */
+	scrollbar-gutter: stable;
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-border-strong) var(--color-bg);
 }
 body {
 	font-family: var(--typography-body-l-font-family);
