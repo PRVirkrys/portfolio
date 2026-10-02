@@ -415,7 +415,12 @@ const selectorItems = [
 		// resets when the direction flips, so small reading adjustments don't
 		// toggle it. Always visible near the top, while the menu is open,
 		// while focus is inside the header, and outside the mobile breakpoint.
+		// Also held visible for a short grace period after the page is shown,
+		// so a restored scroll position (reload, back/forward) doesn't open
+		// the page with the header already tucked away.
 		const TOP_ZONE = 64;
+		const GRACE_MS = 3000;
+		let graceUntil = performance.now() + GRACE_MS;
 		const HIDE_AFTER = 32;
 		const SHOW_AFTER = 16;
 		let lastY = window.scrollY;
@@ -427,7 +432,13 @@ const selectorItems = [
 			const y = window.scrollY;
 			const delta = y - lastY;
 			lastY = y;
-			if (!query.matches || !panel.hidden || y <= TOP_ZONE || header.contains(document.activeElement)) {
+			if (
+				!query.matches ||
+				!panel.hidden ||
+				y <= TOP_ZONE ||
+				performance.now() < graceUntil ||
+				header.contains(document.activeElement)
+			) {
 				travelled = 0;
 				setHidden(false);
 				return;
@@ -444,6 +455,13 @@ const selectorItems = [
 				requestAnimationFrame(update);
 			}
 		}, { passive: true });
+		window.addEventListener('pageshow', (event) => {
+			if (!event.persisted) return;
+			graceUntil = performance.now() + GRACE_MS;
+			lastY = window.scrollY;
+			travelled = 0;
+			setHidden(false);
+		});
 		header.addEventListener('focusin', () => setHidden(false));
 		trigger.addEventListener('click', () => setHidden(false));
 	});
