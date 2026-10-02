@@ -65,6 +65,13 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 		}
 	}
 
+	/* Hover entrance: the line redraws itself left to right. */
+	@keyframes link-underline-draw {
+		from {
+			transform: scaleX(0);
+		}
+	}
+
 	.text-link {
 		display: inline-flex;
 		flex-direction: column;
@@ -117,22 +124,17 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	.text-link::after {
 		content: '';
 		display: block;
-		/* Never below 1px: scaled to 0.8px, the line falls between device
-		   pixels and can vanish entirely depending on where the link lands. */
-		height: max(1px, calc(1px * var(--ui-scale)));
+		/* One thickness in every state (the hover weight): growing it on
+		   hover pushed the link's box and made it jump. Hover is signalled by
+		   the gradient sliding instead. */
+		height: calc(2px * var(--ui-scale));
 		background-image: var(--gradient-link-underline);
 		background-repeat: repeat-x;
 		background-size: 200% 100%;
 		background-position: 0% 0;
-		transition: height var(--duration-fast) var(--ease-standard);
+		transform-origin: left center;
 		animation: link-underline-slide 3s linear infinite;
 		animation-play-state: paused;
-	}
-
-	.text-link:hover::after,
-	.text-link:focus-visible::after,
-	.text-link:active::after {
-		height: calc(2px * var(--ui-scale));
 	}
 
 	/* Only hover starts the slide — focus-visible and :active leave
@@ -143,26 +145,35 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 		animation-play-state: running;
 	}
 
+	/* With a pointer that hovers, entering also redraws the line. The draw
+	   is added as a second animation: animations are matched by name, so
+	   the slide keeps running from where it was instead of restarting. */
+	@media (hover: hover) and (pointer: fine) {
+		.text-link:hover::after {
+			animation-name: link-underline-slide, link-underline-draw;
+			animation-duration: 3s, 350ms;
+			animation-timing-function: linear, var(--ease-out-strong);
+			animation-iteration-count: infinite, 1;
+			animation-play-state: running, running;
+		}
+	}
+
 	.text-link:focus-visible {
 		box-shadow: var(--link-focus-ring);
 		border-radius: var(--radius-sm);
 	}
 
 	.text-link[aria-disabled='true']::after {
-		height: max(1px, calc(1px * var(--ui-scale)));
 		background-image: none;
 		background-color: var(--link-text);
 		animation: none;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.text-link::after {
-			transition: none;
-		}
-
-		/* Overrides the :hover rule above (declared after it, same
-		   specificity) so hovering can never start the slide. */
+		/* Overrides the :hover rules above (declared after them, same
+		   specificity) so hovering neither slides nor redraws the line. */
 		.text-link:hover::after {
+			animation-name: link-underline-slide;
 			animation-play-state: paused;
 		}
 	}
