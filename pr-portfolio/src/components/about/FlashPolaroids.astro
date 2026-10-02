@@ -52,6 +52,20 @@ const tilts = [-3, 4, -6, 2, 6, -2];
     const cards = [...stack.querySelectorAll<HTMLElement>('.polaroids__card')];
     let order = [...cards];
     let busy = false;
+    let dragging = false;
+    // Throws and returns: the strong ease-out lands the card fast, keeping
+    // the window where a second click would be ignored short. The card fades
+    // as it flies off (and back in), so it leaves rather than gets cut off.
+    const motion = 'transform var(--duration-medium) var(--ease-out-strong), opacity var(--duration-medium) var(--ease-out-strong)';
+    // Both properties end together; wait for the transform alone.
+    const onMoved = (card: HTMLElement, done: () => void) => {
+      const handler = (event: TransitionEvent) => {
+        if (event.target !== card || event.propertyName !== 'transform') return;
+        card.removeEventListener('transitionend', handler);
+        done();
+      };
+      card.addEventListener('transitionend', handler);
+    };
 
     const restack = () => {
       order.forEach((card, index) => {
@@ -72,14 +86,16 @@ const tilts = [-3, 4, -6, 2, 6, -2];
         restack();
         card.style.transition = 'none';
         card.style.transform = '';
+        card.style.opacity = '';
         card.classList.remove('is-dragging');
         requestAnimationFrame(() => { card.style.transition = ''; busy = false; });
       };
       if (reduceMotion.matches) return finish();
       const length = Math.hypot(dx, dy) || 1;
-      card.style.transition = 'transform var(--duration-slow) var(--ease-standard)';
+      card.style.transition = motion;
       card.style.transform = `translate(${(dx / length) * 140}%, ${(dy / length) * 60}%) rotate(${dx > 0 ? 18 : -18}deg)`;
-      card.addEventListener('transitionend', finish, { once: true });
+      card.style.opacity = '0';
+      onMoved(card, finish);
     };
 
     // Pull the bottom card back onto the top, flying in from the left.
@@ -92,17 +108,22 @@ const tilts = [-3, 4, -6, 2, 6, -2];
       busy = true;
       card.style.transition = 'none';
       card.style.transform = 'translate(-140%, -12%) rotate(-18deg)';
+      card.style.opacity = '0';
       card.getBoundingClientRect();
-      card.style.transition = 'transform var(--duration-slow) var(--ease-standard)';
+      card.style.transition = motion;
       card.style.transform = '';
-      card.addEventListener('transitionend', () => { card.style.transition = ''; busy = false; }, { once: true });
+      card.style.opacity = '';
+      onMoved(card, () => { card.style.transition = ''; busy = false; });
     };
 
     stack.addEventListener('pointerdown', event => {
       const card = order[0];
-      if (busy || !card || !card.contains(event.target as Node)) return;
+      // A second finger mid-drag would reset the origin and make the card jump.
+      if (busy || dragging || !card || !card.contains(event.target as Node)) return;
+      dragging = true;
       const startX = event.clientX;
       const startY = event.clientY;
+      const startTime = performance.now();
       let dx = 0;
       let dy = 0;
       card.setPointerCapture(event.pointerId);
@@ -117,7 +138,12 @@ const tilts = [-3, 4, -6, 2, 6, -2];
         card.removeEventListener('pointermove', move);
         card.removeEventListener('pointerup', release);
         card.removeEventListener('pointercancel', release);
-        if (Math.hypot(dx, dy) > card.offsetWidth / 3) {
+        dragging = false;
+        // Thrown when dragged far enough, or flicked: a quick short swipe is
+        // as clear an intent as a long drag.
+        const distance = Math.hypot(dx, dy);
+        const velocity = distance / Math.max(1, performance.now() - startTime);
+        if (distance > card.offsetWidth / 3 || (distance > 12 && velocity > 0.11)) {
           sendToBack(dx, dy);
         } else {
           card.classList.remove('is-dragging');
@@ -138,7 +164,7 @@ const tilts = [-3, 4, -6, 2, 6, -2];
   .polaroids { display: grid; justify-items: center; gap: var(--space-8); }
   .polaroids__stack { position: relative; display: grid; width: min(calc(400px * var(--ui-scale)), 72vw); margin: 0; padding: 0; list-style: none; touch-action: none; }
   /* The card moves and spins while dragged; the polaroid inside keeps its own tilt. */
-  .polaroids__card { grid-area: 1 / 1; transition: transform var(--duration-medium) var(--ease-standard); cursor: grab; user-select: none; }
+  .polaroids__card { grid-area: 1 / 1; transition: transform var(--duration-medium) var(--ease-out-strong); cursor: grab; user-select: none; }
   .polaroids__card.is-dragging { cursor: grabbing; transition: none; }
   .polaroids[data-size='sm'] { gap: var(--space-6); }
   .polaroids[data-size='sm'] .polaroids__stack { width: min(calc(280px * var(--ui-scale)), 60vw); }
