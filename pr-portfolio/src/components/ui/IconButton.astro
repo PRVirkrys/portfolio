@@ -1,0 +1,64 @@
+---
+// Circular icon-only button — the recipe Header.astro's mobile trigger and
+// CaseLightbox's close/prev/next buttons already use (transparent bg,
+// --elevation-button-adaptive resting shadow, hover tint, outline focus ring;
+// surface + border in light theme, where that elevation is flat). The icon
+// goes in the default slot; `label` is required since there's no visible text.
+export interface Props {
+	label: string;
+	size?: 'md' | 'lg';
+	type?: 'button' | 'submit' | 'reset';
+	class?: string;
+}
+
+const { label, size = 'lg', type = 'button', class: className, ...rest } = Astro.props;
+---
+
+<button class:list={['icon-button', className]} data-size={size} type={type} aria-label={label} {...rest}>
+	<slot />
+</button>
+
+<style>
+	.icon-button {
+		display: grid;
+		flex-shrink: 0;
+		place-items: center;
+		width: calc(52px * var(--ui-scale));
+		height: calc(52px * var(--ui-scale));
+		padding: 0;
+		border: 0;
+		border-radius: var(--radius-full);
+		background: transparent;
+		box-shadow: var(--elevation-button-adaptive);
+		color: var(--color-text);
+		cursor: pointer;
+		transition: background-color var(--duration-fast) var(--ease-standard);
+	}
+	.icon-button[data-size='md'] {
+		width: calc(44px * var(--ui-scale));
+		height: calc(44px * var(--ui-scale));
+	}
+	:global(html:not(.dark)) .icon-button {
+		border: var(--border-width) solid var(--color-border);
+		background: var(--color-surface-raised);
+	}
+	@media (hover: hover) {
+		.icon-button:hover,
+		:global(html:not(.dark)) .icon-button:hover {
+			background: var(--color-action-secondary-bg-hover);
+		}
+	}
+	.icon-button:focus-visible {
+		outline: var(--focus-width) solid var(--color-focus);
+		outline-offset: var(--space-1);
+	}
+	.icon-button :global(svg) {
+		width: var(--icon-lg);
+		height: var(--icon-lg);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.icon-button {
+			transition: none;
+		}
+	}
+</style>

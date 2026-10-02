@@ -1,0 +1,141 @@
+---
+// Stack of Flash polaroids. Drag (or swipe) the top photo away and it slides
+// to the back of the pile, revealing the next one. The arrow controls step
+// forward (same as a throw) or back (the last card returns to the top), for
+// keyboard and assistive tech too; without JS the stack shows the top photo.
+import type { ImageMetadata } from 'astro';
+import Polaroid from './Polaroid.astro';
+import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import IconButton from '../ui/IconButton.astro';
+
+interface Photo { src: ImageMetadata; alt: string; caption: string }
+interface Props { photos: Photo[] }
+const { photos } = Astro.props;
+
+// Fixed tilts so the pile looks hand-dropped but renders identically every time.
+const tilts = [-3, 4, -6, 2, 6, -2];
+---
+
+<div class="polaroids" data-polaroids>
+  <ul class="polaroids__stack" aria-label="Fotos de Flash">
+    {photos.map((photo, index) => (
+      <li class="polaroids__card" style={`z-index: ${photos.length - index};`} aria-hidden={index > 0 ? 'true' : undefined}>
+        <Polaroid {...photo} tilt={tilts[index % tilts.length]} sizes="(max-width: 839px) 72vw, 320px" />
+      </li>
+    ))}
+  </ul>
+  <div class="polaroids__controls">
+    <p class="polaroids__hint">Arrastra la foto para ver la siguiente</p>
+    <div class="polaroids__nav">
+      <IconButton label="Foto anterior" data-polaroids-prev><ChevronLeft aria-hidden="true" /></IconButton>
+      <span class="polaroids__count" data-polaroids-count aria-live="polite">1 / {photos.length}</span>
+      <IconButton label="Foto siguiente" data-polaroids-next><ChevronRight aria-hidden="true" /></IconButton>
+    </div>
+  </div>
+</div>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-polaroids]')) {
+    const stack = root.querySelector<HTMLElement>('.polaroids__stack')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-polaroids-next]')!;
+    const prev = root.querySelector<HTMLButtonElement>('[data-polaroids-prev]')!;
+    const count = root.querySelector<HTMLElement>('[data-polaroids-count]')!;
+    const cards = [...stack.querySelectorAll<HTMLElement>('.polaroids__card')];
+    let order = [...cards];
+    let busy = false;
+
+    const restack = () => {
+      order.forEach((card, index) => {
+        card.style.zIndex = String(order.length - index);
+        if (index > 0) card.setAttribute('aria-hidden', 'true');
+        else card.removeAttribute('aria-hidden');
+      });
+      count.textContent = `${cards.indexOf(order[0]) + 1} / ${cards.length}`;
+    };
+
+    // Throw the top card out in direction (dx, dy), then tuck it under the pile.
+    const sendToBack = (dx: number, dy: number) => {
+      const card = order[0];
+      if (!card || busy) return;
+      busy = true;
+      const finish = () => {
+        order = [...order.slice(1), card];
+        restack();
+        card.style.transition = 'none';
+        card.style.transform = '';
+        card.classList.remove('is-dragging');
+        requestAnimationFrame(() => { card.style.transition = ''; busy = false; });
+      };
+      if (reduceMotion.matches) return finish();
+      const length = Math.hypot(dx, dy) || 1;
+      card.style.transition = 'transform var(--duration-slow) var(--ease-standard)';
+      card.style.transform = `translate(${(dx / length) * 140}%, ${(dy / length) * 60}%) rotate(${dx > 0 ? 18 : -18}deg)`;
+      card.addEventListener('transitionend', finish, { once: true });
+    };
+
+    // Pull the bottom card back onto the top, flying in from the left.
+    const bringBack = () => {
+      const card = order.at(-1);
+      if (!card || busy || order.length < 2) return;
+      order = [card, ...order.slice(0, -1)];
+      restack();
+      if (reduceMotion.matches) return;
+      busy = true;
+      card.style.transition = 'none';
+      card.style.transform = 'translate(-140%, -12%) rotate(-18deg)';
+      card.getBoundingClientRect();
+      card.style.transition = 'transform var(--duration-slow) var(--ease-standard)';
+      card.style.transform = '';
+      card.addEventListener('transitionend', () => { card.style.transition = ''; busy = false; }, { once: true });
+    };
+
+    stack.addEventListener('pointerdown', event => {
+      const card = order[0];
+      if (busy || !card || !card.contains(event.target as Node)) return;
+      const startX = event.clientX;
+      const startY = event.clientY;
+      let dx = 0;
+      let dy = 0;
+      card.setPointerCapture(event.pointerId);
+      card.classList.add('is-dragging');
+
+      const move = (moveEvent: PointerEvent) => {
+        dx = moveEvent.clientX - startX;
+        dy = moveEvent.clientY - startY;
+        card.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx / 20}deg)`;
+      };
+      const release = () => {
+        card.removeEventListener('pointermove', move);
+        card.removeEventListener('pointerup', release);
+        card.removeEventListener('pointercancel', release);
+        if (Math.hypot(dx, dy) > card.offsetWidth / 3) {
+          sendToBack(dx, dy);
+        } else {
+          card.classList.remove('is-dragging');
+          card.style.transform = '';
+        }
+      };
+      card.addEventListener('pointermove', move);
+      card.addEventListener('pointerup', release);
+      card.addEventListener('pointercancel', release);
+    });
+
+    next.addEventListener('click', () => sendToBack(1, -0.2));
+    prev.addEventListener('click', bringBack);
+  }
+</script>
+
+<style>
+  .polaroids { display: grid; justify-items: center; gap: var(--space-8); }
+  .polaroids__stack { position: relative; display: grid; width: min(calc(400px * var(--ui-scale)), 72vw); margin: 0; padding: 0; list-style: none; touch-action: none; }
+  /* The card moves and spins while dragged; the polaroid inside keeps its own tilt. */
+  .polaroids__card { grid-area: 1 / 1; transition: transform var(--duration-medium) var(--ease-standard); cursor: grab; user-select: none; }
+  .polaroids__card.is-dragging { cursor: grabbing; transition: none; }
+  .polaroids__controls { display: grid; justify-items: center; gap: var(--space-2); }
+  .polaroids__hint { margin: 0; font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
+  .polaroids__nav { display: flex; align-items: center; gap: var(--space-4); }
+  .polaroids__count { min-width: 4ch; text-align: center; font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 600; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) { .polaroids__card { transition: none; } }
+</style>

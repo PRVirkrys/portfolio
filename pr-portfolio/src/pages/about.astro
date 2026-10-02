@@ -1,63 +1,295 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Prefooter from '../components/Prefooter.astro';
+import FlashPolaroids from '../components/about/FlashPolaroids.astro';
+import Polaroid from '../components/about/Polaroid.astro';
+import JourneyChapters from '../components/about/JourneyChapters.astro';
+import SectionIntro from '../components/about/SectionIntro.astro';
+import Tag from '../components/ui/Tag.astro';
+import CaseCallout from '../components/case/CaseCallout.astro';
+import LearningsGrid from '../components/case/LearningsGrid.astro';
+import portrait from '../assets/about/paula.webp';
+import flash01 from '../assets/about/flash/flash-01.jpg';
+import flash02 from '../assets/about/flash/flash-02.jpg';
+import flash03 from '../assets/about/flash/flash-03.jpg';
+import flash04 from '../assets/about/flash/flash-04.jpg';
+import flash05 from '../assets/about/flash/flash-05.jpg';
+
+const story = [
+  {
+    title: 'El diseño me enseñó dónde comienza una idea',
+    body: [
+      'Mi primer camino fue el <strong>Diseño Gráfico</strong>. Esa formación me enseñó a conceptualizar antes de ejecutar: comprender qué queremos comunicar, construir significado y tomar decisiones visuales capaces de dar identidad a una idea.',
+      'En la universidad también me atraía el código. Me fascinaba ver diseño y tecnología trabajando juntos y descubrir que algo inicialmente estático podía adquirir movimiento, comportamiento y vida. Aun así, me incliné primero por el diseño porque allí encontré el origen de la idea: el lugar donde se define qué queremos crear, para quién existe y por qué debería tomar forma.',
+      'El diseño también me enseñó que no todas las ideas necesitan convertirse en productos reales. Antes de construir hay que comprender si existe una necesidad, qué valor puede aportar, a quién afecta y si esa es realmente la respuesta adecuada.',
+      'Diseñar no era decorar una solución que ya estaba decidida. Era imaginar posibilidades, cuestionarlas y dar dirección a aquellas que merecían avanzar.',
+    ],
+  },
+  {
+    title: 'Mi primera idea convertida en producto',
+    body: [
+      'Esa convicción se volvió real cuando fundé <strong>BigPromo</strong>, una plataforma digital de promociones en Ecuador.',
+      'Definí la propuesta de valor, diseñé la experiencia web y móvil, construí la plataforma en WordPress con modificaciones en PHP, desarrollé la identidad y trabajé en su lanzamiento.',
+      'Fue mi primera experiencia conectando producto, diseño, tecnología y comunicación alrededor de una misma intención. También confirmó algo que continúa definiendo mi forma de trabajar: cuando una idea despierta mi curiosidad, necesito comprender el sistema completo que permitirá hacerla realidad.',
+      'Las preguntas que nacieron durante esa experiencia me llevaron a Barcelona para cursar el <strong>Máster en Diseño y Dirección de Proyectos para Internet en ELISAVA</strong> y profundizar en cómo se conciben, organizan y construyen los productos digitales.',
+    ],
+  },
+  {
+    title: 'El código volvió a encontrarme',
+    body: [
+      'En <strong>LPA</strong>, trabajando con productos fintech B2B, diseñaba dashboards, tablas, árboles y flujos con una gran densidad de información. Al mismo tiempo, implementaba interfaces con HTML, CSS y Sass dentro de un entorno Angular.',
+      'El código dejó de ser una curiosidad paralela y se convirtió en otra herramienta de diseño: una manera de probar cómo se comportaba una solución, comprender las restricciones reales y colaborar con ingeniería desde un lenguaje compartido.',
+      'Empecé a asumir historias de usuario completas —desde el análisis hasta la implementación visual— y a elegir entre Figma y código según lo que cada funcionalidad necesitaba. El diseño me ayudaba a decidir qué debía existir. El código me mostraba qué necesitaba para funcionar.',
+    ],
+  },
+  {
+    title: 'Cada proyecto amplió mi manera de mirar',
+    body: [
+      'En <strong>Fail Fast</strong>, mi trabajo me llevó a contextos muy diferentes: salud, educación, deporte y servicios corporativos.',
+      'Proyectos como La Meva Salut, la Oferta Formativa de la UOC, Escola Salut del Hospital Sant Joan de Déu, TimeChef o Culers para FC Barcelona me enseñaron a entrar en un dominio desconocido, escuchar a personas y stakeholders, detectar patrones y convertir la investigación en estructuras, recorridos y decisiones accionables.',
+      'La experiencia de usuario amplió mi mirada. Ya no se trataba solamente de dar forma a una idea, sino de comprender el problema detrás del problema, el contexto en el que aparecería y las consecuencias de cada decisión.',
+    ],
+  },
+  {
+    title: 'En una startup, todas las capas encontraron un lugar',
+    body: [
+      'En <strong>Pelt8</strong>, como Lead Product Designer y única diseñadora del equipo, todas esas experiencias comenzaron a funcionar juntas.',
+      'Mi formación en Diseño Gráfico, mi experiencia en producto y mi cercanía al frontend me permitieron asumir el perfil amplio que una startup necesitaba. Podía moverme entre la experiencia del producto, el sistema de diseño, la implementación, la identidad y la web sin perder la coherencia entre las distintas capas.',
+      'Lideré el diseño end-to-end de un producto B2B SaaS de reporting ESG utilizado por más de 25 empresas. Diseñé y mantuve su sistema de diseño, trabajé directamente con producto, negocio e ingeniería e intervine en componentes React para acercar la implementación al diseño.',
+      'También construí la web en Framer y creé soluciones con Tally y Make para lanzar iniciativas sin añadir trabajo al roadmap de ingeniería.',
+      'Esa etapa confirmó que mi aportación no está limitada por una herramienta o por la frontera tradicional de un rol. Consiste en entender qué impide que una idea avance, conectar las piezas y encontrar una manera responsable de moverla hacia la realidad.',
+    ],
+  },
+];
+
+const principles = [
+  { title: 'Comprender', body: 'No empiezo por la pantalla ni por una herramienta. Empiezo intentando entender a las personas, el contexto, el negocio, la información, las restricciones y las preguntas todavía abiertas.' },
+  { title: 'Conectar', body: 'Busco relaciones y patrones hasta encontrar una estructura que permita tomar decisiones. La claridad visual es la consecuencia de haber comprendido mejor el problema.' },
+  { title: 'Dar forma', body: 'Utilizo research, arquitectura, flujos, sistemas y prototipos para convertir una intención en algo que el equipo pueda observar, discutir y validar.' },
+  { title: 'Construir y aprender', body: 'Cuando aporta claridad, utilizo frontend, Framer, no-code, automatización o IA para probar una solución. Construir revela nuevas preguntas y vuelve a alimentar el diseño.' },
+];
+
+// Work and studies on one timeline, newest first.
+const journey = [
+  {
+    start: 2025, end: 2026, status: 'En curso', kind: 'study' as const, name: 'Grupo Atrium', title: 'Máster en Full Stack Development',
+    tagline: 'Comprender cómo se construye lo que diseño.',
+    body: 'Profundizo en cómo se construyen los productos más allá de la interfaz: frontend, backend, APIs y datos. Es una continuación natural de mi curiosidad por acercar diseño e implementación.',
+    tags: ['Java · Spring Boot', 'Angular · TypeScript', 'APIs REST', 'MySQL · MongoDB'],
+  },
+  {
+    start: 2023, end: 2025, name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
+    tagline: 'Todas las capas en un mismo lugar.',
+    body: 'Lideré el diseño de un producto B2B SaaS de reporting ESG, su sistema de diseño y la colaboración con producto e ingeniería. También trabajé en frontend, marca, web y automatización para ayudar a que el producto y el equipo avanzaran con mayor autonomía.',
+    tags: ['B2B SaaS · ESG', '+25 empresas', 'Design system', 'Componentes React', 'Web en Framer', 'Tally + Make'],
+  },
+  {
+    start: 2021, end: 2023, name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
+    tagline: 'Entrar en dominios desconocidos.',
+    body: 'Gestioné proyectos UX para salud, educación, deporte y servicios corporativos. Convertí investigación, necesidades de negocio y contextos complejos en arquitecturas, flujos, prototipos y experiencias listas para implementar.',
+    tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'La Meva Salut', 'TimeChef', 'Culers · FC Barcelona'],
+  },
+  {
+    start: 2018, end: 2020, name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
+    tagline: 'El código como herramienta de diseño.',
+    body: 'Diseñé e implementé interfaces para productos financieros B2B. Trabajar entre UX/UI y frontend consolidó mi forma de utilizar el código como parte del proceso de diseño y colaborar con ingeniería.',
+    tags: ['Fintech B2B', 'Dashboards y datos densos', 'HTML · CSS · Sass', 'Angular'],
+  },
+  {
+    start: 2018, end: 2019, kind: 'study' as const, name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
+    tagline: 'Del diseño visual al producto digital.',
+    body: 'Amplié mi formación visual hacia la experiencia, la estrategia y la dirección de productos digitales. Este recorrido me ayudó a comprender cómo conectar una idea con las personas, el negocio y su implementación.',
+    tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos'],
+  },
+  {
+    start: 2016, end: 2018, name: 'BigPromo', title: 'Fundadora & Product/Web Designer',
+    tagline: 'Mi primera idea convertida en producto.',
+    body: 'Convertí una idea en una plataforma web y móvil, conectando propuesta de valor, experiencia, tecnología, identidad y lanzamiento.',
+    tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad'],
+  },
+  {
+    start: 2010, end: 2015, kind: 'study' as const, name: 'Universidad del Azuay', title: 'Licenciatura en Diseño Gráfico',
+    tagline: 'Donde aprendí a dar forma y significado a las ideas.',
+    body: 'Mi base en diseño me enseñó a conceptualizar antes de ejecutar: construir significado, comunicar con intención y tomar decisiones visuales capaces de dar identidad a una idea.',
+    tags: ['Diseño gráfico', 'Identidad', 'Comunicación visual', 'Conceptualización', 'Dirección general'],
+  },
+];
+
+// First item is the top of the pile.
+const flashPhotos = [
+  { src: flash05, alt: 'Flash sentado en la arena de la playa, con arnés amarillo, mirando a cámara.', caption: 'Flash, jefe de pausas' },
+  { src: flash02, alt: 'Flash saltando en la playa para atrapar una pelota rosa.', caption: 'Modo paseo activado' },
+  { src: flash04, alt: 'Flash dormido junto a un portátil con código abierto en pantalla.', caption: '“Solo un momento”' },
+  { src: flash03, alt: 'Flash sentado en el suelo de madera de casa, con las orejas levantadas.', caption: '¿Salimos ya?' },
+  { src: flash01, alt: 'Paula abrazando a Flash en casa.', caption: 'Mi compañero' },
+];
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage={AboutHeroImage}
->
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+<!doctype html>
+<html lang="es" class="dark">
+  <head><BaseHead title="About · Paula Rodas" description="Senior Product Designer con un perfil híbrido entre Product Design y UX Engineering. Diseño para dar dirección a las ideas; construyo para acercarlas a la realidad." /></head>
+  <body>
+    <Header />
+    <main class="about">
+      <header class="about-hero">
+        <div class="about-hero__intro">
+          <Tag category="Neutral">About me</Tag>
+          <h1>Diseño para dar dirección a las ideas. Construyo para acercarlas a la realidad.</h1>
+          <p class="about-lead">Siempre me han atraído dos formas de dar vida a una idea: diseñarla y construirla. Durante mucho tiempo avanzaron por caminos distintos. Hoy forman parte de una misma manera de trabajar.</p>
+        </div>
+        <div class="about-hero__photo">
+          <Polaroid src={portrait} alt="Retrato en blanco y negro de Paula Rodas, con el pelo rizado y gafas, mirando a cámara." caption="Hola, soy Paula" tilt={3} widths={[480, 800, 979]} sizes="(max-width: 960px) 90vw, 40vw" loading="eager" fetchpriority="high" />
+        </div>
+        <div class="about-hero__body">
+          <div class="about-prose">
+            <p>Hola, soy <strong>Paula Rodas</strong>, Senior Product Designer con más de nueve años de experiencia en diseño digital y un perfil híbrido entre <strong>Product Design y UX Engineering</strong>.</p>
+            <p>Me enamoré del diseño cuando descubrí que una idea podía dejar de ser algo abstracto y convertirse en una experiencia que otras personas pudieran ver, entender y utilizar. Años después, el código me permitió acercarme todavía más a ese momento: aquel en el que una decisión deja de existir solamente en un archivo de diseño y empieza a comportarse como un producto real.</p>
+            <p>La curiosidad ha sido el motor de mi recorrido. Me ha llevado a querer comprender cómo se construyen las cosas, qué necesita cada idea para avanzar y qué tengo que aprender para hacerla realidad.</p>
+          </div>
+        </div>
+      </header>
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+      <section class="about-section" aria-labelledby="story-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Diseñar y construir" heading="Primero aprendí a dar forma." headingMuted="Después, a construirla." lede="Del diseño gráfico al código: cinco momentos que ampliaron mi manera de llevar una idea a la realidad." headingId="story-title" /></div>
+        <div class="about-section__content">
+          {story.map((chapter, index) => (
+            <article class="about-chapter">
+              <span class="about-chapter__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{chapter.title}</h3>
+              <div class="about-prose">{chapter.body.map(paragraph => <p set:html={paragraph} />)}</div>
+            </article>
+          ))}
+        </div>
+      </section>
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+      <section class="about-section" aria-labelledby="curiosity-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Full stack" heading="La curiosidad sigue ampliando" headingMuted="lo que puedo construir." lede="Exploro el otro lado del producto para diseñar con una visión más completa." headingId="curiosity-title" /></div>
+        <div class="about-section__content about-prose">
+          <p>Actualmente curso un <strong>Máster en Full Stack Development</strong> como continuación de la curiosidad que siempre me ha acompañado. Quiero comprender cómo se estructura la información, cómo se conectan el frontend y el backend, cómo se comportan los datos y qué decisiones permiten que una experiencia llegue realmente a producción.</p>
+          <p>Proyectos propios como <strong>MedusaWatch</strong> y <strong>Mundial Predictions</strong> me permiten recorrer ese camino completo. En ellos puedo pasar de una pregunta inicial a la lógica, los datos, la interfaz y una solución funcional. Construir me ayuda a validar lo que imagino, descubrir restricciones y volver a diseñar con una comprensión más profunda.</p>
+          <blockquote class="about-quote">El diseño me ayuda a decidir qué merece existir y por qué. El código amplía mi capacidad para hacerlo posible.</blockquote>
+        </div>
+      </section>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+      <section class="about-section" aria-labelledby="ai-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Diseñar con IA" heading="Crear es cada vez más rápido." headingMuted="El criterio importa más que nunca." lede="Más capacidad para explorar y construir exige más responsabilidad al decidir." headingId="ai-title" /></div>
+        <div class="about-section__content about-prose">
+          <p>La IA ha multiplicado lo que puedo explorar y construir.</p>
+          <p>La utilizo para acelerar procesos de research y síntesis de información, detectar patrones, explorar alternativas y documentar decisiones. También me ayuda a transformar ideas en prototipos funcionales para testing y a apoyar tareas de programación, debugging y refactoring.</p>
+          <p>Reduce la distancia entre imaginar una posibilidad y poder ponerla a prueba. Pero también refuerza una convicción: cuando crear se vuelve más rápido y accesible, <strong>el criterio importa todavía más</strong>.</p>
+          <p>La IA puede ayudarnos a generar muchas respuestas. No puede decidir por sí sola qué problema merece nuestra atención, qué necesita una persona, qué consecuencias tendrá una solución ni cuál de todas las posibilidades tiene sentido para el producto.</p>
+          <p>El diseño me enseñó que llevar una idea a la vida no consiste únicamente en conseguir que funcione. También implica darle dirección, comprender a quién afecta y asumir la responsabilidad sobre lo que decidimos construir.</p>
+        </div>
+      </section>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
-</Layout>
+      <section class="about-section" aria-labelledby="process-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Cómo pienso y trabajo" heading="Comprender antes de dar forma." headingMuted="Construir para volver a preguntar." lede="Cuatro movimientos que se repiten en cada proyecto, sea cual sea la herramienta." headingId="process-title" /></div>
+        <div class="about-section__content">
+          <LearningsGrid>
+            {principles.map(principle => <CaseCallout size="lg" title={principle.title} body={principle.body} />)}
+          </LearningsGrid>
+        </div>
+      </section>
+
+      <section class="about-career" aria-labelledby="journey-title">
+        <JourneyChapters chapters={journey} eyebrow="Mi recorrido" heading="Los caminos cambiaron." headingMuted="La curiosidad se quedó." intro="Estudios, roles y proyectos que, año a año, fueron ampliando mi manera de diseñar, pensar y construir." headingId="journey-title" />
+      </section>
+
+      <section class="about-section" aria-labelledby="beyond-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Más allá del cargo" heading="Una colección de ideas" headingMuted="que también me construyeron a mí." headingId="beyond-title" /></div>
+        <div class="about-section__content about-prose">
+          <p>Lo que más disfruto es ese momento en el que algo todavía difuso empieza a adquirir sentido.</p>
+          <p>Me entusiasman las ideas que me obligan a aprender: un dominio que no conozco, un sistema con muchas relaciones, una interacción que necesito comprender o una tecnología que abre una posibilidad nueva.</p>
+          <p>Cada proyecto deja algo en mi manera de pensar y amplía lo que seré capaz de construir la próxima vez. Por eso mi historia no es solamente una secuencia de roles, sino una forma de mirar que continúa evolucionando con cada idea.</p>
+          <blockquote class="about-quote">Cada vez que una idea me ha pedido mirar un poco más lejos, he aprendido una nueva manera de hacerla realidad.</blockquote>
+        </div>
+      </section>
+
+      <section class="about-section about-flash" aria-labelledby="flash-title">
+        <div class="about-flash__copy">
+          <SectionIntro size="sm" eyebrow="Flash" heading="Mi recordatorio" headingMuted="de volver al mundo real." headingId="flash-title" />
+          <div class="about-prose">
+            <p>Flash es mi perro, mi compañero y quien se ocupa de que me despegue de la pantalla de vez en cuando.</p>
+            <p>Me obliga a salir, caminar y tomar distancia. Aunque también se aguanta mis carreras de vuelta a casa cuando se me ocurre una idea y necesito comprobar si funciona. Él preferiría continuar el paseo; yo necesito abrir el ordenador “solo un momento”.</p>
+            <p>Supongo que también forma parte de mi proceso: alejarme para mirar de nuevo, encontrar una idea donde no la estaba buscando y regresar con ganas de darle forma.</p>
+          </div>
+        </div>
+        <FlashPolaroids photos={flashPhotos} />
+      </section>
+
+      <section class="about-section" aria-labelledby="now-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Ahora" heading="Ideas que necesitan dirección." headingMuted="Equipos preparados para construirlas." headingId="now-title" /></div>
+        <div class="about-section__content about-prose">
+          <p>Hoy estoy profundizando en desarrollo full stack y explorando cómo la IA puede ampliar el espacio entre imaginar, diseñar y construir.</p>
+          <p>Me interesan los equipos en los que diseño e ingeniería colaboran desde el principio; los productos con sistemas, datos o dominios complejos; y los problemas que exigen tanto una mirada estratégica como atención a los detalles.</p>
+          <p>Quiero seguir trabajando en ese lugar de encuentro: donde una idea todavía necesita dirección, pero ya está lo bastante cerca de la realidad como para empezar a construirla.</p>
+        </div>
+      </section>
+    </main>
+    <Prefooter />
+    <Footer />
+  </body>
+</html>
+
+<style>
+  /* Same outer column as /work (.work-page) so the page lines up with the prefooter. */
+  .about { box-sizing: border-box; width: 100%; max-width: calc(1616px * var(--ui-scale)); margin-inline: auto; padding: calc(var(--component-header-height-desktop) + var(--space-12)) var(--gutter-desktop) var(--space-16); }
+
+  /* ── Hero ── */
+  /* Intro + body on the left, portrait spanning both rows on the right. */
+  .about-hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: calc(96px * var(--ui-scale)); row-gap: var(--space-16); align-items: start; padding-bottom: var(--space-24); }
+  .about-hero__intro { display: grid; justify-items: start; gap: var(--space-8); }
+  .about-hero__photo { grid-column: 2; grid-row: 1 / span 2; width: min(100%, calc(520px * var(--ui-scale))); justify-self: center; margin-top: var(--space-8); }
+  h1 { max-width: 20ch; margin: 0; font-family: var(--font-heading); font-size: clamp(calc(48px * var(--ui-scale)), 5vw, calc(80px * var(--ui-scale))); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; }
+  .about-hero__body { grid-column: 1; }
+  .about-lead { margin: 0; font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; color: var(--color-text); }
+
+  /* ── Long-form copy: same reading treatment as CaseSection paragraphs ── */
+  .about-prose { max-width: calc(820px * var(--ui-scale)); }
+  .about-prose p { margin: 0 0 calc(36px * var(--ui-scale)); font-family: var(--font-sans); font-size: calc(20px * var(--ui-scale)); line-height: 1.65; letter-spacing: 0.01em; color: color-mix(in srgb, var(--color-text) 90%, transparent); }
+  .about-prose p:last-child { margin-bottom: 0; }
+  .about-prose :global(strong) { font-weight: 700; color: var(--color-text); }
+
+  /* ── Sections: sticky title column + content column, like case studies ── */
+  .about-section { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: calc(96px * var(--ui-scale)); align-items: start; padding-block: calc(120px * var(--ui-scale)); border-top: var(--border-width) solid var(--color-border); }
+  /* Like case studies: the intro sticks in the left column while the
+     content scrolls past in the right one. */
+  .about-section__head { position: sticky; top: calc(var(--component-header-height-desktop) + var(--space-8)); }
+  h3 { margin: 0 0 var(--space-4); font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.2px; }
+
+  .about-chapter + .about-chapter { margin-top: calc(80px * var(--ui-scale)); }
+  .about-chapter__index { display: block; margin-bottom: var(--space-3); font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 700; letter-spacing: 0.05em; color: var(--color-action-ghost-text); }
+
+  .about-quote { max-width: calc(820px * var(--ui-scale)); margin: calc(56px * var(--ui-scale)) 0 0; padding-left: var(--space-6); border-left: var(--focus-width) solid var(--color-action-ghost-text); font-family: var(--font-heading); font-size: calc(30px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; color: var(--color-text); }
+
+
+  /* ── Journey: JourneyChapters owns its grid; the section keeps the rhythm ── */
+  /* The journey sits on a full-bleed band (subtle bg, like CaseSection's subtle
+     variant): content stays in the page column while the background runs
+     edge to edge. The spread shadow paints the bleed and clip-path keeps it
+     to the band's height; neither adds horizontal scroll, and the fixed
+     sidebar covers the part that runs under it. */
+  .about-career { padding-block: calc(120px * var(--ui-scale)); background: var(--color-bg-subtle); box-shadow: 0 0 0 100vmax var(--color-bg-subtle); clip-path: inset(0 -100vmax); }
+  .about-career + .about-section { border-top: 0; }
+
+  /* ── Flash: copy + polaroid stack side by side ── */
+  .about-flash { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; }
+  .about-flash__copy > :global(.section-intro) { margin-bottom: var(--space-8); }
+
+  @media (max-width: 960px) {
+    .about-hero, .about-section, .about-flash { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-8); }
+    .about-hero__photo { grid-column: 1; grid-row: auto; width: min(88%, calc(480px * var(--ui-scale))); margin-block: var(--space-4); }
+    .about-section { padding-block: calc(80px * var(--ui-scale)); }
+    .about-career { padding-block: calc(80px * var(--ui-scale)); }
+    .about-section__head { position: static; }
+    .about-flash { row-gap: var(--space-16); }
+  }
+  @media (max-width: 839px) {
+    .about { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-12); }
+    .about-hero { padding-bottom: var(--space-16); }
+    .about-lead { font-size: calc(24px * var(--ui-scale)); }
+        .about-quote { font-size: calc(24px * var(--ui-scale)); }
+  }
+</style>

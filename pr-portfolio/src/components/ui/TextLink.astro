@@ -114,7 +114,9 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	.text-link::after {
 		content: '';
 		display: block;
-		height: calc(1px * var(--ui-scale));
+		/* Never below 1px: scaled to 0.8px, the line falls between device
+		   pixels and can vanish entirely depending on where the link lands. */
+		height: max(1px, calc(1px * var(--ui-scale)));
 		background-image: var(--gradient-link-underline);
 		background-repeat: repeat-x;
 		background-size: 200% 100%;
@@ -144,7 +146,7 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 	}
 
 	.text-link[aria-disabled='true']::after {
-		height: calc(1px * var(--ui-scale));
+		height: max(1px, calc(1px * var(--ui-scale)));
 		background-image: none;
 		background-color: var(--link-text);
 		animation: none;

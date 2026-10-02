@@ -1,0 +1,40 @@
+---
+// Section opener for the about page: a neutral Tag eyebrow, a two-tone
+// heading (statement + quieter second line) and an optional lede.
+import Tag from '../ui/Tag.astro';
+
+export interface Props {
+  eyebrow: string;
+  heading: string;
+  /** Second heading line, set in a quieter tone. */
+  headingMuted?: string;
+  lede?: string;
+  headingId: string;
+  /** 'sm' fits a narrow column — the sticky side column or beside media —
+   * at CaseSection's heading size. */
+  size?: 'default' | 'sm';
+  class?: string;
+}
+const { eyebrow, heading, headingMuted, lede, headingId, size = 'default', class: className } = Astro.props;
+---
+
+<header class:list={['section-intro', className]} data-size={size}>
+  <Tag category="Neutral">{eyebrow}</Tag>
+  <h2 id={headingId}>{heading}{headingMuted && <><br /><span class="section-intro__muted">{headingMuted}</span></>}</h2>
+  {lede && <p class="section-intro__lede">{lede}</p>}
+</header>
+
+<style>
+  .section-intro { display: grid; justify-items: start; gap: var(--space-6); }
+  h2 { margin: 0; font-family: var(--font-heading); font-size: clamp(calc(48px * var(--ui-scale)), 5vw, calc(80px * var(--ui-scale))); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; color: var(--color-text); }
+  .section-intro[data-size='sm'] { gap: var(--space-4); }
+  .section-intro[data-size='sm'] h2 { font-size: clamp(calc(34px * var(--ui-scale)), 2.6vw, calc(46px * var(--ui-scale))); line-height: 1.08; }
+  .section-intro[data-size='sm'] .section-intro__lede { font-size: calc(18px * var(--ui-scale)); }
+  .section-intro__muted { color: var(--color-text-muted); }
+  .section-intro__lede { max-width: 52ch; margin: 0; font-size: calc(22px * var(--ui-scale)); line-height: 1.5; color: var(--color-text-secondary); }
+  @media (max-width: 839px) {
+    h2 { font-size: calc(44px * var(--ui-scale)); }
+    .section-intro[data-size='sm'] h2 { font-size: calc(36px * var(--ui-scale)); }
+    .section-intro__lede { font-size: calc(18px * var(--ui-scale)); }
+  }
+</style>
