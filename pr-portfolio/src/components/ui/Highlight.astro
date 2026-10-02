@@ -1,0 +1,68 @@
+---
+// Brand-gradient highlight for a short phrase in a headline: a rounded
+// gradient block drawn left to right behind it, the text turning white as
+// it's covered. Draws when it reaches the reading line (or on load if it's
+// already there). One line only — it's an inline-block.
+//
+// Without JS (or before it runs, thanks to `scripting`) it shows fully
+// drawn; reduced motion shows it drawn with no sweep.
+interface Props {
+  tone?: 'cool' | 'warm';
+  /** Extra wait before drawing, to stagger highlights that reveal together. */
+  delay?: number;
+}
+const { tone = 'cool', delay } = Astro.props;
+---
+
+<mark class="highlight" data-tone={tone} style={delay ? `--highlight-delay: ${delay}ms;` : undefined}><slot /></mark>
+
+<script>
+  // Reveal once, when the highlight crosses 40% of the viewport, so it
+  // never plays out of sight.
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add('is-revealed');
+      observer.unobserve(entry.target);
+    }
+  }, { rootMargin: '0px 0px -60% 0px' });
+  document.querySelectorAll('.highlight').forEach(element => observer.observe(element));
+</script>
+
+<style>
+  /* The block is a ::before revealed with clip-path (no layout work per
+     frame). A rare, once-per-visit moment, so it can take longer than UI
+     motion. */
+  .highlight {
+    --highlight-wait: var(--highlight-delay, 120ms);
+    position: relative;
+    isolation: isolate;
+    display: inline-block;
+    padding: 0 0.14em;
+    margin-inline: -0.04em;
+    background: none;
+    color: var(--color-neutral-0);
+    transition: color 450ms var(--ease-out-strong) calc(var(--highlight-wait) + 250ms);
+  }
+  .highlight::before {
+    content: '';
+    position: absolute;
+    inset: 0.04em 0 -0.04em;
+    z-index: -1;
+    border-radius: 0.16em;
+    background: var(--gradient-1);
+    clip-path: inset(0 0 0 0 round 0.16em);
+    transition: clip-path 700ms cubic-bezier(0.77, 0, 0.175, 1) var(--highlight-wait);
+  }
+  .highlight[data-tone='warm']::before { background: var(--card-accent-gradient-warm); }
+
+  /* Waiting to be revealed — only when JS will reveal it. */
+  @media (scripting: enabled) {
+    .highlight:not(.is-revealed) { color: var(--color-text); }
+    .highlight:not(.is-revealed)::before { clip-path: inset(0 100% 0 0 round 0.16em); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .highlight, .highlight::before { transition: none; }
+  }
+</style>

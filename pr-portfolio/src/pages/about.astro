@@ -8,6 +8,7 @@ import Polaroid from '../components/about/Polaroid.astro';
 import JourneyChapters from '../components/about/JourneyChapters.astro';
 import SectionIntro from '../components/about/SectionIntro.astro';
 import Tag from '../components/ui/Tag.astro';
+import Highlight from '../components/ui/Highlight.astro';
 import CaseCallout from '../components/case/CaseCallout.astro';
 import LearningsGrid from '../components/case/LearningsGrid.astro';
 import type { ImageMetadata } from 'astro';
@@ -156,7 +157,9 @@ const flashPhotos = [
       <header class="about-hero">
         <div class="about-hero__intro">
           <Tag category="Neutral">About me</Tag>
-          <h1>Diseño para dar dirección a las ideas. Construyo para acercarlas a la realidad.</h1>
+          {/* The two verbs get a highlighter swipe; the code brackets are
+              decoration, so screen readers just hear "Construyo". */}
+          <h1><Highlight tone="cool" delay={300}>Diseño</Highlight> para dar dirección a las ideas. <Highlight tone="warm" delay={650}><span aria-hidden="true">&lt;</span>Construyo<span aria-hidden="true">/&gt;</span></Highlight> para acercarlas a la realidad.</h1>
           <p class="about-lead">Hola, soy Paula Rodas, Senior Product Designer con más de nueve años de experiencia y un perfil híbrido entre Product Design y UX Engineering.</p>
         </div>
         <div class="about-hero__photo">
