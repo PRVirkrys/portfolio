@@ -5,8 +5,8 @@
 // desktop). Chapters are list rows, always open; only the one at the reading
 // line is in focus and every other one, above or below, fades back, so
 // reading follows the scroll without anything opening, closing or jumping.
-// On smaller screens, where the marker column drops, a floating pill under
-// the header carries the same rolling year, with the chapter's name, while the journey is in
+// On smaller screens the marker column drops (≤960px); on mobile (≤839px,
+// the header's breakpoint) a floating pill under the header carries the same rolling year, with the chapter's name, while the journey is in
 // view, and opens a list to jump between chapters (the case studies' mobile
 // section nav, with years for sections). Without JS every chapter renders at full opacity.
 import { getCollection } from 'astro:content';
@@ -196,7 +196,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
 
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const compact = window.matchMedia('(max-width: 960px)');
+  const compact = window.matchMedia('(max-width: 839px)');
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-career]')) {
     const nav = root.parentElement!.querySelector<HTMLElement>('[data-journey-nav]')!;
@@ -359,8 +359,11 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .chapter__projects-label { font-family: var(--font-heading); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
 
   /* ── Mobile pill: same recipe as CaseSectionNav ── */
+  /* Shares the header's mobile breakpoint (839px), not the 960px layout
+     one: it sits under the mobile header, so between the two it would
+     overlap the desktop header. */
   .journey-nav { display: none; }
-  @media (max-width: 960px) {
+  @media (max-width: 839px) {
     .journey-nav:not([hidden]) { position: fixed; top: calc(var(--component-header-height-mobile) + calc(12px * var(--ui-scale))); left: var(--gutter-mobile); right: var(--gutter-mobile); z-index: 29; display: grid; opacity: 1; transition: transform 200ms var(--ease-standard), opacity 200ms var(--ease-standard), visibility 0s; }
     /* Follows the smart header up, like the case studies' pill. */
     :global(body:has(.header.is-scroll-hidden)) .journey-nav { transform: translateY(calc(-1 * var(--component-header-height-mobile))); }
