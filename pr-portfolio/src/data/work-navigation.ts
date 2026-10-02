@@ -129,11 +129,42 @@ export const works: Work[] = [
     clients: [
       {
         name: "AIWIRA",
-        logo: iconUrl("client-pr-lms.svg"),
+        logo: iconUrl("client-aiwira.png"),
         logoClass: "client-bubble__logo--asset",
         surface: "asset",
       },
-      { name: "Medusa Watch", href: withBase("/work/medusawatch-caso-estudio/"), logo: "", surface: "navy" },
+      {
+        name: "Medusa Watch",
+        href: withBase("/work/medusawatch-caso-estudio/"),
+        logo: iconUrl("client-medusawatch.png"),
+        logoClass: "client-bubble__logo--asset",
+        surface: "asset",
+      },
+      // No case studies yet; add `href` once each one is published.
+      {
+        name: "BigPromo",
+        logo: iconUrl("client-bigpromo.png"),
+        logoClass: "client-bubble__logo--asset",
+        surface: "asset",
+      },
+      {
+        name: "SweepUs",
+        logo: iconUrl("client-sweepus.png"),
+        logoClass: "client-bubble__logo--asset",
+        surface: "asset",
+      },
+      {
+        name: "LaBar",
+        logo: iconUrl("client-labar.png"),
+        logoClass: "client-bubble__logo--asset",
+        surface: "asset",
+      },
+      {
+        name: "Zara House",
+        logo: iconUrl("client-zara-house.png"),
+        logoClass: "client-bubble__logo--asset",
+        surface: "asset",
+      },
     ],
     ctaLabel: "See all cases",
   },
