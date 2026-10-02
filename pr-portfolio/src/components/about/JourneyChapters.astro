@@ -1,14 +1,14 @@
 ---
 // The journey as chapters — a personal prologue, studies and work on one
-// timeline, oldest first: a full-width SectionIntro, then an accordion beside
-// a marker with the start year of the chapter being read (sticky on desktop).
-// Chapters start folded and unfold as their row scrolls into view. Nothing
-// above the reader ever changes size, so the page never jumps: chapters left
-// behind stay open, and one only folds again once its row has gone back
-// below the screen. Rows still toggle on click. Without JS all render open.
+// timeline, oldest first: a full-width SectionIntro, then a list of chapters
+// beside a marker with the start year of the chapter being read (sticky on
+// desktop). Chapters are list rows, always open; only the one at the reading
+// line is in focus and every other one, above or below, fades back, so
+// reading follows the scroll without anything opening, closing or jumping.
+// Without JS every chapter renders at full opacity.
 import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
-import { Bike, ChevronDown, GraduationCap } from '@lucide/astro';
+import { Bike, GraduationCap } from '@lucide/astro';
 import Tag from '../ui/Tag.astro';
 import SectionIntro from './SectionIntro.astro';
 import Polaroid from './Polaroid.astro';
@@ -24,6 +24,8 @@ interface Chapter {
   end?: number;
   /** e.g. 'En curso'. */
   status?: string;
+  /** City and country, shown in the marker under the year. */
+  place?: string;
   /** Studies are marked with a cap, the personal prologue with a bike;
    * work is the default. */
   kind?: 'work' | 'study' | 'personal';
@@ -59,6 +61,8 @@ const casesFor = (company?: WorkCompanyId) => company ? cases.filter(entry => en
 const caseLabel = (title: string) => title.split(' · ')[0];
 
 const reel = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+// The place reel: each distinct place once, in order of first appearance.
+const places = [...new Set(chapters.map(chapter => chapter.place ?? ''))];
 
 const period = (chapter: Chapter) => chapter.end === chapter.start ? `${chapter.start}` : `${chapter.start} – ${chapter.end ?? 'Hoy'}`;
 const kindIcon = { study: GraduationCap, personal: Bike } as const;
@@ -84,6 +88,10 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
             </span>
           ))}
         </strong>
+        {/* Same mechanism as the year: a reel of places that rolls to the open chapter's. */}
+        <span class="career__place" style={`--place: ${places.indexOf(chapters[0].place ?? '')};`} data-career-place>
+          <span class="career__reel">{places.map(place => <span>{place}</span>)}</span>
+        </span>
         <div class="career__axis">
           <i data-career-dot style={`left: ${axisPosition(chapters[0].start)}%;`}></i>
           <span>{axisStart}</span><span>Hoy</span>
@@ -96,17 +104,15 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
         const KindIcon = chapter.kind && chapter.kind !== 'work' ? kindIcon[chapter.kind] : undefined;
         const photos = chapter.photos ?? [];
         return (
-          <li class="chapter" data-career-chapter data-year={chapter.start} data-position={axisPosition(chapter.start)}>
-            <button type="button" class="chapter__row" id={`chapter-${index}`} aria-expanded="true" aria-controls={`chapter-body-${index}`}>
+          <li class="chapter" data-career-chapter data-year={chapter.start} data-place={places.indexOf(chapter.place ?? '')} data-position={axisPosition(chapter.start)}>
+            <article class="chapter__card" aria-labelledby={`chapter-${index}`}>
+            <header class="chapter__row">
               <span class="chapter__period">{period(chapter)}</span>
-              <span class="chapter__label">
+              <span class="chapter__label" id={`chapter-${index}`}>
                 <strong>{chapter.kind === 'study' && <span class="sr-only">Formación: </span>}{chapter.name}{KindIcon && <KindIcon class="chapter__kind" aria-hidden="true" />}</strong>
                 <span class="chapter__title">{chapter.title}</span>
               </span>
-              <ChevronDown class="chapter__icon" aria-hidden="true" />
-            </button>
-            <div class="chapter__body" id={`chapter-body-${index}`} role="region" aria-labelledby={`chapter-${index}`}>
-             <div class="chapter__clip">
+            </header>
              <div class:list={['chapter__content', photos.length > 0 && 'has-media']}>
               <div class="chapter__text">
                 {chapter.status && <p class="chapter__status">{chapter.status}</p>}
@@ -145,8 +151,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
                 <div class="chapter__media"><FlashPolaroids photos={photos} label={`Fotos: ${chapter.name}`} size="sm" /></div>
               )}
              </div>
-             </div>
-            </div>
+            </article>
           </li>
         );
       })}
@@ -155,77 +160,42 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
 </div>
 
 <script>
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
   for (const root of document.querySelectorAll<HTMLElement>('[data-career]')) {
     const year = root.querySelector<HTMLElement>('[data-career-year]')!;
     const dot = root.querySelector<HTMLElement>('[data-career-dot]')!;
+    const place = root.querySelector<HTMLElement>('[data-career-place]')!;
     const chapters = [...root.querySelectorAll<HTMLElement>('[data-career-chapter]')];
-    const rows = chapters.map(chapter => chapter.querySelector<HTMLElement>('.chapter__row')!);
-    // Chapters the reader opened or closed by hand; scrolling leaves them
-    // alone until they leave the screen.
-    const manual = new Set<number>();
     let current = -1;
-
-    // A row unfolds its chapter once it's this far up the screen…
-    const openLine = () => window.innerHeight * 0.85;
-    // …and the chapter being read is the last row past this line.
-    const readingLine = () => window.innerHeight * 0.3;
-
-    const setOpen = (index: number, isOpen: boolean) => {
-      const chapter = chapters[index];
-      if (chapter.classList.contains('is-open') === isOpen) return;
-      chapter.classList.toggle('is-open', isOpen);
-      rows[index].setAttribute('aria-expanded', String(isOpen));
-      // Content is clipped while the height animates, then let free so the
-      // polaroids' tilt, shadow and throw aren't cut off.
-      chapter.classList.remove('is-expanded');
-      if (isOpen && reduceMotion.matches) chapter.classList.add('is-expanded');
-    };
+    let frame = 0;
 
     const showYear = (index: number) => {
       if (index === current) return;
       current = index;
       const chapter = chapters[index];
       dot.style.left = `${chapter.dataset.position}%`;
+      place.style.setProperty('--place', chapter.dataset.place ?? '0');
       const digits = (chapter.dataset.year ?? '').split('');
       year.querySelectorAll<HTMLElement>('.career__digit').forEach((column, i) => {
         column.style.setProperty('--digit', digits[i] ?? '0');
       });
     };
 
-    const syncToScroll = () => {
-      rows.forEach((row, index) => {
-        const top = row.getBoundingClientRect().top;
-        if (top > window.innerHeight) {
-          // Below the screen: changing it can't move anything in view.
-          manual.delete(index);
-          setOpen(index, false);
-        } else if (top >= 0 && top < openLine() && !manual.has(index)) {
-          // Unfolds downwards, so the rows above don't move.
-          setOpen(index, true);
-        }
-      });
-      const passed = rows.findLastIndex(row => row.getBoundingClientRect().top <= readingLine());
-      showYear(Math.max(0, passed));
+    // The chapter in focus is the one under the reading line; before the
+    // first it's the first, past the last it's the last.
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.4;
+      const passed = chapters.findLastIndex(chapter => chapter.getBoundingClientRect().top <= line);
+      const focused = Math.max(0, passed);
+      chapters.forEach((chapter, index) => chapter.classList.toggle('is-focused', index === focused));
+      showYear(focused);
     };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
 
-    chapters.forEach((chapter, index) => {
-      chapter.querySelector('.chapter__body')!.addEventListener('transitionend', event => {
-        if (event.target === event.currentTarget && chapter.classList.contains('is-open')) chapter.classList.add('is-expanded');
-      });
-      rows[index].addEventListener('click', () => {
-        manual.add(index);
-        setOpen(index, !chapter.classList.contains('is-open'));
-      });
-    });
-
-    // Fold everything, then let scrolling unfold what's in view.
     root.classList.add('is-enhanced');
-    chapters.forEach((_, index) => setOpen(index, false));
-    syncToScroll();
-    window.addEventListener('scroll', syncToScroll, { passive: true });
-    window.addEventListener('resize', syncToScroll);
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
   }
 </script>
 
@@ -247,6 +217,11 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .career__digit { height: 1em; clip-path: inset(0 -0.25em); }
   .career__reel { display: flex; flex-direction: column; transform: translateY(calc(var(--digit) * -1em)); transition: transform var(--duration-slow) var(--ease-standard); }
   .career__reel > span { height: 1em; }
+  /* Place: one line tall, its reel steps a line per place. Starts rolling a
+     beat after the year's last digit. */
+  .career__place { height: 1.4em; overflow: hidden; font-family: var(--font-heading); font-size: calc(20px * var(--ui-scale)); font-weight: 600; line-height: 1.4; color: var(--color-text-secondary); }
+  .career__place .career__reel { transform: translateY(calc(var(--place) * -1.4em)); transition-delay: 160ms; }
+  .career__place .career__reel > span { height: 1.4em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   /* A slight left-to-right stagger reads as a mechanism, not a swap. */
   .career__digit:nth-child(2) .career__reel { transition-delay: 40ms; }
   .career__digit:nth-child(3) .career__reel { transition-delay: 80ms; }
@@ -254,12 +229,15 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .career__axis { position: relative; display: flex; justify-content: space-between; padding-top: var(--space-4); border-top: var(--border-width) solid var(--color-border-strong); font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
   .career__axis i { position: absolute; top: calc(-5px * var(--ui-scale)); width: calc(9px * var(--ui-scale)); height: calc(9px * var(--ui-scale)); margin-left: calc(-4.5px * var(--ui-scale)); border-radius: var(--radius-full); background: var(--color-action-ghost-text); transition: left var(--duration-slow) var(--ease-standard); }
 
-  /* ── Chapters ── */
+  /* ── Chapters: open list rows between hairlines ── */
   .career__chapters { margin: 0; padding: 0; list-style: none; border-top: var(--border-width) solid var(--color-border); }
   .chapter { border-bottom: var(--border-width) solid var(--color-border); }
-  /* Row: label | period | chevron. */
-  .chapter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-1) var(--space-6); width: 100%; padding: var(--space-4) 0 var(--space-6); border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-  .chapter__row:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  .chapter__card { display: grid; padding: var(--space-4) 0 calc(48px * var(--ui-scale)); }
+  /* Only the chapter in focus is fully shown; the rest step back. */
+  .is-enhanced .chapter__card { opacity: 0.12; transition: opacity var(--duration-slow) var(--ease-standard); }
+  .is-enhanced .chapter.is-focused .chapter__card, .is-enhanced .chapter__card:focus-within { opacity: 1; }
+  /* Row: label | period. */
+  .chapter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-1) var(--space-6); padding-bottom: var(--space-6); }
   .chapter__period { grid-column: 2; grid-row: 1; font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
   /* Name on top, role or programme below. */
   .chapter__label { grid-column: 1; grid-row: 1; display: grid; gap: var(--space-2); min-width: 0; }
@@ -267,21 +245,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
   .chapter__title { font-size: calc(15px * var(--ui-scale)); line-height: 1.35; color: var(--color-text-secondary); }
   .chapter__label :global(.chapter__kind) { width: var(--icon-md); height: var(--icon-md); color: var(--color-action-ghost-text); }
 
-  .chapter__row :global(.chapter__icon) { grid-column: 3; grid-row: 1; width: var(--icon-md); height: var(--icon-md); color: var(--color-text-muted); transition: transform var(--duration-medium) var(--ease-standard); }
-  .chapter.is-open :global(.chapter__icon) { transform: rotate(180deg); color: var(--color-action-ghost-text); }
-  @media (hover: hover) { .chapter__row:hover .chapter__label strong { color: var(--color-action-ghost-text); } }
-
-  /* Folding animates the grid row between 0fr and 1fr — a real height
-     transition to the content's size — so the rows below glide instead of
-     jumping. Only once JS is in charge (.is-enhanced); without it, all open. */
-  .chapter__body { display: grid; grid-template-rows: 1fr; }
-  .chapter__clip { min-height: 0; }
-  .chapter__content { display: grid; gap: var(--space-6) calc(48px * var(--ui-scale)); padding-bottom: var(--space-6); }
-  .is-enhanced .chapter__body { grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows var(--duration-slow) var(--ease-standard), visibility 0s linear var(--duration-slow); }
-  .is-enhanced .chapter.is-open .chapter__body { grid-template-rows: 1fr; visibility: visible; transition-delay: 0s, 0s; }
-  .is-enhanced .chapter:not(.is-expanded) .chapter__clip { overflow: hidden; }
-  .is-enhanced .chapter__content { opacity: 0; transition: opacity var(--duration-slow) var(--ease-standard); }
-  .is-enhanced .chapter.is-open .chapter__content { opacity: 1; }
+  .chapter__content { display: grid; gap: var(--space-6) calc(48px * var(--ui-scale)); }
   /* Text beside its photos; the media column holds a polaroid or a pile. */
   .chapter__content.has-media { grid-template-columns: minmax(0, 1fr) calc(280px * var(--ui-scale)); align-items: start; }
   .chapter__text { display: grid; gap: var(--space-3); min-width: 0; }
@@ -306,7 +270,7 @@ const axisPosition = (year: number) => ((year - axisStart) / (axisEnd - axisStar
     .chapter__content.has-media { grid-template-columns: minmax(0, 1fr); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .is-enhanced .chapter__body, .is-enhanced .chapter__content { transition: none; }
-    .career__reel, .career__axis i, .chapter__row :global(.chapter__icon) { transition: none; }
+    .is-enhanced .chapter__card { transition: none; }
+    .career__reel, .career__axis i { transition: none; }
   }
 </style>

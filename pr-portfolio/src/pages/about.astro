@@ -43,7 +43,7 @@ const principles = [
 // A personal prologue, studies and work on one timeline, oldest first.
 const journey = [
   {
-    start: 2001, end: 2001, kind: 'personal' as const, name: 'BMX Supercross', title: 'Louisville, Kentucky',
+    start: 2001, end: 2001, kind: 'personal' as const, place: 'Louisville, EE. UU.', name: 'BMX Supercross', title: 'Ecuador Racing Team',
     tagline: 'Algo que me formó mucho antes de saberlo.',
     body: [
       'El bicicrós fue una de las primeras experiencias que me enseñó de qué era capaz cuando perseveraba. En 2001 quedé <strong>primera en el premundial y séptima del mundo</strong> en BMX Supercross, en Louisville, Kentucky.',
@@ -53,7 +53,7 @@ const journey = [
     photos: bmxPhotos,
   },
   {
-    start: 2010, end: 2015, kind: 'study' as const, name: 'Universidad del Azuay', title: 'Diseño Gráfico',
+    start: 2010, end: 2015, kind: 'study' as const, place: 'Cuenca, Ecuador', name: 'Universidad del Azuay', title: 'Diseño Gráfico',
     tagline: 'Elegí empezar por el porqué.',
     body: [
       'Cuando llegó el momento de escoger una carrera, dudé entre diseño y código. Me apasionaban los dos por la misma razón: su capacidad de convertir una idea en algo real.',
@@ -63,7 +63,7 @@ const journey = [
     tags: ['Diseño gráfico', 'Identidad', 'Comunicación visual', 'Conceptualización', 'Dirección de arte'],
   },
   {
-    start: 2015, end: 2015, kind: 'study' as const, name: 'Trabajo de graduación', title: 'Experiencia de compra en negocios locales',
+    start: 2015, end: 2015, kind: 'study' as const, place: 'Cuenca, Ecuador', name: 'Trabajo de graduación', title: 'Experiencia de compra en negocios locales',
     tagline: 'Mi primera investigación nació de una necesidad que tenía muy cerca.',
     body: [
       'Un año antes había escuchado por primera vez el término <strong>experiencia de usuario</strong>. Me cautivó porque describía una idea que empezaba a interesarme cada vez más: el diseño no solo podía comunicar algo; también podía transformar la manera en que una persona comprendía, elegía y vivía una experiencia.',
@@ -81,7 +81,7 @@ const journey = [
     photos: [{ src: thesisBook, alt: 'Portada roja del libro “Diseño de estrategias gráficas para mejorar la experiencia de compra de comida”, con la ilustración de una tostadora, Universidad del Azuay, 2015.', caption: 'De tesis a libro' }],
   },
   {
-    start: 2016, end: 2018, name: 'BigPromo', title: 'Fundadora & Product/Web Designer',
+    start: 2016, end: 2018, place: 'Cuenca, Ecuador', name: 'BigPromo', title: 'Fundadora & Product/Web Designer',
     tagline: 'Mi primera idea tuvo que enfrentarse al mundo real.',
     body: [
       'Fundé BigPromo, una plataforma digital de promociones en Ecuador. Definí la propuesta de valor, diseñé la experiencia web y móvil, construí la plataforma en WordPress con modificaciones en PHP, desarrollé la identidad y trabajé en su lanzamiento.',
@@ -90,7 +90,7 @@ const journey = [
     tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad', 'Lanzamiento'],
   },
   {
-    start: 2018, end: 2019, kind: 'study' as const, name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
+    start: 2018, end: 2019, kind: 'study' as const, place: 'Barcelona, España', name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
     tagline: 'La curiosidad me llevó al otro lado del mundo.',
     body: [
       'Las ganas de profundizar en experiencia de usuario y comprender mejor cómo se conciben los productos digitales me hicieron cruzar el Atlántico: dejé Ecuador y me trasladé a Barcelona para estudiar en ELISAVA.',
@@ -99,7 +99,7 @@ const journey = [
     tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos', 'Barcelona'],
   },
   {
-    start: 2018, end: 2020, name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
+    start: 2018, end: 2020, place: 'Barcelona, España', name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
     tagline: 'El código se convirtió en otra herramienta de diseño.',
     body: [
       'Trabajé con productos fintech B2B: dashboards, tablas, árboles y flujos con una gran densidad de información. Además de diseñarlos, implementaba interfaces con HTML, CSS y Sass dentro de Angular.',
@@ -108,7 +108,7 @@ const journey = [
     tags: ['Fintech B2B', 'Datos complejos', 'HTML', 'CSS', 'Sass', 'Angular', 'Colaboración con ingeniería'],
   },
   {
-    start: 2021, end: 2023, name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
+    start: 2021, end: 2023, place: 'Barcelona, España', name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
     tagline: 'Descubrí cuánto me motiva entrar en mundos que todavía no conozco.',
     body: [
       'Trabajé en ámbitos tan diferentes como salud, educación, deporte y servicios corporativos. Cada proyecto empezaba con un nuevo lenguaje, nuevas reglas y personas con necesidades distintas.',
@@ -117,7 +117,7 @@ const journey = [
     tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'Facilitación', 'Prototipado'],
   },
   {
-    start: 2023, end: 2025, name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
+    start: 2023, end: 2025, place: 'Barcelona, España · Remoto', name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
     tagline: 'Todas las capas empezaron a trabajar juntas.',
     body: [
       'Como Lead Product Designer y única diseñadora del equipo, lideré el diseño end-to-end de un producto B2B SaaS de reporting ESG utilizado por más de 25 empresas. Diseñé y mantuve su sistema de diseño y trabajé directamente con producto, negocio e ingeniería.',
@@ -127,7 +127,7 @@ const journey = [
     tags: ['B2B SaaS', 'ESG', '+25 empresas', 'Design system', 'React', 'Framer', 'Tally + Make', 'Liderazgo'],
   },
   {
-    start: 2025, status: 'En curso', kind: 'study' as const, name: 'Full Stack, IA y proyectos propios', title: 'Máster en Full Stack Development · Grupo Atrium', workCompany: 'pr' as const,
+    start: 2025, status: 'En curso', kind: 'study' as const, place: 'Barcelona, España', name: 'Full Stack, IA y proyectos propios', title: 'Máster en Full Stack Development · Grupo Atrium', workCompany: 'pr' as const,
     tagline: 'Sigo ampliando lo que puedo comprender y construir.',
     body: [
       'Curso un Máster en Full Stack Development para profundizar en lo que ocurre más allá de la interfaz: frontend, backend, APIs y datos.',
