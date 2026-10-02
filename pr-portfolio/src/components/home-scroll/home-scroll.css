@@ -307,7 +307,7 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #fafafb;
+  background: var(--color-neutral-0);
   border: 1px solid var(--home-select-blue);
   opacity: var(--sel, 0);
   pointer-events: none;
@@ -402,7 +402,7 @@
 /* Flat in light theme — dark keeps the drop shadow that separates the cursor
    icon from the (also dark) page behind it. */
 html.dark .narrative-cursor__pointer {
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 2px 6px var(--color-overlay-black-35));
 }
 .narrative-cursor__pointer svg {
   display: block;
@@ -421,7 +421,7 @@ html.dark .narrative-cursor__pointer {
 .narrative-cursor__label {
   top: 17px;
   background: var(--home-greeting-purple);
-  color: #fafafb;
+  color: var(--color-neutral-0);
 }
 .narrative-cursor__msg {
   top: 41px;
@@ -436,7 +436,7 @@ html.dark .narrative-cursor__pointer {
   padding: 4px 8px;
   border-radius: 0 8px 8px 8px;
   background: var(--color-brand-cyan-500);
-  color: #10101f;
+  color: var(--color-neutral-950);
   opacity: var(--cursor-msg, 0);
   transition: opacity 0.18s ease;
 }
@@ -494,7 +494,7 @@ html.dark .narrative-cursor__pointer {
 }
 html:not(.dark) .home-page {
   --home-greeting-pink: #bd1640;
-  --home-greeting-purple: #7b2cbf;
+  --home-greeting-purple: var(--color-brand-purple-700);
 }
 .hero-logo {
   position: relative;
@@ -721,7 +721,7 @@ html:not(.dark) .home-page {
   padding: 5px 10px;
   border-radius: var(--radius-full);
   background: var(--color-brand-green-500);
-  color: #10101f;
+  color: var(--color-neutral-950);
   font-size: 11px;
   font-weight: 500;
   white-space: nowrap;
@@ -764,10 +764,10 @@ html:not(.dark) .home-page {
   background: var(--color-border-strong);
 }
 .code-window__dots i:first-child {
-  background: #f41e50;
+  background: var(--color-brand-red-500);
 }
 .code-window__dots i:nth-child(2) {
-  background: #ffcd2b;
+  background: var(--color-brand-yellow-500);
 }
 .code-window__dots i:last-child {
   background: var(--color-brand-green-500);
@@ -834,7 +834,7 @@ html:not(.dark) .home-page {
   gap: 16px;
   padding: 2px 20px;
   white-space: pre;
-  background: rgb(157 118 253 / calc(var(--code-hl) * 0.16));
+  background: color-mix(in srgb, var(--home-greeting-purple) calc(var(--code-hl) * 16%), transparent);
 }
 .code-line:not([data-active]) {
   background: none;
@@ -889,7 +889,7 @@ html:not(.dark) .home-page {
   padding: 5px 12px;
   border-radius: var(--radius-sm);
   background: var(--home-greeting-purple);
-  color: #fafafb;
+  color: var(--color-neutral-0);
   font-size: 12px;
 }
 /* AI collaboration — a workspace window: context, a short exchange, and a
@@ -1014,7 +1014,7 @@ html:not(.dark) .home-page {
 }
 .ai-option[data-chosen] {
   color: var(--color-text);
-  background: rgb(157 118 253 / calc(var(--ai-pick) * 0.14));
+  background: color-mix(in srgb, var(--home-greeting-purple) calc(var(--ai-pick) * 14%), transparent);
 }
 .ai-input {
   display: flex;
