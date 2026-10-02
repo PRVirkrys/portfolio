@@ -12,6 +12,7 @@ const { inMenu = false } = Astro.props;
 ---
 
 <footer class="footer" data-in-menu={inMenu || undefined}>
+	<span class="footer__item footer__clock"><span>BCN, ES</span><span class="footer__sep" aria-hidden="true">·</span><time data-bcn-clock></time></span>
 	<span class="footer__item">
 		<span>Made in Barcelona</span>
 		<img class="footer__flag" src={iconUrl('flag-spain.svg')} alt="" width="32" height="32" />
@@ -27,6 +28,23 @@ const { inMenu = false } = Astro.props;
 		<span class="footer__dog" role="img" aria-label="perro">🐶</span>
 	</span>
 </footer>
+
+<script>
+	// Barcelona's local time with its zone (CET/CEST), filled in the
+	// visitor's browser — the site is static, so a build-time time would be
+	// stale. Kept to the minute; covers every footer copy (page + menu).
+	const clocks = document.querySelectorAll<HTMLTimeElement>('[data-bcn-clock]');
+	const format = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+	const tick = () => {
+		const now = new Date();
+		for (const clock of clocks) {
+			clock.textContent = format.format(now);
+			clock.dateTime = now.toISOString();
+		}
+		setTimeout(tick, 60000 - (now.getTime() % 60000));
+	};
+	if (clocks.length) tick();
+</script>
 
 <style>
 	.footer {
@@ -46,12 +64,24 @@ const { inMenu = false } = Astro.props;
 		text-align: center;
 	}
 	.footer__item { display: flex; align-items: center; gap: var(--space-3); white-space: nowrap; }
+	/* Pushed to the left edge; the rest stays right-aligned. Tighter gap than
+	   the footer's own separators so it reads as one item. Fixed-width
+	   digits so it doesn't twitch as the minutes change. */
+	.footer__clock { gap: var(--space-2); margin-right: auto; font-variant-numeric: tabular-nums; }
+	/* Divider running the footer's full height (stretched past its block
+	   padding), with the same space on its right as the footer's own left
+	   padding gives the clock on its left. */
+	.footer__clock { align-self: stretch; margin-block: calc(-10px * var(--ui-scale)); padding-right: var(--gutter-desktop); border-right: var(--border-width) solid var(--color-border); }
 	.footer__flag { display: block; width: calc(24px * var(--ui-scale)); height: calc(24px * var(--ui-scale)); }
 	.footer__sep { font-size: calc(24px * var(--ui-scale)); line-height: 1.75; }
 	.footer__dog { font-size: calc(23px * var(--ui-scale)); line-height: 1; }
 	@media (max-width: 839px) {
 		.footer { justify-content: center; gap: var(--space-3); padding-inline: var(--gutter-mobile); }
 		.footer__sep { display: none; }
+		.footer__clock .footer__sep { display: inline; }
+		/* On its own row the divider moves below it, spanning the footer's
+		   full width (stretched past its inline padding). */
+		.footer__clock { box-sizing: border-box; flex-basis: calc(100% + 2 * var(--gutter-mobile)); justify-content: center; margin: 0 calc(-1 * var(--gutter-mobile)); padding: 0 var(--gutter-mobile) var(--space-3); border-right: 0; border-bottom: var(--border-width) solid var(--color-border); }
 		.footer:not([data-in-menu]) { display: none; }
 	}
 </style>
