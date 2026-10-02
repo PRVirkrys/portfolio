@@ -6,10 +6,14 @@ $duration-fast: 150ms;
 $duration-medium: 250ms;
 $duration-slow: 400ms;
 $ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+// Stronger ease-out for UI that should land fast: most of the travel happens
+// in the first frames, so a 250ms move reads as instant feedback.
+$ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 
 $motion: (
 	'duration-fast': $duration-fast,
 	'duration-medium': $duration-medium,
 	'duration-slow': $duration-slow,
 	'ease-standard': $ease-standard,
+	'ease-out-strong': $ease-out-strong,
 );
