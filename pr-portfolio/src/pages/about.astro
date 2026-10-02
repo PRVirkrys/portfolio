@@ -10,110 +10,130 @@ import SectionIntro from '../components/about/SectionIntro.astro';
 import Tag from '../components/ui/Tag.astro';
 import CaseCallout from '../components/case/CaseCallout.astro';
 import LearningsGrid from '../components/case/LearningsGrid.astro';
+import type { ImageMetadata } from 'astro';
 import portrait from '../assets/about/paula.webp';
+import thesisBook from '../assets/about/tfg-libro.jpg';
 import flash01 from '../assets/about/flash/flash-01.jpg';
 import flash02 from '../assets/about/flash/flash-02.jpg';
 import flash03 from '../assets/about/flash/flash-03.jpg';
 import flash04 from '../assets/about/flash/flash-04.jpg';
 import flash05 from '../assets/about/flash/flash-05.jpg';
 
-const story = [
-  {
-    title: 'El diseño me enseñó dónde comienza una idea',
-    body: [
-      'Mi primer camino fue el <strong>Diseño Gráfico</strong>. Esa formación me enseñó a conceptualizar antes de ejecutar: comprender qué queremos comunicar, construir significado y tomar decisiones visuales capaces de dar identidad a una idea.',
-      'En la universidad también me atraía el código. Me fascinaba ver diseño y tecnología trabajando juntos y descubrir que algo inicialmente estático podía adquirir movimiento, comportamiento y vida. Aun así, me incliné primero por el diseño porque allí encontré el origen de la idea: el lugar donde se define qué queremos crear, para quién existe y por qué debería tomar forma.',
-      'El diseño también me enseñó que no todas las ideas necesitan convertirse en productos reales. Antes de construir hay que comprender si existe una necesidad, qué valor puede aportar, a quién afecta y si esa es realmente la respuesta adecuada.',
-      'Diseñar no era decorar una solución que ya estaba decidida. Era imaginar posibilidades, cuestionarlas y dar dirección a aquellas que merecían avanzar.',
-    ],
-  },
-  {
-    title: 'Mi primera idea convertida en producto',
-    body: [
-      'Esa convicción se volvió real cuando fundé <strong>BigPromo</strong>, una plataforma digital de promociones en Ecuador.',
-      'Definí la propuesta de valor, diseñé la experiencia web y móvil, construí la plataforma en WordPress con modificaciones en PHP, desarrollé la identidad y trabajé en su lanzamiento.',
-      'Fue mi primera experiencia conectando producto, diseño, tecnología y comunicación alrededor de una misma intención. También confirmó algo que continúa definiendo mi forma de trabajar: cuando una idea despierta mi curiosidad, necesito comprender el sistema completo que permitirá hacerla realidad.',
-      'Las preguntas que nacieron durante esa experiencia me llevaron a Barcelona para cursar el <strong>Máster en Diseño y Dirección de Proyectos para Internet en ELISAVA</strong> y profundizar en cómo se conciben, organizan y construyen los productos digitales.',
-    ],
-  },
-  {
-    title: 'El código volvió a encontrarme',
-    body: [
-      'En <strong>LPA</strong>, trabajando con productos fintech B2B, diseñaba dashboards, tablas, árboles y flujos con una gran densidad de información. Al mismo tiempo, implementaba interfaces con HTML, CSS y Sass dentro de un entorno Angular.',
-      'El código dejó de ser una curiosidad paralela y se convirtió en otra herramienta de diseño: una manera de probar cómo se comportaba una solución, comprender las restricciones reales y colaborar con ingeniería desde un lenguaje compartido.',
-      'Empecé a asumir historias de usuario completas —desde el análisis hasta la implementación visual— y a elegir entre Figma y código según lo que cada funcionalidad necesitaba. El diseño me ayudaba a decidir qué debía existir. El código me mostraba qué necesitaba para funcionar.',
-    ],
-  },
-  {
-    title: 'Cada proyecto amplió mi manera de mirar',
-    body: [
-      'En <strong>Fail Fast</strong>, mi trabajo me llevó a contextos muy diferentes: salud, educación, deporte y servicios corporativos.',
-      'Proyectos como La Meva Salut, la Oferta Formativa de la UOC, Escola Salut del Hospital Sant Joan de Déu, TimeChef o Culers para FC Barcelona me enseñaron a entrar en un dominio desconocido, escuchar a personas y stakeholders, detectar patrones y convertir la investigación en estructuras, recorridos y decisiones accionables.',
-      'La experiencia de usuario amplió mi mirada. Ya no se trataba solamente de dar forma a una idea, sino de comprender el problema detrás del problema, el contexto en el que aparecería y las consecuencias de cada decisión.',
-    ],
-  },
-  {
-    title: 'En una startup, todas las capas encontraron un lugar',
-    body: [
-      'En <strong>Pelt8</strong>, como Lead Product Designer y única diseñadora del equipo, todas esas experiencias comenzaron a funcionar juntas.',
-      'Mi formación en Diseño Gráfico, mi experiencia en producto y mi cercanía al frontend me permitieron asumir el perfil amplio que una startup necesitaba. Podía moverme entre la experiencia del producto, el sistema de diseño, la implementación, la identidad y la web sin perder la coherencia entre las distintas capas.',
-      'Lideré el diseño end-to-end de un producto B2B SaaS de reporting ESG utilizado por más de 25 empresas. Diseñé y mantuve su sistema de diseño, trabajé directamente con producto, negocio e ingeniería e intervine en componentes React para acercar la implementación al diseño.',
-      'También construí la web en Framer y creé soluciones con Tally y Make para lanzar iniciativas sin añadir trabajo al roadmap de ingeniería.',
-      'Esa etapa confirmó que mi aportación no está limitada por una herramienta o por la frontera tradicional de un rol. Consiste en entender qué impide que una idea avance, conectar las piezas y encontrar una manera responsable de moverla hacia la realidad.',
-    ],
-  },
-];
+// BMX photos: every image in assets/about/bmx joins the pile in file-name
+// order, so adding one is just dropping it in the folder. Describe it here;
+// otherwise it falls back to the generic text.
+const bmxDetails: Record<string, { alt: string; caption: string }> = {
+  'bmx-01.jpg': { alt: 'Podio del Campeonato Mundial de BMX 2001 en Louisville, Kentucky, con las corredoras sosteniendo sus trofeos.', caption: 'Louisville, 2001' },
+  'bmx-02.jpg': { alt: 'Paula de niña, con el uniforme del Ecuador Racing Team, sonriendo en una calle de Louisville.', caption: 'Ecuador Racing Team' },
+};
+const bmxPhotos = Object.entries(import.meta.glob<{ default: ImageMetadata }>('../assets/about/bmx/*.{jpg,jpeg,png,webp}', { eager: true }))
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([path, module]) => {
+    const file = path.split('/').pop()!;
+    return { src: module.default, ...(bmxDetails[file] ?? { alt: 'Paula en su etapa de BMX Supercross.', caption: 'BMX Supercross' }) };
+  });
 
 const principles = [
-  { title: 'Comprender', body: 'No empiezo por la pantalla ni por una herramienta. Empiezo intentando entender a las personas, el contexto, el negocio, la información, las restricciones y las preguntas todavía abiertas.' },
-  { title: 'Conectar', body: 'Busco relaciones y patrones hasta encontrar una estructura que permita tomar decisiones. La claridad visual es la consecuencia de haber comprendido mejor el problema.' },
-  { title: 'Dar forma', body: 'Utilizo research, arquitectura, flujos, sistemas y prototipos para convertir una intención en algo que el equipo pueda observar, discutir y validar.' },
-  { title: 'Construir y aprender', body: 'Cuando aporta claridad, utilizo frontend, Framer, no-code, automatización o IA para probar una solución. Construir revela nuevas preguntas y vuelve a alimentar el diseño.' },
+  { title: 'Comprender', body: 'Investigo a las personas, el contexto, el negocio, la información, las restricciones y las preguntas todavía abiertas. Antes de simplificar algo, necesito comprender qué complejidad es necesaria y cuál podemos eliminar.' },
+  { title: 'Conectar', body: 'Busco relaciones y patrones hasta encontrar una estructura que permita conversar y decidir. La claridad visual no es el punto de partida: es la consecuencia de haber entendido mejor el problema.' },
+  { title: 'Dar forma', body: 'Utilizo research, arquitectura de información, flujos, sistemas y prototipos para convertir una intención en algo que el equipo pueda observar, discutir y validar.' },
+  { title: 'Construir y aprender', body: 'Cuando aporta claridad, utilizo frontend, Framer, no-code, automatización o IA para probar una solución. Construir hace visibles nuevas restricciones y preguntas; esas respuestas vuelven a alimentar el diseño.' },
 ];
 
-// Work and studies on one timeline, newest first.
+// A personal prologue, studies and work on one timeline, oldest first.
 const journey = [
   {
-    start: 2025, end: 2026, status: 'En curso', kind: 'study' as const, name: 'Grupo Atrium', title: 'Máster en Full Stack Development',
-    tagline: 'Comprender cómo se construye lo que diseño.',
-    body: 'Profundizo en cómo se construyen los productos más allá de la interfaz: frontend, backend, APIs y datos. Es una continuación natural de mi curiosidad por acercar diseño e implementación.',
-    tags: ['Java · Spring Boot', 'Angular · TypeScript', 'APIs REST', 'MySQL · MongoDB'],
+    start: 2001, end: 2001, kind: 'personal' as const, name: 'BMX Supercross', title: 'Louisville, Kentucky',
+    tagline: 'Algo que me formó mucho antes de saberlo.',
+    body: [
+      'El bicicrós fue una de las primeras experiencias que me enseñó de qué era capaz cuando perseveraba. En 2001 quedé <strong>primera en el premundial y séptima del mundo</strong> en BMX Supercross, en Louisville, Kentucky.',
+      'Me enseñó que caerse forma parte del recorrido y que avanzar consiste en entrenar, observar, ajustar y volver a intentarlo. También me dejó el gusto por esa mezcla de concentración, vértigo y satisfacción que aparece cuando todo el trabajo previo desemboca en una carrera a toda velocidad.',
+      'Muchos años después sigo reconociendo esa forma de aprender en mí: insistir, prestar atención a lo que no funcionó y regresar al siguiente intento con algo nuevo.',
+    ],
+    photos: bmxPhotos,
   },
   {
-    start: 2023, end: 2025, name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
-    tagline: 'Todas las capas en un mismo lugar.',
-    body: 'Lideré el diseño de un producto B2B SaaS de reporting ESG, su sistema de diseño y la colaboración con producto e ingeniería. También trabajé en frontend, marca, web y automatización para ayudar a que el producto y el equipo avanzaran con mayor autonomía.',
-    tags: ['B2B SaaS · ESG', '+25 empresas', 'Design system', 'Componentes React', 'Web en Framer', 'Tally + Make'],
+    start: 2010, end: 2015, kind: 'study' as const, name: 'Universidad del Azuay', title: 'Diseño Gráfico',
+    tagline: 'Elegí empezar por el porqué.',
+    body: [
+      'Cuando llegó el momento de escoger una carrera, dudé entre diseño y código. Me apasionaban los dos por la misma razón: su capacidad de convertir una idea en algo real.',
+      'El código podía enseñarme <strong>cómo construirla</strong>. Pero entendí que el diseño podía ayudarme a descubrir <strong>qué merecía la pena construir, para quién y con qué propósito</strong>. Por eso decidí empezar por allí: por el origen de la idea, por el porqué y por las decisiones que le dan dirección.',
+      'La formación en Diseño Gráfico me enseñó a conceptualizar antes de ejecutar, construir significado y tomar decisiones visuales con intención. Esa base sigue presente cuando organizo información, defino jerarquías o construyo un sistema visual.',
+    ],
+    tags: ['Diseño gráfico', 'Identidad', 'Comunicación visual', 'Conceptualización', 'Dirección de arte'],
   },
   {
-    start: 2021, end: 2023, name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
-    tagline: 'Entrar en dominios desconocidos.',
-    body: 'Gestioné proyectos UX para salud, educación, deporte y servicios corporativos. Convertí investigación, necesidades de negocio y contextos complejos en arquitecturas, flujos, prototipos y experiencias listas para implementar.',
-    tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'La Meva Salut', 'TimeChef', 'Culers · FC Barcelona'],
-  },
-  {
-    start: 2018, end: 2020, name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
-    tagline: 'El código como herramienta de diseño.',
-    body: 'Diseñé e implementé interfaces para productos financieros B2B. Trabajar entre UX/UI y frontend consolidó mi forma de utilizar el código como parte del proceso de diseño y colaborar con ingeniería.',
-    tags: ['Fintech B2B', 'Dashboards y datos densos', 'HTML · CSS · Sass', 'Angular'],
-  },
-  {
-    start: 2018, end: 2019, kind: 'study' as const, name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
-    tagline: 'Del diseño visual al producto digital.',
-    body: 'Amplié mi formación visual hacia la experiencia, la estrategia y la dirección de productos digitales. Este recorrido me ayudó a comprender cómo conectar una idea con las personas, el negocio y su implementación.',
-    tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos'],
+    start: 2015, end: 2015, kind: 'study' as const, name: 'Trabajo de graduación', title: 'Experiencia de compra en negocios locales',
+    tagline: 'Mi primera investigación nació de una necesidad que tenía muy cerca.',
+    body: [
+      'Un año antes había escuchado por primera vez el término <strong>experiencia de usuario</strong>. Me cautivó porque describía una idea que empezaba a interesarme cada vez más: el diseño no solo podía comunicar algo; también podía transformar la manera en que una persona comprendía, elegía y vivía una experiencia.',
+      'Mi madre tenía un establecimiento local de comida y, a través de ella, conocía a muchas personas que intentaban sacar adelante sus propios negocios. Veía cómo competían con cadenas transnacionales que disponían de más recursos, visibilidad y sistemas de marca. Cuando en la universidad nos plantearon el trabajo de graduación como una oportunidad para generar impacto social, supe dónde quería empezar.',
+      'Mi tesis, <strong>“Diseño de estrategias gráficas para mejorar la experiencia de compra de comida”</strong>, investigó cómo el diseño podía ayudar a que pequeños negocios de alimentación fueran más competitivos. El proyecto propuso estrategias emergentes de imagen con criterios de sostenibilidad y las aplicó en elementos físicos y digitales de tres establecimientos.',
+      'Fue una de mis primeras experiencias utilizando investigación, contexto, estrategia y diseño como partes de una misma respuesta. Ya no se trataba únicamente de crear una identidad visual, sino de comprender el recorrido de compra, detectar oportunidades y diseñar una experiencia capaz de ayudar a un negocio real.',
+      'El proyecto fue seleccionado para ser presentado en el <strong>III Concurso de Reconocimiento a la Investigación Universitaria Estudiantil de SENESCYT</strong>. Años después, la Universidad del Azuay lo convirtió en una publicación, ampliando aquel trabajo académico hacia una herramienta que otras personas pudieran consultar y utilizar.',
+    ],
+    tags: ['Investigación', 'Experiencia de usuario', 'Experiencia de compra', 'Negocio local', 'Estrategia gráfica', 'Competitividad', 'Sostenibilidad', 'Impacto social'],
+    links: [
+      { label: 'Trabajo de graduación · Repositorio UDA', href: 'https://dspace.uazuay.edu.ec/handle/datos/4784' },
+      { label: 'Libro · Casa Editora UDA', href: 'https://publicaciones.uazuay.edu.ec/index.php/ceuazuay/catalog/book/28' },
+      { label: 'Libro · Digitalia', href: 'https://www.digitaliapublishing.com/a/133399/estrategias-graficas-para-mejorar-la-experiencia-de-compra-de-comida' },
+    ],
+    photos: [{ src: thesisBook, alt: 'Portada roja del libro “Diseño de estrategias gráficas para mejorar la experiencia de compra de comida”, con la ilustración de una tostadora, Universidad del Azuay, 2015.', caption: 'De tesis a libro' }],
   },
   {
     start: 2016, end: 2018, name: 'BigPromo', title: 'Fundadora & Product/Web Designer',
-    tagline: 'Mi primera idea convertida en producto.',
-    body: 'Convertí una idea en una plataforma web y móvil, conectando propuesta de valor, experiencia, tecnología, identidad y lanzamiento.',
-    tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad'],
+    tagline: 'Mi primera idea tuvo que enfrentarse al mundo real.',
+    body: [
+      'Fundé BigPromo, una plataforma digital de promociones en Ecuador. Definí la propuesta de valor, diseñé la experiencia web y móvil, construí la plataforma en WordPress con modificaciones en PHP, desarrollé la identidad y trabajé en su lanzamiento.',
+      'Fue la primera vez que conecté personas, negocio, producto, tecnología y comunicación alrededor de una misma idea. También entendí que diseñar un producto no termina cuando la interfaz se ve bien: tiene que funcionar, poder explicarse y encontrar su lugar.',
+    ],
+    tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad', 'Lanzamiento'],
   },
   {
-    start: 2010, end: 2015, kind: 'study' as const, name: 'Universidad del Azuay', title: 'Licenciatura en Diseño Gráfico',
-    tagline: 'Donde aprendí a dar forma y significado a las ideas.',
-    body: 'Mi base en diseño me enseñó a conceptualizar antes de ejecutar: construir significado, comunicar con intención y tomar decisiones visuales capaces de dar identidad a una idea.',
-    tags: ['Diseño gráfico', 'Identidad', 'Comunicación visual', 'Conceptualización', 'Dirección general'],
+    start: 2018, end: 2019, kind: 'study' as const, name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
+    tagline: 'La curiosidad me llevó al otro lado del mundo.',
+    body: [
+      'Las ganas de profundizar en experiencia de usuario y comprender mejor cómo se conciben los productos digitales me hicieron cruzar el Atlántico: dejé Ecuador y me trasladé a Barcelona para estudiar en ELISAVA.',
+      'Allí amplié mi formación visual hacia UX, estrategia y dirección de proyectos. El diseño empezó a ocupar un espacio más amplio: no solo como una forma de comunicar, sino como una manera de investigar, tomar decisiones y dirigir la construcción de una experiencia digital.',
+    ],
+    tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos', 'Barcelona'],
+  },
+  {
+    start: 2018, end: 2020, name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
+    tagline: 'El código se convirtió en otra herramienta de diseño.',
+    body: [
+      'Trabajé con productos fintech B2B: dashboards, tablas, árboles y flujos con una gran densidad de información. Además de diseñarlos, implementaba interfaces con HTML, CSS y Sass dentro de Angular.',
+      'Empecé a asumir historias de usuario completas y a elegir entre Figma y código según lo que necesitaba comprobar. Entender la implementación me ayudó a detectar restricciones antes, conversar mejor con ingeniería y diseñar soluciones más realistas.',
+    ],
+    tags: ['Fintech B2B', 'Datos complejos', 'HTML', 'CSS', 'Sass', 'Angular', 'Colaboración con ingeniería'],
+  },
+  {
+    start: 2021, end: 2023, name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
+    tagline: 'Descubrí cuánto me motiva entrar en mundos que todavía no conozco.',
+    body: [
+      'Trabajé en ámbitos tan diferentes como salud, educación, deporte y servicios corporativos. Cada proyecto empezaba con un nuevo lenguaje, nuevas reglas y personas con necesidades distintas.',
+      'Esa incertidumbre no me frenaba: despertaba mi curiosidad. Disfrutaba investigando, haciendo preguntas y encontrando los patrones que me permitían convertir un dominio desconocido en una arquitectura, un flujo o una experiencia que el equipo pudiera entender y construir.',
+    ],
+    tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'Facilitación', 'Prototipado'],
+  },
+  {
+    start: 2023, end: 2025, name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
+    tagline: 'Todas las capas empezaron a trabajar juntas.',
+    body: [
+      'Como Lead Product Designer y única diseñadora del equipo, lideré el diseño end-to-end de un producto B2B SaaS de reporting ESG utilizado por más de 25 empresas. Diseñé y mantuve su sistema de diseño y trabajé directamente con producto, negocio e ingeniería.',
+      'También intervine en componentes React, construí la web en Framer y creé soluciones con Tally y Make para lanzar iniciativas sin añadir dependencia al roadmap de ingeniería.',
+      'Mi aportación no consistía en utilizar muchas herramientas. Consistía en detectar qué impedía avanzar, conectar las piezas y elegir la forma más útil de resolverlo.',
+    ],
+    tags: ['B2B SaaS', 'ESG', '+25 empresas', 'Design system', 'React', 'Framer', 'Tally + Make', 'Liderazgo'],
+  },
+  {
+    start: 2025, status: 'En curso', kind: 'study' as const, name: 'Full Stack, IA y proyectos propios', title: 'Máster en Full Stack Development · Grupo Atrium', workCompany: 'pr' as const,
+    tagline: 'Sigo ampliando lo que puedo comprender y construir.',
+    body: [
+      'Curso un Máster en Full Stack Development para profundizar en lo que ocurre más allá de la interfaz: frontend, backend, APIs y datos.',
+      'En proyectos propios como <strong>MedusaWatch</strong> y <strong>Mundial Predictions</strong> puedo recorrer el camino completo, desde una pregunta inicial hasta la lógica, la información, la interfaz y una solución funcional. Construir me ayuda a descubrir restricciones, validar antes y volver a diseñar con más información.',
+    ],
+    tags: ['Java', 'Spring Boot', 'Angular', 'TypeScript', 'APIs REST', 'MySQL', 'MongoDB', 'IA aplicada', 'Prototipado funcional'],
   },
 ];
 
@@ -137,55 +157,25 @@ const flashPhotos = [
         <div class="about-hero__intro">
           <Tag category="Neutral">About me</Tag>
           <h1>Diseño para dar dirección a las ideas. Construyo para acercarlas a la realidad.</h1>
-          <p class="about-lead">Siempre me han atraído dos formas de dar vida a una idea: diseñarla y construirla. Durante mucho tiempo avanzaron por caminos distintos. Hoy forman parte de una misma manera de trabajar.</p>
+          <p class="about-lead">Hola, soy Paula Rodas, Senior Product Designer con más de nueve años de experiencia y un perfil híbrido entre Product Design y UX Engineering.</p>
         </div>
         <div class="about-hero__photo">
-          <Polaroid src={portrait} alt="Retrato en blanco y negro de Paula Rodas, con el pelo rizado y gafas, mirando a cámara." caption="Hola, soy Paula" tilt={3} widths={[480, 800, 979]} sizes="(max-width: 960px) 90vw, 40vw" loading="eager" fetchpriority="high" />
+          <Polaroid src={portrait} alt="Retrato en blanco y negro de Paula Rodas, con el pelo rizado y gafas, mirando a cámara." caption="Paula Rodas" tilt={3} widths={[480, 800, 979]} sizes="(max-width: 960px) 90vw, 40vw" loading="eager" fetchpriority="high" />
         </div>
         <div class="about-hero__body">
           <div class="about-prose">
-            <p>Hola, soy <strong>Paula Rodas</strong>, Senior Product Designer con más de nueve años de experiencia en diseño digital y un perfil híbrido entre <strong>Product Design y UX Engineering</strong>.</p>
-            <p>Me enamoré del diseño cuando descubrí que una idea podía dejar de ser algo abstracto y convertirse en una experiencia que otras personas pudieran ver, entender y utilizar. Años después, el código me permitió acercarme todavía más a ese momento: aquel en el que una decisión deja de existir solamente en un archivo de diseño y empieza a comportarse como un producto real.</p>
+            <p>Me enamoré del diseño cuando descubrí que una idea podía dejar de ser algo abstracto y convertirse en una experiencia que otras personas pudieran ver, entender y utilizar. Años después, el código me acercó todavía más a la posibilidad de materializar esas ideas en el mundo digital: aquel momento en el que una decisión deja de existir solamente en un archivo de diseño y empieza a comportarse como un producto real.</p>
             <p>La curiosidad ha sido el motor de mi recorrido. Me ha llevado a querer comprender cómo se construyen las cosas, qué necesita cada idea para avanzar y qué tengo que aprender para hacerla realidad.</p>
           </div>
         </div>
       </header>
 
-      <section class="about-section" aria-labelledby="story-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Diseñar y construir" heading="Primero aprendí a dar forma." headingMuted="Después, a construirla." lede="Del diseño gráfico al código: cinco momentos que ampliaron mi manera de llevar una idea a la realidad." headingId="story-title" /></div>
-        <div class="about-section__content">
-          {story.map((chapter, index) => (
-            <article class="about-chapter">
-              <span class="about-chapter__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-              <h3>{chapter.title}</h3>
-              <div class="about-prose">{chapter.body.map(paragraph => <p set:html={paragraph} />)}</div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class="about-section" aria-labelledby="curiosity-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Full stack" heading="La curiosidad sigue ampliando" headingMuted="lo que puedo construir." lede="Exploro el otro lado del producto para diseñar con una visión más completa." headingId="curiosity-title" /></div>
-        <div class="about-section__content about-prose">
-          <p>Actualmente curso un <strong>Máster en Full Stack Development</strong> como continuación de la curiosidad que siempre me ha acompañado. Quiero comprender cómo se estructura la información, cómo se conectan el frontend y el backend, cómo se comportan los datos y qué decisiones permiten que una experiencia llegue realmente a producción.</p>
-          <p>Proyectos propios como <strong>MedusaWatch</strong> y <strong>Mundial Predictions</strong> me permiten recorrer ese camino completo. En ellos puedo pasar de una pregunta inicial a la lógica, los datos, la interfaz y una solución funcional. Construir me ayuda a validar lo que imagino, descubrir restricciones y volver a diseñar con una comprensión más profunda.</p>
-          <blockquote class="about-quote">El diseño me ayuda a decidir qué merece existir y por qué. El código amplía mi capacidad para hacerlo posible.</blockquote>
-        </div>
-      </section>
-
-      <section class="about-section" aria-labelledby="ai-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Diseñar con IA" heading="Crear es cada vez más rápido." headingMuted="El criterio importa más que nunca." lede="Más capacidad para explorar y construir exige más responsabilidad al decidir." headingId="ai-title" /></div>
-        <div class="about-section__content about-prose">
-          <p>La IA ha multiplicado lo que puedo explorar y construir.</p>
-          <p>La utilizo para acelerar procesos de research y síntesis de información, detectar patrones, explorar alternativas y documentar decisiones. También me ayuda a transformar ideas en prototipos funcionales para testing y a apoyar tareas de programación, debugging y refactoring.</p>
-          <p>Reduce la distancia entre imaginar una posibilidad y poder ponerla a prueba. Pero también refuerza una convicción: cuando crear se vuelve más rápido y accesible, <strong>el criterio importa todavía más</strong>.</p>
-          <p>La IA puede ayudarnos a generar muchas respuestas. No puede decidir por sí sola qué problema merece nuestra atención, qué necesita una persona, qué consecuencias tendrá una solución ni cuál de todas las posibilidades tiene sentido para el producto.</p>
-          <p>El diseño me enseñó que llevar una idea a la vida no consiste únicamente en conseguir que funcione. También implica darle dirección, comprender a quién afecta y asumir la responsabilidad sobre lo que decidimos construir.</p>
-        </div>
+      <section class="about-career" aria-labelledby="journey-title">
+        <JourneyChapters chapters={journey} eyebrow="Mi recorrido" heading="Los caminos cambiaron." headingMuted="La curiosidad se quedó." intro="No llegué hasta aquí siguiendo un plan cerrado. Cada vez que una idea o un proyecto me pedía comprender algo nuevo, aprendí una forma distinta de observar, diseñar o construir. Estas son las etapas que fueron dando forma a mi manera de trabajar." headingId="journey-title" />
       </section>
 
       <section class="about-section" aria-labelledby="process-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Cómo pienso y trabajo" heading="Comprender antes de dar forma." headingMuted="Construir para volver a preguntar." lede="Cuatro movimientos que se repiten en cada proyecto, sea cual sea la herramienta." headingId="process-title" /></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Mi forma de trabajar" heading="Comprender antes de dar forma." headingMuted="Construir para volver a preguntar." lede="No empiezo por una pantalla ni por una herramienta. Empiezo intentando comprender qué ocurre, quién está implicado y qué necesita el equipo para tomar una mejor decisión." headingId="process-title" /></div>
         <div class="about-section__content">
           <LearningsGrid>
             {principles.map(principle => <CaseCallout size="lg" title={principle.title} body={principle.body} />)}
@@ -193,38 +183,34 @@ const flashPhotos = [
         </div>
       </section>
 
-      <section class="about-career" aria-labelledby="journey-title">
-        <JourneyChapters chapters={journey} eyebrow="Mi recorrido" heading="Los caminos cambiaron." headingMuted="La curiosidad se quedó." intro="Estudios, roles y proyectos que, año a año, fueron ampliando mi manera de diseñar, pensar y construir." headingId="journey-title" />
-      </section>
-
-      <section class="about-section" aria-labelledby="beyond-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Más allá del cargo" heading="Una colección de ideas" headingMuted="que también me construyeron a mí." headingId="beyond-title" /></div>
+      <section class="about-section" aria-labelledby="ai-title">
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Nuevas capacidades" heading="La IA ha multiplicado" headingMuted="lo que puedo explorar y construir." headingId="ai-title" /></div>
         <div class="about-section__content about-prose">
-          <p>Lo que más disfruto es ese momento en el que algo todavía difuso empieza a adquirir sentido.</p>
-          <p>Me entusiasman las ideas que me obligan a aprender: un dominio que no conozco, un sistema con muchas relaciones, una interacción que necesito comprender o una tecnología que abre una posibilidad nueva.</p>
-          <p>Cada proyecto deja algo en mi manera de pensar y amplía lo que seré capaz de construir la próxima vez. Por eso mi historia no es solamente una secuencia de roles, sino una forma de mirar que continúa evolucionando con cada idea.</p>
-          <blockquote class="about-quote">Cada vez que una idea me ha pedido mirar un poco más lejos, he aprendido una nueva manera de hacerla realidad.</blockquote>
+          <p>La utilizo para acelerar research y síntesis, detectar patrones, explorar alternativas, documentar decisiones y transformar ideas en prototipos funcionales para testing. También me ayuda a programar, depurar y refactorizar cuando necesito acercar una propuesta a un comportamiento real.</p>
+          <p>A veces se siente como haber ganado nuevos superpoderes: puedo recorrer más rápido la distancia entre una pregunta y algo que el equipo puede observar, probar y discutir.</p>
+          <p>Pero un superpoder no decide por sí solo dónde merece la pena utilizarlo. La IA puede generar muchas respuestas; no puede comprender por sí sola qué necesita una persona, qué consecuencias tendrá una decisión ni qué posibilidad tiene sentido para el producto.</p>
+          <p>Cuando crear se vuelve más rápido, <strong>el criterio importa todavía más</strong>. Mi responsabilidad sigue siendo formular la pregunta, dirigir la exploración y decidir qué merece avanzar.</p>
+          <blockquote class="about-quote">La IA amplía mi capacidad para explorar y construir. El diseño sigue dando dirección a lo que decido hacer posible.</blockquote>
         </div>
       </section>
 
       <section class="about-section about-flash" aria-labelledby="flash-title">
         <div class="about-flash__copy">
-          <SectionIntro size="sm" eyebrow="Flash" heading="Mi recordatorio" headingMuted="de volver al mundo real." headingId="flash-title" />
+          <SectionIntro size="sm" eyebrow="Fuera de la pantalla" heading="Flash me recuerda que tomar distancia" headingMuted="también forma parte del proceso." headingId="flash-title" />
           <div class="about-prose">
-            <p>Flash es mi perro, mi compañero y quien se ocupa de que me despegue de la pantalla de vez en cuando.</p>
-            <p>Me obliga a salir, caminar y tomar distancia. Aunque también se aguanta mis carreras de vuelta a casa cuando se me ocurre una idea y necesito comprobar si funciona. Él preferiría continuar el paseo; yo necesito abrir el ordenador “solo un momento”.</p>
-            <p>Supongo que también forma parte de mi proceso: alejarme para mirar de nuevo, encontrar una idea donde no la estaba buscando y regresar con ganas de darle forma.</p>
+            <p>Flash es mi perro, mi compañero y quien se ocupa de que cierre el ordenador de vez en cuando.</p>
+            <p>Salir a caminar me ayuda a ordenar ideas y volver con otra perspectiva. Aunque él ya conoce la otra cara de la historia: a veces se me ocurre algo a mitad del paseo y regresamos antes porque necesito comprobar si funciona. Él preferiría seguir caminando; yo prometo abrir el portátil “solo un momento”.</p>
           </div>
         </div>
-        <FlashPolaroids photos={flashPhotos} />
+        <FlashPolaroids photos={flashPhotos} label="Fotos de Flash" />
       </section>
 
       <section class="about-section" aria-labelledby="now-title">
-        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Ahora" heading="Ideas que necesitan dirección." headingMuted="Equipos preparados para construirlas." headingId="now-title" /></div>
+        <div class="about-section__head"><SectionIntro size="sm" eyebrow="Lo que viene" heading="Quiero seguir trabajando donde producto," headingMuted="sistemas e ingeniería se encuentran." headingId="now-title" /></div>
         <div class="about-section__content about-prose">
-          <p>Hoy estoy profundizando en desarrollo full stack y explorando cómo la IA puede ampliar el espacio entre imaginar, diseñar y construir.</p>
-          <p>Me interesan los equipos en los que diseño e ingeniería colaboran desde el principio; los productos con sistemas, datos o dominios complejos; y los problemas que exigen tanto una mirada estratégica como atención a los detalles.</p>
-          <p>Quiero seguir trabajando en ese lugar de encuentro: donde una idea todavía necesita dirección, pero ya está lo bastante cerca de la realidad como para empezar a construirla.</p>
+          <p>Hoy profundizo en desarrollo full stack y continúo explorando cómo la IA puede <strong>ampliar el espacio entre imaginar, diseñar y construir</strong>.</p>
+          <p>Me interesan especialmente los productos B2B, los sistemas o datos complejos, los equipos que integran diseño e ingeniería desde el principio y los retos en los que hace falta combinar una visión de conjunto con atención al detalle.</p>
+          <p>Si estás construyendo un producto complejo, evolucionando un sistema de diseño o buscando acercar diseño e ingeniería, me encantará conocer el reto.</p>
         </div>
       </section>
     </main>
@@ -257,10 +243,7 @@ const flashPhotos = [
   /* Like case studies: the intro sticks in the left column while the
      content scrolls past in the right one. */
   .about-section__head { position: sticky; top: calc(var(--component-header-height-desktop) + var(--space-8)); }
-  h3 { margin: 0 0 var(--space-4); font-family: var(--font-heading); font-size: calc(28px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.2px; }
 
-  .about-chapter + .about-chapter { margin-top: calc(80px * var(--ui-scale)); }
-  .about-chapter__index { display: block; margin-bottom: var(--space-3); font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 700; letter-spacing: 0.05em; color: var(--color-action-ghost-text); }
 
   .about-quote { max-width: calc(820px * var(--ui-scale)); margin: calc(56px * var(--ui-scale)) 0 0; padding-left: var(--space-6); border-left: var(--focus-width) solid var(--color-action-ghost-text); font-family: var(--font-heading); font-size: calc(30px * var(--ui-scale)); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; color: var(--color-text); }
 
@@ -290,6 +273,6 @@ const flashPhotos = [
     .about { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-12); }
     .about-hero { padding-bottom: var(--space-16); }
     .about-lead { font-size: calc(24px * var(--ui-scale)); }
-        .about-quote { font-size: calc(24px * var(--ui-scale)); }
+    .about-quote { font-size: calc(24px * var(--ui-scale)); }
   }
 </style>

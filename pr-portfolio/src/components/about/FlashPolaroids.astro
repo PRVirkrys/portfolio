@@ -1,5 +1,5 @@
 ---
-// Stack of Flash polaroids. Drag (or swipe) the top photo away and it slides
+// Stack of polaroids (Flash, the BMX chapter). Drag (or swipe) the top photo away and it slides
 // to the back of the pile, revealing the next one. The arrow controls step
 // forward (same as a throw) or back (the last card returns to the top), for
 // keyboard and assistive tech too; without JS the stack shows the top photo.
@@ -9,27 +9,34 @@ import { ChevronLeft, ChevronRight } from '@lucide/astro';
 import IconButton from '../ui/IconButton.astro';
 
 interface Photo { src: ImageMetadata; alt: string; caption: string }
-interface Props { photos: Photo[] }
-const { photos } = Astro.props;
+interface Props {
+  photos: Photo[];
+  /** Names the pile for assistive tech, e.g. 'Fotos de Flash'. */
+  label: string;
+  /** 'sm' fits beside text, e.g. inside a journey chapter. */
+  size?: 'md' | 'sm';
+}
+const { photos, label, size = 'md' } = Astro.props;
+const sizes = size === 'sm' ? '(max-width: 839px) 60vw, 240px' : '(max-width: 839px) 72vw, 320px';
 
 // Fixed tilts so the pile looks hand-dropped but renders identically every time.
 const tilts = [-3, 4, -6, 2, 6, -2];
 ---
 
-<div class="polaroids" data-polaroids>
-  <ul class="polaroids__stack" aria-label="Fotos de Flash">
+<div class="polaroids" data-polaroids data-size={size}>
+  <ul class="polaroids__stack" aria-label={label}>
     {photos.map((photo, index) => (
       <li class="polaroids__card" style={`z-index: ${photos.length - index};`} aria-hidden={index > 0 ? 'true' : undefined}>
-        <Polaroid {...photo} tilt={tilts[index % tilts.length]} sizes="(max-width: 839px) 72vw, 320px" />
+        <Polaroid {...photo} tilt={tilts[index % tilts.length]} sizes={sizes} />
       </li>
     ))}
   </ul>
   <div class="polaroids__controls">
     <p class="polaroids__hint">Arrastra la foto para ver la siguiente</p>
     <div class="polaroids__nav">
-      <IconButton label="Foto anterior" data-polaroids-prev><ChevronLeft aria-hidden="true" /></IconButton>
+      <IconButton label="Foto anterior" size={size === 'sm' ? 'md' : 'lg'} data-polaroids-prev><ChevronLeft aria-hidden="true" /></IconButton>
       <span class="polaroids__count" data-polaroids-count aria-live="polite">1 / {photos.length}</span>
-      <IconButton label="Foto siguiente" data-polaroids-next><ChevronRight aria-hidden="true" /></IconButton>
+      <IconButton label="Foto siguiente" size={size === 'sm' ? 'md' : 'lg'} data-polaroids-next><ChevronRight aria-hidden="true" /></IconButton>
     </div>
   </div>
 </div>
@@ -133,6 +140,8 @@ const tilts = [-3, 4, -6, 2, 6, -2];
   /* The card moves and spins while dragged; the polaroid inside keeps its own tilt. */
   .polaroids__card { grid-area: 1 / 1; transition: transform var(--duration-medium) var(--ease-standard); cursor: grab; user-select: none; }
   .polaroids__card.is-dragging { cursor: grabbing; transition: none; }
+  .polaroids[data-size='sm'] { gap: var(--space-6); }
+  .polaroids[data-size='sm'] .polaroids__stack { width: min(calc(280px * var(--ui-scale)), 60vw); }
   .polaroids__controls { display: grid; justify-items: center; gap: var(--space-2); }
   .polaroids__hint { margin: 0; font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
   .polaroids__nav { display: flex; align-items: center; gap: var(--space-4); }

@@ -4,7 +4,10 @@
 // --gradient-link-underline background-image, at the same oversized
 // background-size, is declared once and never swapped between states. Only
 // animation-play-state toggles on hover; background-position is what slides.
-export interface Props {
+import type { HTMLAttributes } from 'astro/types';
+
+// Other anchor attributes (target, rel, aria-*) pass through to the <a>.
+export interface Props extends Omit<HTMLAttributes<'a'>, 'href' | 'class'> {
 	href: string;
 	size?: 'md' | 'lg';
 	showIcon?: boolean;
