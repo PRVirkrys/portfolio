@@ -20,19 +20,46 @@ import flash03 from '../assets/about/flash/flash-03.jpg';
 import flash04 from '../assets/about/flash/flash-04.jpg';
 import flash05 from '../assets/about/flash/flash-05.jpg';
 
-// BMX photos: every image in assets/about/bmx joins the pile in file-name
-// order, so adding one is just dropping it in the folder. Describe it here;
-// otherwise it falls back to the generic text.
-const bmxDetails: Record<string, { alt: string; caption: string }> = {
+// Chapter photos live in one folder per chapter under assets/about. Listed
+// files come first, in this order (the first is the top of the pile); any
+// other image dropped in the folder joins after them in file-name order,
+// with the album's fallback text.
+type PhotoText = { alt: string; caption: string };
+const photoFiles = import.meta.glob<{ default: ImageMetadata }>('../assets/about/*/*.{jpg,jpeg,png,webp}', { eager: true });
+const album = (folder: string, described: Record<string, PhotoText>, fallback: PhotoText) => {
+  const prefix = `../assets/about/${folder}/`;
+  const files = Object.keys(photoFiles).filter(path => path.startsWith(prefix)).map(path => path.slice(prefix.length));
+  const order = [...Object.keys(described).filter(file => files.includes(file)), ...files.filter(file => !(file in described)).sort((a, b) => a.localeCompare(b))];
+  return order.map(file => ({ src: photoFiles[prefix + file].default, ...(described[file] ?? fallback) }));
+};
+
+const bmxPhotos = album('bmx', {
   'bmx-01.jpg': { alt: 'Podio del Campeonato Mundial de BMX 2001 en Louisville, Kentucky, con las corredoras sosteniendo sus trofeos.', caption: 'Louisville, 2001' },
   'bmx-02.jpg': { alt: 'Paula de niña, con el uniforme del Ecuador Racing Team, sonriendo en una calle de Louisville.', caption: 'Ecuador Racing Team' },
-};
-const bmxPhotos = Object.entries(import.meta.glob<{ default: ImageMetadata }>('../assets/about/bmx/*.{jpg,jpeg,png,webp}', { eager: true }))
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([path, module]) => {
-    const file = path.split('/').pop()!;
-    return { src: module.default, ...(bmxDetails[file] ?? { alt: 'Paula en su etapa de BMX Supercross.', caption: 'BMX Supercross' }) };
-  });
+}, { alt: 'Paula en su etapa de BMX Supercross.', caption: 'BMX Supercross' });
+const bigpromoPhotos = album('bigpromo', {
+  'logo.png': { alt: 'Logotipo de BigPromo: un carrito de compras naranja junto a las palabras “Big Promo” y “ec.com”, sobre fondo negro.', caption: 'Mi primera startup' },
+  'app.png': { alt: 'Maqueta de la app de BigPromo en un móvil, con categorías, ofertas destacadas y productos con etiqueta de descuento.', caption: 'Promos en el móvil' },
+}, { alt: 'Imagen del proyecto BigPromo.', caption: 'BigPromo' });
+const elisavaPhotos = album('elisava', {
+  'logo.png': { alt: 'Logotipo de ELISAVA en negro sobre fondo claro.', caption: 'Barcelona, 2018' },
+  'labar.png': { alt: 'Maqueta de LaBar en un móvil delante de una lavadora: una app con contador de monedas y recompensas.', caption: 'LaBar' },
+  'sweepus.png': { alt: 'Maqueta de SweepUs en un móvil: una app con el plan semanal de comidas, con desayuno, comida y cena.', caption: 'SweepUs' },
+}, { alt: 'Proyecto del máster en ELISAVA.', caption: 'ELISAVA' });
+const lpaPhotos = album('lpa', {
+  'logo.png': { alt: 'Logotipo de LPA en azul sobre fondo claro.', caption: 'Fintech B2B' },
+}, { alt: 'Imagen de LPA.', caption: 'LPA' });
+const failfastPhotos = album('failfast', {
+  'logo.png': { alt: 'Logotipo de Fail Fast en blanco sobre fondo negro.', caption: 'Fail Fast' },
+  'clients.png': { alt: 'Logotipos de clientes: FC Barcelona, base:, Sant Joan de Déu, La meva Salut, Time Chef y UOC.', caption: 'Un mundo por proyecto' },
+}, { alt: 'Imagen de Fail Fast.', caption: 'Fail Fast' });
+const pelt8Photos = album('pelt8', {
+  'logo.png': { alt: 'Isotipo de Pelt8: un octógono turquesa sobre fondo azul marino.', caption: 'Reporting ESG' },
+}, { alt: 'Imagen de Pelt8.', caption: 'Pelt8' });
+const fullStackPhotos = album('full-stack', {
+  'frontend.png': { alt: 'Logotipos de HTML5, CSS3, JavaScript, TypeScript, Sass y Angular.', caption: 'Frontend' },
+  'backend.png': { alt: 'Logotipos de Java, Spring Boot, MySQL, MongoDB y REST API.', caption: 'Backend' },
+}, { alt: 'Tecnologías del máster Full Stack.', caption: 'Full Stack' });
 
 const principles = [
   { title: 'Comprender', body: 'Investigo a las personas, el contexto, el negocio, la información, las restricciones y las preguntas todavía abiertas. Antes de simplificar algo, necesito comprender qué complejidad es necesaria y cuál podemos eliminar.' },
@@ -89,6 +116,7 @@ const journey = [
       'Fue la primera vez que conecté personas, negocio, producto, tecnología y comunicación alrededor de una misma idea. También entendí que diseñar un producto no termina cuando la interfaz se ve bien: tiene que funcionar, poder explicarse y encontrar su lugar.',
     ],
     tags: ['Fundadora', 'Propuesta de valor', 'Web y móvil', 'WordPress + PHP', 'Identidad', 'Lanzamiento'],
+    photos: bigpromoPhotos,
   },
   {
     start: 2018, end: 2019, kind: 'study' as const, place: 'Barcelona, España', name: 'ELISAVA', title: 'Máster en Diseño y Dirección de Proyectos para Internet',
@@ -98,6 +126,7 @@ const journey = [
       'Allí amplié mi formación visual hacia UX, estrategia y dirección de proyectos. El diseño empezó a ocupar un espacio más amplio: no solo como una forma de comunicar, sino como una manera de investigar, tomar decisiones y dirigir la construcción de una experiencia digital.',
     ],
     tags: ['Product Design', 'UX', 'Estrategia digital', 'Dirección de proyectos', 'Barcelona'],
+    photos: elisavaPhotos,
   },
   {
     start: 2018, end: 2020, place: 'Barcelona, España', name: 'LPA', title: 'UX/UI Designer & Front-end Developer', workCompany: 'lpa' as const,
@@ -107,6 +136,7 @@ const journey = [
       'Empecé a asumir historias de usuario completas y a elegir entre Figma y código según lo que necesitaba comprobar. Entender la implementación me ayudó a detectar restricciones antes, conversar mejor con ingeniería y diseñar soluciones más realistas.',
     ],
     tags: ['Fintech B2B', 'Datos complejos', 'HTML', 'CSS', 'Sass', 'Angular', 'Colaboración con ingeniería'],
+    photos: lpaPhotos,
   },
   {
     start: 2021, end: 2023, place: 'Barcelona, España', name: 'Fail Fast', title: 'UX/UI Designer', workCompany: 'failfast' as const,
@@ -116,6 +146,7 @@ const journey = [
       'Esa incertidumbre no me frenaba: despertaba mi curiosidad. Disfrutaba investigando, haciendo preguntas y encontrando los patrones que me permitían convertir un dominio desconocido en una arquitectura, un flujo o una experiencia que el equipo pudiera entender y construir.',
     ],
     tags: ['Salud', 'Educación', 'Deporte', 'Research', 'Arquitectura de información', 'Facilitación', 'Prototipado'],
+    photos: failfastPhotos,
   },
   {
     start: 2023, end: 2025, place: 'Barcelona, España · Remoto', name: 'Pelt8', title: 'Lead Product Designer', workCompany: 'pelt8' as const,
@@ -126,6 +157,7 @@ const journey = [
       'Mi aportación no consistía en utilizar muchas herramientas. Consistía en detectar qué impedía avanzar, conectar las piezas y elegir la forma más útil de resolverlo.',
     ],
     tags: ['B2B SaaS', 'ESG', '+25 empresas', 'Design system', 'React', 'Framer', 'Tally + Make', 'Liderazgo'],
+    photos: pelt8Photos,
   },
   {
     start: 2025, status: 'En curso', kind: 'study' as const, place: 'Barcelona, España', name: 'Full Stack, IA y proyectos propios', title: 'Máster en Full Stack Development · Grupo Atrium', workCompany: 'pr' as const,
@@ -135,6 +167,7 @@ const journey = [
       'En proyectos propios como <strong>MedusaWatch</strong> y <strong>Mundial Predictions</strong> puedo recorrer el camino completo, desde una pregunta inicial hasta la lógica, la información, la interfaz y una solución funcional. Construir me ayuda a descubrir restricciones, validar antes y volver a diseñar con más información.',
     ],
     tags: ['Java', 'Spring Boot', 'Angular', 'TypeScript', 'APIs REST', 'MySQL', 'MongoDB', 'IA aplicada', 'Prototipado funcional'],
+    photos: fullStackPhotos,
   },
 ];
 
