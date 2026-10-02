@@ -11,7 +11,7 @@ import { caseFocus, focusCategories } from '../../lib/work-filters';
 import { withBase } from '../../lib/url';
 import { LayoutGrid, Rows3 } from '@lucide/astro';
 
-const cases = (await getCollection('blog', ({ data }) => data.type === 'case-study')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const cases = (await getCollection('blog', ({ data }) => data.type === 'case-study')).sort((a, b) => Number(!!a.data.upcoming) - Number(!!b.data.upcoming) || b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const companies = workCompanies.filter(company => cases.some(entry => entry.data.company === company.id));
 const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(entry.data).includes(focus)));
 ---

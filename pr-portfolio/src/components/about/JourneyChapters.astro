@@ -59,7 +59,7 @@ interface Props {
 }
 const { chapters, eyebrow, heading, headingMuted, intro, headingId } = Astro.props;
 
-const cases = await getCollection('blog', ({ data }) => data.type === 'case-study');
+const cases = await getCollection('blog', ({ data }) => data.type === 'case-study' && !data.upcoming);
 const casesFor = (company?: WorkCompanyId) => company ? cases.filter(entry => entry.data.company === company) : [];
 // Case titles read "Customer · Subtitle"; the chip only needs the customer.
 const caseLabel = (title: string) => title.split(' · ')[0];

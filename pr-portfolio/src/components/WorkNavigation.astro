@@ -17,7 +17,7 @@ import WorkBubble from './ui/WorkBubble.astro';
 				{work.clients && <div class="work-panel__clients">{work.clients.map((client) => (
 					<div class="work-panel__client">
 						<ClientBubble {...client} />
-						<Tag category="Neutral" size="md" class="work-panel__label-tag">{client.label ?? client.name}</Tag>
+						<Tag category="Neutral" size="md" class="work-panel__label-tag">{client.label ?? client.name}{!client.href && <span class="work-panel__soon">{' · Próximamente'}</span>}</Tag>
 					</div>
 				))}</div>}
 				{work.ctaHref
@@ -49,6 +49,9 @@ import WorkBubble from './ui/WorkBubble.astro';
 	.work-panel__clients { display: flex; flex-direction: column; align-items: center; gap: var(--space-6); overflow: visible; }
 	.work-panel__clients:hover :global(.client-bubble) { opacity: calc(var(--opacity-disabled) / 100); }
 	.work-panel__clients :global(.client-bubble:hover) { z-index: 1; opacity: 1; transform: scale(1.2); }
+	/* Upcoming clients stay dimmed and still on hover; only the label appears. */
+	.work-panel__clients :global(.client-bubble[aria-disabled='true']) { opacity: .5; transform: none; }
+	.work-panel__soon { opacity: .6; white-space: pre; }
 	.work-panel__client { position: relative; display: flex; }
 	:is(.work-panel__client, .work-panel__cta) :global(.work-panel__label-tag) { --tag-color: var(--color-base-white); position: absolute; top: 50%; left: calc(100% + var(--space-3)); transform: translateY(-50%); opacity: 0; pointer-events: none; text-transform: uppercase; letter-spacing: calc(1.4px * var(--ui-scale)); white-space: nowrap; transition: opacity var(--duration-fast) var(--ease-standard); }
 	:is(.work-panel__client, .work-panel__cta):hover :global(.work-panel__label-tag), :is(.work-panel__client, .work-panel__cta):focus-within :global(.work-panel__label-tag) { opacity: 1; }

@@ -11,7 +11,7 @@ const Tag = href ? 'a' : 'span';
 const Icon = icon ? ICONS[icon] : undefined;
 ---
 
-<Tag class:list={['client-bubble', `client-bubble--${surface}`]} href={href} aria-label={href ? `Ver case study de ${name}` : name} aria-disabled={href ? undefined : 'true'}>
+<Tag class:list={['client-bubble', `client-bubble--${surface}`]} href={href} aria-label={href ? `Ver case study de ${name}` : `${name}, próximamente`} aria-disabled={href ? undefined : 'true'}>
 	{Icon ? <Icon /> : logos ? <span class:list={['client-bubble__hedgepilot', logoClass]}>{logos.map((asset) => <img src={asset} alt="" />)}</span> : logo ? <img class={logoClass} src={logo} alt="" /> : <span class="client-bubble__emoji" aria-hidden="true">🪼</span>}
 </Tag>
 
@@ -41,6 +41,8 @@ const Icon = icon ? ICONS[icon] : undefined;
 	.client-bubble__hedgepilot img:nth-child(2) { top: 12.66%; right: 0; width: 29.43%; }
 	.client-bubble__hedgepilot img:nth-child(3) { top: 0; left: 0; width: 16.36%; }
 	.client-bubble__emoji { font-size: calc(36px * var(--ui-scale)); line-height: calc(48px * var(--ui-scale)); }
+	/* No case study yet: same dimmed, desaturated look as upcoming Work cards. */
+	.client-bubble[aria-disabled='true'] { filter: grayscale(1); opacity: .5; cursor: default; }
 	.client-bubble[href]:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
 	@media (prefers-reduced-motion: reduce) { .client-bubble { transition: none; } }
 </style>

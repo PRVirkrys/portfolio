@@ -7,34 +7,37 @@ import { getWorkCompany } from '../../data/work-companies';
 import { withBase } from '../../lib/url';
 import { caseFocus } from '../../lib/work-filters';
 import { readingMinutes } from '../../lib/reading-time';
-import { Clock } from '@lucide/astro';
+import { Clock, Hourglass } from '@lucide/astro';
 
 interface Props { entry: CollectionEntry<'blog'>; eager?: boolean }
 const { entry, eager = false } = Astro.props;
 const { data } = entry;
+const upcoming = data.upcoming ?? false;
 const company = getWorkCompany(data.company);
 const titleId = `card-title-${entry.id}`;
-const context = [company?.name, data.customer].filter(Boolean).join(' · ');
+const context = data.cardContext ?? [company?.name, data.customer].filter(Boolean).join(' · ');
 const meta = [
   { label: 'Mi rol', value: data.role },
   { label: data.platform ? 'Plataforma' : 'Periodo', value: data.platform ?? data.date },
 ].filter(row => row.value);
 ---
 
-<article class="case-card" data-case-card data-company={data.company ?? ''} data-focus={JSON.stringify(caseFocus(data))}>
+<article class="case-card" data-case-card data-upcoming={upcoming || undefined} data-company={data.company ?? ''} data-focus={JSON.stringify(caseFocus(data))}>
   <div class="case-card__content">
-    {data.heroImage && <div class="case-card__cover"><Image src={data.heroImage} alt="" widths={[480, 720, 1080]} sizes="(max-width: 839px) 100vw, 50vw" loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
+    {data.heroImage && <div class="case-card__cover">{upcoming && <span class="case-card__soon">Próximamente</span>}<Image src={data.heroImage} alt="" widths={[480, 720, 1080]} sizes="(max-width: 839px) 100vw, 50vw" loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
     <div class="case-card__body">
       <div class="case-card__eyebrow">
         {context && <p class="case-card__context">{context}</p>}
-        <p class="case-card__reading"><Clock class="case-card__reading-icon" aria-hidden="true" />{readingMinutes(entry.body)} min de lectura</p>
+        {!upcoming && <p class="case-card__reading"><Clock class="case-card__reading-icon" aria-hidden="true" />{readingMinutes(entry.body)} min de lectura</p>}
       </div>
       <h2 id={titleId} class="case-card__title">{data.title}</h2>
       {(data.cardSummary || data.description) && <p class="case-card__summary">{data.cardSummary ?? data.description}</p>}
       <div class="case-card__details">
         {meta.length > 0 && <dl class="case-card__meta">{meta.map(row => <div><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>}
         {data.tags?.length && <div class="case-card__tags">{data.tags.slice(0, 3).map(tag => <Tag category={tag.category}>{tag.label}</Tag>)}</div>}
-        <TextLink class="case-card__cta" href={withBase(`/work/${entry.id}/`)} size="lg" aria-labelledby={titleId} data-case-link>Ver case study</TextLink>
+        {upcoming
+          ? <p class="case-card__pending"><Hourglass class="case-card__reading-icon" aria-hidden="true" />Próximamente</p>
+          : <TextLink class="case-card__cta" href={withBase(`/work/${entry.id}/`)} size="lg" aria-labelledby={titleId} data-case-link>Ver case study</TextLink>}
       </div>
     </div>
   </div>
@@ -71,7 +74,7 @@ const meta = [
      focus on the card link). Touch devices keep the static cover. */
   @media (hover: hover) and (pointer: fine) {
     .case-card__image { transition: transform 600ms cubic-bezier(.22, 1, .36, 1); }
-    .case-card:is(:hover, :focus-within) .case-card__image { transform: scale(1.05); }
+    .case-card:not([data-upcoming]):is(:hover, :focus-within) .case-card__image { transform: scale(1.05); }
   }
   /* Rows view (toggle on /work/, desktop only): cover on the left, body on
      the right. The cover stretches to the body's height. */
@@ -79,6 +82,16 @@ const meta = [
     :global([data-view='rows']) .case-card__content { flex-direction: row; }
     :global([data-view='rows']) .case-card__cover { flex: 0 0 44%; aspect-ratio: auto; border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
   }
+  /* Upcoming: same card, announced but not openable. Dimmed cover and copy,
+     a "Próximamente" badge over the cover, and no hover affordances. */
+  .case-card__soon { position: absolute; top: var(--space-6); left: var(--space-6); z-index: 1; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); background: var(--color-bg); border: var(--border-width) solid var(--color-border-strong); color: var(--color-text); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2px * var(--ui-scale)); text-transform: uppercase; }
+  /* Native dashed borders can't set dash length or gap, so the border is a
+     dashed SVG stroke used as a mask, painted with the theme's border color. */
+  .case-card[data-upcoming] { border-color: transparent; }
+  .case-card[data-upcoming]::after { content: ''; position: absolute; inset: calc(var(--border-width) * -1); border-radius: var(--radius-lg); background: var(--color-border); pointer-events: none; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' rx='10' fill='none' stroke='black' stroke-width='3' stroke-dasharray='8 8'/%3E%3C/svg%3E"); }
+  .case-card[data-upcoming] .case-card__cover { position: relative; }
+  .case-card[data-upcoming] :is(.case-card__image, .case-card__body) { opacity: .5; }
+  .case-card__pending { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--color-text-muted); font-size: calc(16px * var(--ui-scale)); font-weight: 600; }
   @media (max-width: 839px) { .case-card__body { padding: var(--space-6); } .case-card__title { font-size: calc(32px * var(--ui-scale)); } }
   @media (prefers-reduced-motion: reduce) { .case-card, .case-card__image { transition: none; } .case-card:is(:hover, :focus-within) .case-card__image { transform: none; } }
 </style>
