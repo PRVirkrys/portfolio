@@ -11,8 +11,9 @@ const Tag = href ? 'a' : 'span';
 const Icon = icon ? ICONS[icon] : undefined;
 ---
 
+{/* Lazy: the panels start hidden, so logos only load once one opens. */}
 <Tag class:list={['client-bubble', `client-bubble--${surface}`]} href={href} aria-label={href ? `Ver case study de ${name}` : `${name}, próximamente`} aria-disabled={href ? undefined : 'true'}>
-	{Icon ? <Icon /> : logos ? <span class:list={['client-bubble__hedgepilot', logoClass]}>{logos.map((asset) => <img src={asset} alt="" />)}</span> : logo ? <img class={logoClass} src={logo} alt="" /> : <span class="client-bubble__emoji" aria-hidden="true">🪼</span>}
+	{Icon ? <Icon /> : logos ? <span class:list={['client-bubble__hedgepilot', logoClass]}>{logos.map((asset) => <img src={asset} alt="" loading="lazy" />)}</span> : logo ? <img class={logoClass} src={logo} alt="" loading="lazy" /> : <span class="client-bubble__emoji" aria-hidden="true">🪼</span>}
 </Tag>
 
 <style>
