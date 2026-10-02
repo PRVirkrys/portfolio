@@ -36,6 +36,8 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
           {focuses.map(focus => <button type="button" data-filter="focus" data-value={focus} aria-pressed="false">{focus}</button>)}
         </div></fieldset>
       </div>
+      {/* Reveal the filters before first paint (they stay hidden without JS) so the grid doesn't jump down when the module script loads. */}
+      <script is:inline>document.querySelector('[data-work-filters]').hidden = false;</script>
       <noscript><p>Puedes explorar todos los casos. Activa JavaScript para usar los filtros.</p></noscript>
       <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><button type="button" class="work-page__clear" data-clear-filters hidden>Limpiar filtros</button><div class="work-view" role="group" aria-label="Vista" data-work-view><button type="button" data-view-option="grid" aria-pressed="true" aria-label="Cuadrícula"><LayoutGrid aria-hidden="true" /></button><button type="button" data-view-option="rows" aria-pressed="false" aria-label="Filas"><Rows3 aria-hidden="true" /></button></div></div>
       <div class="work-grid" data-work-grid data-view="grid">{cases.map((entry, index) => <CaseStudyCard entry={entry} eager={index < 2} />)}</div>

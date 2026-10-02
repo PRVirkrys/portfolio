@@ -31,7 +31,7 @@ import WorkBubble from './ui/WorkBubble.astro';
 <style>
 	.work-navigation { position: relative; z-index: 1; pointer-events: none; }
 	.work-navigation__control { position: relative; pointer-events: auto; }
-	.work-navigation__overlay { position: fixed; inset: 0; z-index: 45; pointer-events: none; background: linear-gradient(to top, rgba(16, 16, 31, 0.2), rgba(69, 69, 133, 0.2)); opacity: 0; transition: opacity var(--duration-medium) var(--ease-standard); }
+	.work-navigation__overlay { position: fixed; inset: 0; z-index: 45; pointer-events: none; background: var(--overlay-scrim); opacity: 0; transition: opacity var(--duration-medium) var(--ease-standard); }
 	.work-navigation__overlay.is-visible { opacity: 1; pointer-events: auto; }
 	:global(.header:has(.work-panel:not([hidden]))) { z-index: 50; }
 	@supports (backdrop-filter: blur(5.5px)) { .work-navigation__overlay.is-visible { backdrop-filter: blur(5.5px); } }

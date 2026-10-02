@@ -14,18 +14,13 @@ const { category = 'Research', size = 'sm', class: className } = Astro.props;
 <span class:list={['tag', className]} data-category={category} data-size={size}><slot /></span>
 
 <style>
-	.tag { --tag-color: #45bfe1; display: inline-flex; height: calc(28px * var(--ui-scale)); align-items: center; justify-content: center; padding-inline: var(--space-3); border: var(--border-width) solid var(--tag-color); border-radius: var(--radius-full); background: color-mix(in srgb, var(--tag-color) 12.2%, transparent); color: var(--tag-color); font-family: var(--typography-ui-link-md-font-family); font-size: calc(12px * var(--ui-scale)); font-weight: 500; line-height: calc(16px * var(--ui-scale)); white-space: nowrap; transition: background-color var(--duration-fast) var(--ease-standard); }
-	.tag[data-category='Strategy'] { --tag-color: #5b8cff; }
-	.tag[data-category='UX Design'] { --tag-color: #9d76fd; }
-	.tag[data-category='UI Design'] { --tag-color: #f06faf; }
-	.tag[data-category='Engineering'] { --tag-color: #3ed598; }
-	.tag[data-category='Design Systems'] { --tag-color: #ffcd2b; }
-	.tag[data-category='Branding'] { --tag-color: #ff8a4c; }
-	/* The dark-theme yellow is too washed out against light theme's near-white
-	   background — a darker gold keeps the same hue while staying legible. */
-	:global(html:not(.dark)) .tag[data-category='Design Systems'] { --tag-color: #c79c11; }
-	:global(html:not(.dark)) .tag[data-category='Engineering'] { --tag-color: #189d67; }
-	:global(html:not(.dark)) .tag[data-category='Branding'] { --tag-color: #d2601f; }
+	.tag { --tag-color: var(--tag-research); display: inline-flex; height: calc(28px * var(--ui-scale)); align-items: center; justify-content: center; padding-inline: var(--space-3); border: var(--border-width) solid var(--tag-color); border-radius: var(--radius-full); background: color-mix(in srgb, var(--tag-color) 12.2%, transparent); color: var(--tag-color); font-family: var(--typography-ui-link-md-font-family); font-size: calc(12px * var(--ui-scale)); font-weight: 500; line-height: calc(16px * var(--ui-scale)); white-space: nowrap; transition: background-color var(--duration-fast) var(--ease-standard); }
+	.tag[data-category='Strategy'] { --tag-color: var(--tag-strategy); }
+	.tag[data-category='UX Design'] { --tag-color: var(--tag-ux-design); }
+	.tag[data-category='UI Design'] { --tag-color: var(--tag-ui-design); }
+	.tag[data-category='Engineering'] { --tag-color: var(--tag-engineering); }
+	.tag[data-category='Design Systems'] { --tag-color: var(--tag-design-systems); }
+	.tag[data-category='Branding'] { --tag-color: var(--tag-branding); }
 	.tag[data-category='Neutral'] { --tag-color: var(--color-text-muted); background: transparent; }
 	/* Light theme's near-white page turns the color-mix tint into a faint
 	   halo around the border instead of a fill — flatten it to transparent

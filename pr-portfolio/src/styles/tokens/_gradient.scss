@@ -39,6 +39,9 @@ $button-border-gradient-primary-reversed: linear-gradient(#{$gradient-angle-reve
 // animation.
 $gradient-link-underline: linear-gradient(90deg, #f41e4f 0%, #b64f93 25%, #2bbafe 50%, #b64f93 75%, #f41e4f 100%);
 
+// Scrim behind modal-ish overlays (mobile menu, work navigation panel).
+$overlay-scrim: linear-gradient(to top, rgba(16, 16, 31, 0.2), rgba(69, 69, 133, 0.2));
+
 $gradient: (
 	'gradient-1': $gradient-1,
 	'gradient-2': $gradient-2,
@@ -48,4 +51,5 @@ $gradient: (
 	'gradient-interactive-stops': $gradient-interactive-stops,
 	'gradient-link-underline': $gradient-link-underline,
 	'card-accent-gradient-warm': $card-accent-gradient-warm,
+	'overlay-scrim': $overlay-scrim,
 );

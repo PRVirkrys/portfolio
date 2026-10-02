@@ -203,6 +203,24 @@ $project-card-border--dark: p.$color-neutral-700;
 $project-card-border-hover: p.$color-neutral-500; // aliasTo Border/Strong, both modes resolve dark (#767685)
 $project-card-border-hover--dark: p.$color-neutral-500;
 
+// Tag category colors (Tag.astro). Dark values are the Figma UI-kit hues;
+// light values are the same hues darkened to clear 4.5:1 against
+// --color-bg (#f4f4f5) for the 12px label.
+$tag-research: #177792;
+$tag-research--dark: #45bfe1;
+$tag-strategy: #1b5fff;
+$tag-strategy--dark: #5b8cff;
+$tag-ux-design: #7b46fc;
+$tag-ux-design--dark: #9d76fd;
+$tag-ui-design: #d11673;
+$tag-ui-design--dark: #f06faf;
+$tag-engineering: #1b7d56;
+$tag-engineering--dark: #3ed598;
+$tag-design-systems: #896900;
+$tag-design-systems--dark: #ffcd2b;
+$tag-branding: #c14300;
+$tag-branding--dark: #ff8a4c;
+
 $semantic-light: (
 	'color-bg': $color-bg,
 	'color-bg-subtle': $color-bg-subtle,
@@ -283,6 +301,13 @@ $semantic-light: (
 	'project-card-meta': $project-card-meta,
 	'project-card-border': $project-card-border,
 	'project-card-border-hover': $project-card-border-hover,
+	'tag-research': $tag-research,
+	'tag-strategy': $tag-strategy,
+	'tag-ux-design': $tag-ux-design,
+	'tag-ui-design': $tag-ui-design,
+	'tag-engineering': $tag-engineering,
+	'tag-design-systems': $tag-design-systems,
+	'tag-branding': $tag-branding,
 );
 
 $semantic-dark: (
@@ -365,4 +390,11 @@ $semantic-dark: (
 	'project-card-meta': $project-card-meta--dark,
 	'project-card-border': $project-card-border--dark,
 	'project-card-border-hover': $project-card-border-hover--dark,
+	'tag-research': $tag-research--dark,
+	'tag-strategy': $tag-strategy--dark,
+	'tag-ux-design': $tag-ux-design--dark,
+	'tag-ui-design': $tag-ui-design--dark,
+	'tag-engineering': $tag-engineering--dark,
+	'tag-design-systems': $tag-design-systems--dark,
+	'tag-branding': $tag-branding--dark,
 );
