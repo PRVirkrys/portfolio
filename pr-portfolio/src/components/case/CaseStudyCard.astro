@@ -128,8 +128,8 @@ const meta = [
     .case-card:not([data-upcoming]):is(:hover, :focus-within) .case-card__image { transform: scale(1.05); }
   }
   /* Rows view (toggle on /work/, desktop only): the whole cover on the left
-     at its own ratio, and a compact body sized to match it — role and
-     platform collapse into one inline line above the tags and CTA. Below
+     at its own ratio, and a slightly compact body (title, summary) that keeps
+     the grid card's structure — including the role / platform boxes. Below
      1280px the body can't fit beside the cover without cropping it, so rows
      stay stacked (one full-width card per row). If the body still runs a bit
      taller, the cover stretches and crops slightly instead of leaving a gap. */
@@ -139,12 +139,6 @@ const meta = [
     :global([data-view='rows']) .case-card__body { min-width: 0; padding: var(--space-6) var(--space-8); gap: var(--space-3); }
     :global([data-view='rows']) .case-card__title { font-size: calc(28px * var(--ui-scale)); }
     :global([data-view='rows']) .case-card__summary { font-size: calc(17px * var(--ui-scale)); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    :global([data-view='rows']) .case-card__details { gap: var(--space-3); padding-top: var(--space-3); border-top: var(--border-width) solid var(--color-border); }
-    :global([data-view='rows']) .case-card__meta { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); border: 0; padding: 0; }
-    :global([data-view='rows']) .case-card__meta > div + div { border-left: 0; padding-left: 0; }
-    :global([data-view='rows']) .case-card__meta > div + div dd::before { content: '·'; margin-right: var(--space-3); color: var(--color-text-muted); }
-    :global([data-view='rows']) .case-card__meta dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    :global([data-view='rows']) .case-card__meta dd { font-size: calc(14px * var(--ui-scale)); color: var(--color-text-secondary); }
   }
   /* Upcoming: same card, announced but not openable. Dimmed cover and copy,
      a "Próximamente" badge over the cover, and no hover affordances. */
