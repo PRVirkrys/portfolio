@@ -10,6 +10,7 @@ export type TagCategory =
   | "Engineering"
   | "Design Systems"
   | "Branding"
+  | "Publication"
   | "Neutral";
 
 export type Client = {
@@ -141,6 +142,12 @@ export const works: Work[] = [
         surface: "asset",
       },
       // No case studies yet; add `href` once each one is published.
+      {
+        name: "Estrategias gráficas",
+        logo: iconUrl("client-estrategias-graficas.png"),
+        logoClass: "client-bubble__logo--asset",
+        surface: "asset",
+      },
       {
         name: "BigPromo",
         logo: iconUrl("client-bigpromo.png"),
