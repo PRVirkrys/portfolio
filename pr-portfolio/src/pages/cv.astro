@@ -3,19 +3,258 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Prefooter from '../components/Prefooter.astro';
 import Header from '../components/Header.astro';
+import TextLink from '../components/ui/TextLink.astro';
+import { withBase } from '../lib/url';
+
+const external = { target: '_blank', rel: 'noopener noreferrer' };
 ---
 
+<!doctype html>
 <html lang="es" class="dark">
-	<head>
-		<BaseHead title="CV" description="Curriculum vitae" />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>CV</h1>
-			<p>Próximamente encontrarás aquí mi experiencia, formación y proyectos destacados.</p>
-		</main>
-		<Prefooter />
-		<Footer />
-	</body>
+  <head>
+    <BaseHead
+      title="CV · Paula Rodas · Senior Product Designer & Product Builder"
+      description="CV de Paula Rodas, Senior Product Designer & Product Builder con experiencia en UX Engineering, Design Systems, frontend y AI-Augmented Product Development."
+    />
+  </head>
+  <body>
+    <Header />
+    <main class="cv-page">
+      <header class="cv-hero">
+        <p class="cv-eyebrow">Curriculum vitae</p>
+        <h1>Paula Rodas Ruiz</h1>
+        <p class="cv-role">Senior Product Designer <span aria-hidden="true">·</span> Product Builder <span aria-hidden="true">·</span> UX Engineering</p>
+        <p class="cv-location">Barcelona, España · Remoto</p>
+        <nav class="cv-contact" aria-label="Contacto y perfiles profesionales">
+          <TextLink href="mailto:bypaularodas@gmail.com" showIcon={false}>Email</TextLink>
+          <TextLink href="tel:+34600060804" showIcon={false}>+34 600 060 804</TextLink>
+          <TextLink href="https://linkedin.com/in/paularodas" {...external}>LinkedIn</TextLink>
+          <TextLink href="https://github.com/PRVirkrys" {...external}>GitHub</TextLink>
+        </nav>
+      </header>
+
+      <div class="cv-layout">
+        <div class="cv-main">
+          <section class="cv-section" aria-labelledby="profile-title">
+            <h2 id="profile-title">Resumen profesional</h2>
+            <div class="cv-prose">
+              <p>Senior Product Designer y Product Builder con más de 9 años de experiencia en diseño digital, incluidos más de 7 años en UX/UI y diseño de producto. He liderado soluciones end-to-end para productos B2B SaaS, fintech y servicios digitales complejos: desde investigación y definición del problema hasta arquitectura de información, diseño de interacción, prototipado, sistemas de diseño y entrega preparada para desarrollo.</p>
+              <p>Combino pensamiento estratégico, diseño centrado en las personas y objetivos de negocio con experiencia práctica en frontend. He trabajado con HTML, CSS/Sass, JavaScript y entornos React y Angular, colaborando directamente con ingeniería para asegurar viabilidad técnica, consistencia y fidelidad entre diseño e implementación.</p>
+              <p>Integro IA a lo largo del desarrollo de producto para sintetizar investigación, detectar patrones, explorar alternativas, crear documentación y especificaciones, construir soluciones funcionales y apoyar programación, debugging, refactoring, automatización y QA. Actualmente curso un Máster en Full Stack Development para profundizar un perfil que conecta Product Design, Product Building y UX Engineering.</p>
+            </div>
+          </section>
+
+          <section class="cv-section" aria-labelledby="experience-title">
+            <h2 id="experience-title">Experiencia profesional</h2>
+
+            <article class="cv-entry">
+              <header class="cv-entry__header">
+                <div><h3>Lead Product Designer</h3><p>Pelt8 · Simple Swiss Sustainability Reporting</p></div>
+                <p class="cv-entry__meta">Remoto · Mar 2023 – May 2025</p>
+              </header>
+              <ul>
+                <li>Lideré la estrategia y el diseño end-to-end de un producto B2B SaaS para reporting ESG adoptado por más de 25 empresas, desde la definición de necesidades hasta la entrega y evolución de la interfaz.</li>
+                <li>Diseñé y mantuve un sistema de diseño escalable en Figma que aumentó la consistencia del producto y redujo aproximadamente un 30% el tiempo de handoff con desarrollo.</li>
+                <li>Convertí decisiones de diseño en user stories y especificaciones accionables, colaborando directamente con producto, negocio y desarrollo.</li>
+                <li>Implementé ajustes en componentes React con CSS-in-JS para resolver diferencias entre diseño e interfaz construida y asegurar fidelidad visual.</li>
+                <li>Construí una solución no-code con Tally y Make para lanzar una iniciativa fuera del roadmap sin consumir capacidad adicional de desarrollo, automatizando comunicaciones y seguimiento.</li>
+                <li>Diseñé y desarrollé la web principal en Framer y definí la identidad de marca, principios de diseño, brand book y templates reutilizables.</li>
+              </ul>
+              <TextLink href={withBase('/work/pelt8-caso-estudio')}>Ver case study de Pelt8</TextLink>
+            </article>
+
+            <article class="cv-entry">
+              <header class="cv-entry__header">
+                <div><h3>UX/UI Designer</h3><p>Fail Fast · Consultora</p></div>
+                <p class="cv-entry__meta">Barcelona · Mar 2021 – Mar 2023</p>
+              </header>
+              <ul>
+                <li>Gestioné de forma autónoma proyectos de UX end-to-end para clientes de distintos sectores, incluyendo investigación, arquitectura de información, definición funcional y relación directa con stakeholders.</li>
+                <li>Diseñé la experiencia completa de TimeChef, una aplicación móvil y web para reservas de catering corporativo, desde los flujos iniciales hasta el prototipo y la entrega a desarrollo.</li>
+                <li>Participé en la investigación UX y la arquitectura de información de La Meva Salut, el servicio digital de salud de Cataluña.</li>
+                <li>Rediseñé la Oferta Formativa de la UOC, transformando hallazgos de research en una arquitectura, navegación y jerarquía de contenidos implementadas y todavía reconocibles en la experiencia pública.</li>
+                <li>Rediseñé la web de Base Sport y definí la experiencia de Escola Salut, del Hospital Sant Joan de Déu.</li>
+                <li>Diseñé el prototipo del espacio digital Culers para FC Barcelona, traduciendo necesidades de negocio y usuario en flujos e interfaces.</li>
+              </ul>
+            </article>
+
+            <article class="cv-entry">
+              <header class="cv-entry__header">
+                <div><h3>UX/UI Designer & Front-end Developer</h3><p>LPA · Lucht Probst Associates</p></div>
+                <p class="cv-entry__meta">Barcelona · Oct 2018 – Dic 2020</p>
+              </header>
+              <ul>
+                <li>Diseñé productos financieros B2B para HedgePilot, WebDD —hoy Capmatix— e IBOR, trabajando con dashboards, tablas, árboles, datos financieros y flujos de alta complejidad.</li>
+                <li>Implementé interfaces con HTML, CSS y Sass dentro de Angular, trabajando de forma continua con desarrollo y adaptando patrones a restricciones técnicas como AG Grid.</li>
+                <li>Creé una librería de componentes reutilizables que aumentó la consistencia y redujo aproximadamente un 40% el tiempo necesario para crear nuevos mockups.</li>
+                <li>Planifiqué y facilité investigación UX remota mediante card sorting, tree testing y pruebas de usabilidad.</li>
+                <li>Asumí user stories completas —análisis, diseño, maquetación visual y handoff— y utilicé Figma o código como herramienta de diseño según cada funcionalidad.</li>
+              </ul>
+            </article>
+
+            <article class="cv-entry">
+              <header class="cv-entry__header">
+                <div><h3>Fundadora & Product/Web Designer</h3><p>BigPromo · Plataforma de promoción digital</p></div>
+                <p class="cv-entry__meta">Cuenca · Jul 2016 – Ene 2018</p>
+              </header>
+              <ul>
+                <li>Definí la propuesta de valor, la experiencia de usuario y el diseño de una plataforma digital de promociones.</li>
+                <li>Construí la plataforma web en WordPress con modificaciones personalizadas en PHP y diseñé la aplicación móvil para Android e iOS.</li>
+                <li>Creé la marca desde cero —naming, logotipo y guías visuales— y ejecuté la estrategia de lanzamiento, marketing y redes sociales.</li>
+              </ul>
+            </article>
+
+            <article class="cv-entry">
+              <header class="cv-entry__header">
+                <div><h3>Diseño Gráfico, Web y Marca</h3><p>EEC · Latermwebs</p></div>
+                <p class="cv-entry__meta">Ecuador · Feb 2016 – Ene 2018</p>
+              </header>
+              <ul>
+                <li>Diseñé identidades visuales, sitios web, piezas digitales y materiales de comunicación para clientes de distintos sectores.</li>
+                <li>Gestioné propuestas visuales, relación con clientes y entregables de diseño web y branding de punta a punta.</li>
+              </ul>
+            </article>
+          </section>
+
+          <section class="cv-section" aria-labelledby="projects-title">
+            <h2 id="projects-title">Proyectos técnicos seleccionados</h2>
+            <article class="cv-project">
+              <div><h3>MedusaWatch</h3><p>Proyecto personal · En producción</p></div>
+              <p>Diseñé y desarrollé una aplicación web responsive que estima el riesgo de medusas en playas de Mallorca mediante una lógica basada en viento y orientación de cada playa. Integré datos de Open-Meteo y OpenStreetMap Overpass, un mapa con Leaflet.js y un sistema de diseño responsive con tokens CSS.</p>
+              <p class="cv-stack"><strong>Tecnologías:</strong> JavaScript, HTML5, CSS3, APIs REST y Leaflet.js.</p>
+              <div class="cv-project__links">
+                <TextLink href={withBase('/work/medusawatch-caso-estudio')}>Ver case study</TextLink>
+                <TextLink href="https://prvirkrys.github.io/MedusaWatch/" {...external}>Ver producto</TextLink>
+                <TextLink href="https://github.com/PRVirkrys/MedusaWatch" {...external}>Repositorio</TextLink>
+              </div>
+            </article>
+            <article class="cv-project">
+              <div><h3>Mundial Predictions</h3><p>Proyecto personal full-stack</p></div>
+              <p>Diseñé y desarrollé un backend con Java, Spring Boot y MySQL —modelo de datos, autenticación, puntuación y ranking— e integré una API pública de resultados. Construí el frontend en Angular con Tailwind CSS y DaisyUI consumiendo la API REST propia.</p>
+              <div class="cv-project__links">
+                <TextLink href="https://github.com/PRVirkrys/mundial-predictions" {...external}>Backend</TextLink>
+                <TextLink href="https://github.com/PRVirkrys/mundial-predictions-FE" {...external}>Frontend</TextLink>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <aside class="cv-sidebar" aria-label="Competencias, formación e idiomas">
+          <section class="cv-side-section" aria-labelledby="skills-title">
+            <h2 id="skills-title">Competencias clave</h2>
+            <dl class="cv-skills">
+              <div><dt>Product Design y UX</dt><dd>Product Strategy, Discovery, UX Research, arquitectura de información, user flows, prototipado, interaction design, testing, responsive y accesibilidad.</dd></div>
+              <div><dt>Design Systems</dt><dd>Tokens, componentes, variantes, patrones, nomenclatura, documentación, gobernanza y handoff.</dd></div>
+              <div><dt>UX Engineering y Frontend</dt><dd>HTML5, CSS3, Sass, JavaScript, TypeScript, Angular, React, Vue, Tailwind CSS, APIs REST y estados de interfaz.</dd></div>
+              <div><dt>AI-Augmented Product Development</dt><dd>Research y síntesis, ideación, prompt engineering, documentación, soluciones funcionales, AI-assisted coding, debugging, refactoring, automatización y QA.</dd></div>
+              <div><dt>Full Stack — fundamentos</dt><dd>Java, Spring Boot, PHP, MySQL, MongoDB, APIs REST, modelado de datos, autenticación, CRUD y arquitectura cliente-servidor.</dd></div>
+              <div><dt>Herramientas</dt><dd>Figma, FigJam, Framer, Git, GitHub, VS Code, Postman, Browser DevTools, Make, Tally y Notion.</dd></div>
+            </dl>
+          </section>
+
+          <section class="cv-side-section" aria-labelledby="education-title">
+            <h2 id="education-title">Formación</h2>
+            <div class="cv-compact-entry"><h3>Máster en Full Stack Development</h3><p>Grupo Atrium · Online</p><p>2025–2026</p></div>
+            <div class="cv-compact-entry"><h3>Máster en Diseño y Dirección de Proyectos para Internet</h3><p>ELISAVA · Barcelona</p><p>2018–2019</p></div>
+            <div class="cv-compact-entry"><h3>Licenciatura en Diseño Gráfico</h3><p>Universidad del Azuay · Cuenca</p><p>2010–2015</p></div>
+          </section>
+
+          <section class="cv-side-section" aria-labelledby="recognition-title">
+            <h2 id="recognition-title">Certificaciones y reconocimientos</h2>
+            <div class="cv-prose cv-prose--compact">
+              <p><strong>UXCEL:</strong> UX Design Patterns, Accessibility, Color Psychology, Design Composition y UI Components · 2021–2025.</p>
+              <p><strong>Reconocimientos académicos:</strong> III Concurso de Reconocimiento a la Investigación Universitaria Estudiantil —Galardones SENESCYT— y Mérito Académico Manzaneidad · 2015.</p>
+            </div>
+          </section>
+
+          <section class="cv-side-section" aria-labelledby="languages-title">
+            <h2 id="languages-title">Idiomas</h2>
+            <ul class="cv-languages">
+              <li><strong>Español</strong><span>Nativo</span></li>
+              <li><strong>Inglés</strong><span>B2 · Intermedio alto</span></li>
+              <li><strong>Catalán</strong><span>Buena comprensión · Básico al hablar</span></li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <Prefooter />
+    <Footer />
+  </body>
 </html>
+
+<style>
+  .cv-page { box-sizing: border-box; width: 100%; max-width: calc(1616px * var(--ui-scale)); margin-inline: auto; padding: calc(var(--component-header-height-desktop) + var(--space-12)) var(--gutter-desktop) var(--space-24); }
+  .cv-hero { padding-bottom: var(--space-16); border-bottom: var(--border-width) solid var(--color-border-strong); }
+  .cv-eyebrow { margin: 0 0 var(--space-4); color: var(--color-action-ghost-text); font-family: var(--font-heading); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(3px * var(--ui-scale)); text-transform: uppercase; }
+  h1 { max-width: 12ch; margin: 0; font-family: var(--font-heading); font-size: clamp(calc(52px * var(--ui-scale)), 7vw, calc(104px * var(--ui-scale))); font-weight: 700; line-height: .95; letter-spacing: -.045em; }
+  .cv-role { margin: var(--space-6) 0 var(--space-2); color: var(--color-text); font-family: var(--font-heading); font-size: clamp(calc(22px * var(--ui-scale)), 2.4vw, calc(34px * var(--ui-scale))); font-weight: 600; line-height: 1.25; letter-spacing: -.015em; }
+  .cv-role span { color: var(--color-action-ghost-text); }
+  .cv-location { margin: 0; color: var(--color-text-secondary); }
+  .cv-contact { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); margin-top: var(--space-6); }
+  .cv-layout { display: grid; grid-template-columns: minmax(0, 8fr) minmax(calc(280px * var(--ui-scale)), 4fr); gap: calc(96px * var(--ui-scale)); align-items: start; }
+  .cv-section { padding-block: calc(88px * var(--ui-scale)); border-bottom: var(--border-width) solid var(--color-border); }
+  .cv-section:last-child { border-bottom: 0; }
+  .cv-section > h2, .cv-side-section > h2 { margin: 0 0 var(--space-8); font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 700; line-height: 1.3; letter-spacing: calc(2.5px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
+  .cv-prose { max-width: calc(820px * var(--ui-scale)); }
+  .cv-prose p { margin: 0 0 var(--space-6); font-size: calc(19px * var(--ui-scale)); line-height: 1.65; color: color-mix(in srgb, var(--color-text) 90%, transparent); }
+  .cv-prose p:last-child { margin-bottom: 0; }
+  .cv-entry { padding-block: var(--space-10); border-top: var(--border-width) solid var(--color-border); }
+  .cv-entry:first-of-type { padding-top: 0; border-top: 0; }
+  .cv-entry__header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4) var(--space-8); align-items: baseline; margin-bottom: var(--space-5); }
+  .cv-entry h3, .cv-project h3, .cv-compact-entry h3 { margin: 0; font-family: var(--font-heading); font-weight: 650; letter-spacing: -.01em; }
+  .cv-entry h3 { font-size: calc(26px * var(--ui-scale)); line-height: 1.25; }
+  .cv-entry__header p { margin: var(--space-1) 0 0; color: var(--color-text-secondary); }
+  .cv-entry__meta { font-size: calc(14px * var(--ui-scale)); white-space: nowrap; }
+  .cv-entry ul { display: grid; gap: var(--space-3); margin: 0 0 var(--space-5); padding-left: var(--space-6); }
+  .cv-entry li { padding-left: var(--space-1); line-height: 1.55; color: color-mix(in srgb, var(--color-text) 90%, transparent); }
+  .cv-project { display: grid; gap: var(--space-4); padding: var(--space-8); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-bg-subtle); }
+  .cv-project + .cv-project { margin-top: var(--space-6); }
+  .cv-project h3 { font-size: calc(24px * var(--ui-scale)); }
+  .cv-project p { margin: 0; line-height: 1.55; color: var(--color-text-secondary); }
+  .cv-project > div > p { margin-top: var(--space-1); font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
+  .cv-project .cv-stack { color: var(--color-text); }
+  .cv-project__links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
+  .cv-sidebar { position: sticky; top: calc(var(--component-header-height-desktop) + var(--space-8)); padding-top: calc(88px * var(--ui-scale)); }
+  .cv-side-section { padding-bottom: var(--space-12); margin-bottom: var(--space-12); border-bottom: var(--border-width) solid var(--color-border); }
+  .cv-side-section:last-child { border-bottom: 0; }
+  .cv-side-section > h2 { margin-bottom: var(--space-6); }
+  .cv-skills { display: grid; gap: var(--space-6); margin: 0; }
+  .cv-skills div { display: grid; gap: var(--space-2); }
+  .cv-skills dt { font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 700; line-height: 1.35; }
+  .cv-skills dd { margin: 0; color: var(--color-text-secondary); font-size: calc(14px * var(--ui-scale)); line-height: 1.55; }
+  .cv-compact-entry + .cv-compact-entry { margin-top: var(--space-6); }
+  .cv-compact-entry h3 { font-size: calc(17px * var(--ui-scale)); line-height: 1.4; }
+  .cv-compact-entry p { margin: var(--space-1) 0 0; color: var(--color-text-secondary); font-size: calc(14px * var(--ui-scale)); line-height: 1.45; }
+  .cv-prose--compact p { font-size: calc(14px * var(--ui-scale)); line-height: 1.55; }
+  .cv-languages { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+  .cv-languages li { display: grid; gap: var(--space-1); }
+  .cv-languages span { color: var(--color-text-secondary); font-size: calc(14px * var(--ui-scale)); }
+  @media (max-width: 1080px) {
+    .cv-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .cv-sidebar { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-10); padding-top: calc(72px * var(--ui-scale)); border-top: var(--border-width) solid var(--color-border); }
+    .cv-side-section { margin: 0; }
+  }
+  @media (max-width: 839px) {
+    .cv-page { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-16); }
+    .cv-hero { padding-bottom: var(--space-12); }
+    .cv-section { padding-block: calc(64px * var(--ui-scale)); }
+    .cv-entry__header { grid-template-columns: minmax(0, 1fr); }
+    .cv-entry__meta { white-space: normal; }
+    .cv-sidebar { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media print {
+    :global(body) { background: white; color: black; font-size: 10pt; }
+    :global(header), :global(.prefooter), :global(footer) { display: none !important; }
+    .cv-page { max-width: none; padding: 0; }
+    .cv-hero { padding-bottom: 18pt; }
+    h1 { font-size: 34pt; }
+    .cv-role { font-size: 15pt; }
+    .cv-layout { grid-template-columns: 2fr 1fr; gap: 28pt; }
+    .cv-section { padding-block: 24pt; }
+    .cv-sidebar { position: static; display: block; padding-top: 24pt; }
+    .cv-side-section, .cv-entry, .cv-project { break-inside: avoid; }
+    .cv-project { background: transparent; }
+    :global(a) { color: black; }
+  }
+</style>
