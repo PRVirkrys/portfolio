@@ -126,8 +126,9 @@ const { href, size = 'md', showIcon = true, disabled = false, class: className, 
 		display: block;
 		/* One thickness in every state (the hover weight): growing it on
 		   hover pushed the link's box and made it jump. Hover is signalled by
-		   the gradient sliding instead. */
-		height: calc(2px * var(--ui-scale));
+		   the gradient sliding instead. Same weight as the primary Button's
+		   gradient border (--border-width). */
+		height: var(--border-width);
 		background-image: var(--gradient-link-underline);
 		background-repeat: repeat-x;
 		background-size: 200% 100%;
