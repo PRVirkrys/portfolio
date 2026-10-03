@@ -149,7 +149,6 @@ const meta = [
   /* Dimmed like the rest of the card, except the material block: opacity
      can't be undone on a child, so it goes on each part, not the whole body. */
   .case-card[data-upcoming] :is(.case-card__image, .case-card__body > *:not(.case-card__details), .case-card__details > *:not(.case-card__materials)) { opacity: .5; }
-  .case-card[data-upcoming] .case-card__image { filter: grayscale(.5); }
   .case-card__materials { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); padding-top: var(--space-6); border-top: var(--border-width) solid var(--color-border); }
   .case-card__materials-lead { margin: 0; color: var(--color-text-secondary); font-size: calc(16px * var(--ui-scale)); font-weight: 600; }
   .case-card__materials-links { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
