@@ -9,7 +9,7 @@ import CaseStudyCard from '../../components/case/CaseStudyCard.astro';
 import { workCompanies } from '../../data/work-companies';
 import { caseFocus, focusCategories } from '../../lib/work-filters';
 import { withBase } from '../../lib/url';
-import { LayoutGrid, Rows3 } from '@lucide/astro';
+import { FilterX, LayoutGrid, Rows3 } from '@lucide/astro';
 
 const cases = (await getCollection('blog', ({ data }) => data.type === 'case-study')).sort((a, b) => Number(!!a.data.upcoming) - Number(!!b.data.upcoming) || b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const companies = workCompanies.filter(company => cases.some(entry => entry.data.company === company.id));
@@ -39,7 +39,7 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
       {/* Reveal the filters before first paint (they stay hidden without JS) so the grid doesn't jump down when the module script loads. */}
       <script is:inline>document.querySelector('[data-work-filters]').hidden = false;</script>
       <noscript><p>Puedes explorar todos los casos. Activa JavaScript para usar los filtros.</p></noscript>
-      <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><button type="button" class="work-page__clear" data-clear-filters hidden>Limpiar filtros</button><div class="work-view" role="group" aria-label="Vista" data-work-view><button type="button" data-view-option="grid" aria-pressed="true" aria-label="Cuadrícula"><LayoutGrid aria-hidden="true" /></button><button type="button" data-view-option="rows" aria-pressed="false" aria-label="Filas"><Rows3 aria-hidden="true" /></button></div></div>
+      <div class="work-page__results"><p data-work-count role="status" aria-live="polite">{cases.length} case studies</p><Button variant="ghost" class="work-page__clear" data-clear-filters hidden showTrailingIcon={false}><FilterX slot="icon-leading" />Limpiar filtros</Button><div class="work-view" role="group" aria-label="Vista" data-work-view><button type="button" data-view-option="grid" aria-pressed="true" aria-label="Cuadrícula"><LayoutGrid aria-hidden="true" /></button><button type="button" data-view-option="rows" aria-pressed="false" aria-label="Filas"><Rows3 aria-hidden="true" /></button></div></div>
       <div class="work-grid" data-work-grid data-view="grid">{cases.map((entry, index) => <CaseStudyCard entry={entry} eager={index < 2} />)}</div>
       {/* Restore the saved view before first paint so rows don't flash as a grid. */}
       <script is:inline>try { if (localStorage.getItem('work-view') === 'rows') document.querySelector('[data-work-grid]').dataset.view = 'rows'; } catch {}</script>
@@ -86,7 +86,6 @@ const focuses = focusCategories.filter(focus => cases.some(entry => caseFocus(en
   button:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
   .work-page__results { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-block: var(--space-6); }
   .work-page__results p { margin: 0; font-size: calc(16px * var(--ui-scale)); letter-spacing: 0; color: var(--color-text-muted); }
-  .work-page__clear { background: transparent; border: 0; padding: var(--space-2); color: var(--color-action-ghost-text); font: inherit; font-size: calc(16px * var(--ui-scale)); text-decoration: underline; cursor: pointer; }
   .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
   .work-grid[data-view='rows'] { grid-template-columns: minmax(0, 1fr); }
   .work-view { display: flex; gap: var(--space-1); margin-left: auto; padding: var(--space-1); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); }
