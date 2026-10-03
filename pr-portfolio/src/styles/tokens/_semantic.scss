@@ -220,6 +220,8 @@ $tag-design-systems: #896900;
 $tag-design-systems--dark: #ffcd2b;
 $tag-branding: #c14300;
 $tag-branding--dark: #ff8a4c;
+$tag-publication: #de0710;
+$tag-publication--dark: p.$color-brand-red-500;
 
 $semantic-light: (
 	'color-bg': $color-bg,
@@ -308,6 +310,7 @@ $semantic-light: (
 	'tag-engineering': $tag-engineering,
 	'tag-design-systems': $tag-design-systems,
 	'tag-branding': $tag-branding,
+	'tag-publication': $tag-publication,
 );
 
 $semantic-dark: (
@@ -397,4 +400,5 @@ $semantic-dark: (
 	'tag-engineering': $tag-engineering--dark,
 	'tag-design-systems': $tag-design-systems--dark,
 	'tag-branding': $tag-branding--dark,
+	'tag-publication': $tag-publication--dark,
 );

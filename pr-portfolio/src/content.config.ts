@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { workCompanyIds } from './data/work-companies';
 
-const tagCategory = z.enum(['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems', 'Branding', 'Neutral']);
+const tagCategory = z.enum(['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems', 'Branding', 'Publication', 'Neutral']);
 const focusCategory = tagCategory.exclude(['Neutral']);
 
 const blog = defineCollection({
@@ -30,6 +30,12 @@ const blog = defineCollection({
 			// Announced but not written yet: shows a disabled card on /work/ and
 			// gets no page, RSS item or journey link. The MDX body stays empty.
 			upcoming: z.boolean().optional(),
+			// Upcoming only: the case is being written up (badge «Case study en
+			// preparación» instead of «Próximamente»), and `materials` lists what
+			// can already be seen elsewhere (publications, Behance…). The card links
+			// it from its cover badge and from a «Mientras tanto, puedes ver:» footer.
+			inPreparation: z.boolean().optional(),
+			materials: z.array(z.object({ label: z.string(), href: z.string().url() })).optional(),
 			// Work filters. Optional: defaults to the tag categories, so only set it
 			// when the case covers a discipline its (max 3–4) visible tags don't show.
 			focus: z.array(focusCategory).optional(),

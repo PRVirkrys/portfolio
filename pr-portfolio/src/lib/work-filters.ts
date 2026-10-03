@@ -1,6 +1,6 @@
 import { workCompanyIds } from '../data/work-companies.ts';
 
-export const focusCategories = ['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems', 'Branding'] as const;
+export const focusCategories = ['Research', 'Strategy', 'UX Design', 'UI Design', 'Engineering', 'Design Systems', 'Branding', 'Publication'] as const;
 export type WorkFilters = { company: string; focus: string };
 type FocusData = { focus?: string[]; tags?: { category: string }[] };
 type FilterableEntry = { data: { type: string; company?: string } & FocusData };

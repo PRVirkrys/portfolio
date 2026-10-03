@@ -7,12 +7,17 @@ import { getWorkCompany } from '../../data/work-companies';
 import { withBase } from '../../lib/url';
 import { caseFocus } from '../../lib/work-filters';
 import { readingMinutes } from '../../lib/reading-time';
-import { Clock, Hourglass } from '@lucide/astro';
+import Button from '../ui/Button.astro';
+import { ArrowUpRight, ChevronDown, Clock, Hourglass } from '@lucide/astro';
 
 interface Props { entry: CollectionEntry<'blog'>; eager?: boolean }
 const { entry, eager = false } = Astro.props;
 const { data } = entry;
 const upcoming = data.upcoming ?? false;
+const upcomingLabel = data.inPreparation ? 'Case study en preparación' : 'Próximamente';
+// Material already published elsewhere (book, Behance…), linked from the
+// cover badge and the footer while the case study itself isn't written.
+const materials = upcoming ? data.materials ?? [] : [];
 const company = getWorkCompany(data.company);
 const titleId = `card-title-${entry.id}`;
 const context = data.cardContext ?? [company?.name, data.customer].filter(Boolean).join(' · ');
@@ -23,8 +28,27 @@ const meta = [
 ---
 
 <article class="case-card" data-case-card data-upcoming={upcoming || undefined} data-company={data.company ?? ''} data-focus={JSON.stringify(caseFocus(data))}>
+  {/* Badges sit on the card, over the cover's corner, not inside the cover:
+      the cover clips its overflow, which would cut the materials menu. The
+      material badge is the link itself (one item) or opens a menu (several). */}
+  {upcoming && data.heroImage && (
+    <div class="case-card__badges">
+      <span class="case-card__soon">{upcomingLabel}</span>
+      {materials.length === 1 && (
+        <a class="case-card__soon case-card__has-material" href={materials[0].href} target="_blank" rel="noopener noreferrer">Material disponible<ArrowUpRight class="case-card__badge-icon" aria-hidden="true" /><span class="sr-only"> ({materials[0].label}, se abre en otra pestaña)</span></a>
+      )}
+      {materials.length > 1 && (
+        <details class="case-card__menu" data-material-menu>
+          <summary class="case-card__soon case-card__has-material">Material disponible<ChevronDown class="case-card__badge-icon case-card__chevron" aria-hidden="true" /></summary>
+          <ul class="case-card__menu-list">
+            {materials.map(link => <li><a href={link.href} target="_blank" rel="noopener noreferrer"><span>{link.label}</span><ArrowUpRight class="case-card__badge-icon" aria-hidden="true" /></a></li>)}
+          </ul>
+        </details>
+      )}
+    </div>
+  )}
   <div class="case-card__content">
-    {data.heroImage && <div class="case-card__cover">{upcoming && <span class="case-card__soon">Próximamente</span>}<Image src={data.heroImage} alt="" widths={[640, 960, 1280, 1600, 2160]} sizes="(max-width: 839px) 100vw, 55vw" quality={90} loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
+    {data.heroImage && <div class="case-card__cover"><Image src={data.heroImage} alt="" widths={[640, 960, 1280, 1600, 2160]} sizes="(max-width: 839px) 100vw, 55vw" quality={90} loading={eager ? 'eager' : 'lazy'} class="case-card__image" /></div>}
     <div class="case-card__body">
       <div class="case-card__eyebrow">
         {context && <p class="case-card__context">{context}</p>}
@@ -34,21 +58,46 @@ const meta = [
       {(data.cardSummary || data.description) && <p class="case-card__summary">{data.cardSummary ?? data.description}</p>}
       <div class="case-card__details">
         {meta.length > 0 && <dl class="case-card__meta">{meta.map(row => <div><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>}
-        {data.tags?.length && <div class="case-card__tags">{data.tags.slice(0, 3).map(tag => <Tag category={tag.category}>{tag.label}</Tag>)}</div>}
+        {data.tags?.length && <div class="case-card__tags">{data.tags.slice(0, 4).map(tag => <Tag category={tag.category}>{tag.label}</Tag>)}</div>}
+        {materials.length > 0 && (
+          <div class="case-card__materials">
+            <p class="case-card__materials-lead">Mientras tanto, puedes ver:</p>
+            <div class="case-card__materials-links">
+              {materials.map(link => <Button variant="secondary" href={link.href} target="_blank" rel="noopener noreferrer" showLeadingIcon={false}>{link.label}<ArrowUpRight slot="icon-trailing" /></Button>)}
+            </div>
+          </div>
+        )}
         {upcoming
-          ? <p class="case-card__pending"><Hourglass class="case-card__reading-icon" aria-hidden="true" />Próximamente</p>
+          ? materials.length === 0 && <p class="case-card__pending"><Hourglass class="case-card__reading-icon" aria-hidden="true" />{upcomingLabel}</p>
           : <TextLink class="case-card__cta" href={withBase(`/work/${entry.id}/`)} size="lg" aria-labelledby={titleId} data-case-link>Ver case study</TextLink>}
       </div>
     </div>
   </div>
 </article>
 
+<script>
+  // Material badge menu (<details>): close on outside click or Escape, and
+  // keep only one open at a time.
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>('[data-material-menu]')];
+  menus.forEach(menu => menu.addEventListener('toggle', () => {
+    if (menu.open) menus.forEach(other => { if (other !== menu) other.open = false; });
+  }));
+  document.addEventListener('click', event => {
+    for (const menu of menus) if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    const open = menus.find(menu => menu.open);
+    if (open) { open.open = false; open.querySelector('summary')?.focus(); }
+  });
+</script>
+
 <style>
   .case-card { position: relative; min-width: 0; border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-subtle); transition: border-color var(--duration-fast) var(--ease-standard); }
   .case-card[hidden] { display: none; }
   .case-card:hover { border-color: var(--sidebar-item-text-active); }
   .case-card__content { height: 100%; display: flex; flex-direction: column; border-radius: inherit; }
-  .case-card:has(a:focus-visible) { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  .case-card:not([data-upcoming]):has(a:focus-visible) { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
   /* Full-bleed cover at the heroes' own ratio (3386×1616), so the whole image
      shows edge to edge with no padding or letterboxing. */
   .case-card__cover { aspect-ratio: 3386 / 1616; background: var(--color-bg); border-radius: calc(var(--radius-lg) - var(--border-width)) calc(var(--radius-lg) - var(--border-width)) 0 0; overflow: hidden; }
@@ -99,13 +148,30 @@ const meta = [
   }
   /* Upcoming: same card, announced but not openable. Dimmed cover and copy,
      a "Próximamente" badge over the cover, and no hover affordances. */
-  .case-card__soon { position: absolute; top: var(--space-4); left: var(--space-4); z-index: 1; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); background: var(--color-bg); border: var(--border-width) solid var(--color-border-strong); color: var(--color-text); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2px * var(--ui-scale)); text-transform: uppercase; }
+  .case-card__soon { padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); background: var(--color-bg); border: var(--border-width) solid var(--color-border-strong); color: var(--color-text); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2px * var(--ui-scale)); text-transform: uppercase; }
   /* Native dashed borders can't set dash length or gap, so the border is a
      dashed SVG stroke used as a mask, painted with the theme's border color. */
   .case-card[data-upcoming] { border-color: transparent; }
   .case-card[data-upcoming]::after { content: ''; position: absolute; inset: calc(var(--border-width) * -1); border-radius: var(--radius-lg); background: var(--color-border); pointer-events: none; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' rx='10' fill='none' stroke='black' stroke-width='3' stroke-dasharray='8 8'/%3E%3C/svg%3E"); }
-  .case-card[data-upcoming] .case-card__cover { position: relative; }
-  .case-card[data-upcoming] :is(.case-card__image, .case-card__body) { opacity: .5; }
+  /* Dimmed like the rest of the card, except the material block: opacity
+     can't be undone on a child, so it goes on each part, not the whole body. */
+  .case-card[data-upcoming] :is(.case-card__image, .case-card__body > *:not(.case-card__details), .case-card__details > *:not(.case-card__materials)) { opacity: .5; }
+  .case-card__materials { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); padding-top: var(--space-6); border-top: var(--border-width) solid var(--color-border); }
+  .case-card__materials-lead { margin: 0; color: var(--color-text-secondary); font-size: calc(16px * var(--ui-scale)); font-weight: 600; }
+  .case-card__materials-links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .case-card__badges { position: absolute; top: var(--space-4); left: var(--space-4); z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+  .case-card__has-material { display: inline-flex; align-items: center; gap: var(--space-1); text-decoration: none; cursor: pointer; }
+  .case-card__badge-icon { width: calc(14px * var(--ui-scale)); height: calc(14px * var(--ui-scale)); flex-shrink: 0; }
+  .case-card__menu { position: relative; }
+  .case-card__menu summary { list-style: none; }
+  .case-card__menu summary::-webkit-details-marker { display: none; }
+  .case-card__menu[open] .case-card__chevron { transform: rotate(180deg); }
+  .case-card__chevron { transition: transform 200ms var(--ease-standard); }
+  .case-card__menu-list { position: absolute; top: calc(100% + var(--space-2)); left: 0; z-index: 3; width: max-content; max-width: calc(100vw - 4 * var(--space-6)); margin: 0; padding: var(--space-2); list-style: none; background: var(--color-bg); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--elevation-floating); }
+  .case-card__menu-list a { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3); border-radius: var(--radius-md); color: var(--color-text); font-size: calc(15px * var(--ui-scale)); font-weight: 500; text-decoration: none; }
+  .case-card__menu-list a:hover { background: var(--color-action-ghost-bg-hover); }
+  :is(.case-card__menu summary, .case-card__menu-list a, a.case-card__has-material):focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  .case-card__has-material { background: var(--color-action); color: var(--color-action-text); border-color: transparent; }
   .case-card__pending { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--color-text-muted); font-size: calc(16px * var(--ui-scale)); font-weight: 600; }
   @media (max-width: 839px) { .case-card__body { padding: var(--space-6); } .case-card__title { font-size: calc(32px * var(--ui-scale)); } }
   @media (prefers-reduced-motion: reduce) { .case-card, .case-card__image { transition: none; } .case-card:is(:hover, :focus-within) .case-card__image { transform: none; } }
