@@ -1,0 +1,303 @@
+---
+// DEMO — alternative CV layout built from the patterns in the reference
+// research (years column, 2–3 impact bullets, tool tags per role, collapsed
+// older roles, Design | Code skills). Not linked, noindex, out of the
+// sitemap. Delete once a layout is chosen.
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Tag from '../../components/ui/Tag.astro';
+import TextLink from '../../components/ui/TextLink.astro';
+import { withBase } from '../../lib/url';
+
+const external = { target: '_blank', rel: 'noopener noreferrer' };
+const caseUrl = (slug: string) => withBase(`/work/${slug}/`);
+
+const roles = [
+  {
+    years: '2023 — 2025', role: 'Lead Product Designer', company: 'Pelt8', detail: 'Simple Swiss Sustainability Reporting · Remoto',
+    bullets: [
+      'Lideré la estrategia y el diseño end-to-end de un producto B2B SaaS de reporting ESG adoptado por <strong>más de 25 empresas</strong>.',
+      'Diseñé y mantuve un sistema de diseño escalable en Figma que redujo aproximadamente <strong>un 30% el tiempo de handoff</strong> con desarrollo.',
+      'Implementé ajustes en componentes React con CSS-in-JS para asegurar la fidelidad entre diseño e interfaz construida.',
+    ],
+    tags: ['B2B SaaS', 'Figma', 'Design system', 'React', 'Framer', 'Tally + Make'],
+    cases: [{ label: 'Pelt8', slug: 'pelt8-caso-estudio' }],
+  },
+  {
+    years: '2021 — 2023', role: 'UX/UI Designer', company: 'Fail Fast', detail: 'Consultora · Barcelona',
+    bullets: [
+      'Gestioné de forma autónoma proyectos de UX end-to-end para clientes de salud, educación, deporte y servicios corporativos.',
+      'Rediseñé la Oferta Formativa de la UOC: arquitectura, navegación y jerarquía de contenidos <strong>implementadas y todavía visibles</strong> en la experiencia pública.',
+      'Diseñé la experiencia completa de TimeChef, app móvil y web de reservas de catering corporativo, desde los flujos hasta la entrega a desarrollo.',
+    ],
+    tags: ['UX Research', 'Arquitectura de información', 'Prototipado', 'Figma'],
+    cases: [{ label: 'UOC', slug: 'uoc-catalogo-experiencia-decision' }, { label: 'HSJD', slug: 'hsjd-caso-estudio' }, { label: 'Base', slug: 'base-caso-estudio' }],
+  },
+  {
+    years: '2018 — 2020', role: 'UX/UI Designer & Front-end Developer', company: 'LPA', detail: 'Lucht Probst Associates · Barcelona',
+    bullets: [
+      'Diseñé productos financieros B2B (HedgePilot, Capmatix, IBOR) con dashboards, tablas y flujos de alta complejidad.',
+      'Implementé interfaces con HTML, CSS y Sass dentro de Angular, adaptando patrones a restricciones técnicas como AG Grid.',
+      'Creé una librería de componentes que redujo aproximadamente <strong>un 40% el tiempo</strong> de creación de nuevos mockups.',
+    ],
+    tags: ['Fintech B2B', 'Angular', 'Sass', 'Figma', 'Card sorting'],
+    cases: [{ label: 'LPA', slug: 'lpa-caso-estudio' }],
+  },
+];
+
+const earlier = [
+  { years: '2016 — 2018', role: 'Fundadora & Product/Web Designer', company: 'BigPromo', detail: 'Plataforma de promociones · Cuenca', text: 'Propuesta de valor, experiencia y marca; plataforma en WordPress + PHP y app móvil para Android e iOS.' },
+  { years: '2016 — 2018', role: 'Diseño Gráfico, Web y Marca', company: 'EEC · Latermwebs', detail: 'Ecuador', text: 'Identidades visuales, sitios web y piezas digitales para clientes de distintos sectores.' },
+];
+
+const projects = [
+  {
+    name: 'MedusaWatch', meta: 'Proyecto personal · En producción',
+    text: 'App web responsive que estima el riesgo de medusas en playas de Mallorca a partir del viento y la orientación de cada playa.',
+    tags: ['JavaScript', 'APIs REST', 'Leaflet.js', 'Tokens CSS'],
+    links: [{ label: 'Case study', href: caseUrl('medusawatch-caso-estudio') }, { label: 'Producto', href: 'https://prvirkrys.github.io/MedusaWatch/', ...external }, { label: 'Repositorio', href: 'https://github.com/PRVirkrys/MedusaWatch', ...external }],
+  },
+  {
+    name: 'Mundial Predictions', meta: 'Proyecto personal full-stack',
+    text: 'Backend con modelo de datos, autenticación, puntuación y ranking, y frontend que consume la API REST propia.',
+    tags: ['Java', 'Spring Boot', 'MySQL', 'Angular', 'Tailwind'],
+    links: [{ label: 'Backend', href: 'https://github.com/PRVirkrys/mundial-predictions', ...external }, { label: 'Frontend', href: 'https://github.com/PRVirkrys/mundial-predictions-FE', ...external }],
+  },
+];
+
+const skills = {
+  design: [
+    { title: 'Product Design y UX', text: 'Product strategy, discovery, UX research, arquitectura de información, user flows, prototipado, testing y accesibilidad.' },
+    { title: 'Design Systems', text: 'Tokens, componentes, variantes, documentación, gobernanza y handoff.' },
+  ],
+  code: [
+    { title: 'UX Engineering y Frontend', text: 'HTML, CSS/Sass, JavaScript, TypeScript, Angular, React, Vue, Tailwind y APIs REST.' },
+    { title: 'Full Stack — fundamentos', text: 'Java, Spring Boot, PHP, MySQL, MongoDB, modelado de datos y autenticación.' },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <BaseHead title="Demo · CV" description="Demo de una nueva estructura para el CV de Paula Rodas." />
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body>
+    <Header />
+    <main class="cvd">
+      <p class="cvd-demo-note">Demo de estructura · <a href={withBase('/cv/')}>ver el CV actual</a></p>
+
+      <header class="cvd-hero">
+        <div>
+          <h1>Paula Rodas Ruiz</h1>
+          <p class="cvd-role">Senior Product Designer&nbsp;<span aria-hidden="true">·</span> Product Builder&nbsp;<span aria-hidden="true">·</span> UX Engineering</p>
+          <p class="cvd-place">Barcelona, España · CET · Remoto</p>
+        </div>
+        <div class="cvd-contact">
+          <nav aria-label="Contacto y perfiles">
+            <TextLink href="mailto:bypaularodas@gmail.com" showIcon={false}>Email</TextLink>
+            <TextLink href="tel:+34600060804" showIcon={false}>+34 600 060 804</TextLink>
+            <TextLink href="https://linkedin.com/in/paularodas" {...external}>LinkedIn</TextLink>
+            <TextLink href="https://github.com/PRVirkrys" {...external}>GitHub</TextLink>
+          </nav>
+          <button type="button" class="cvd-print" data-print>Guardar como PDF</button>
+        </div>
+      </header>
+
+      <section class="cvd-section cvd-summary" aria-labelledby="summary-title">
+        <h2 id="summary-title">Resumen</h2>
+        <p>Senior Product Designer y Product Builder con más de 9 años en diseño digital, 7 de ellos en UX/UI y producto. Lidero soluciones end-to-end para B2B SaaS, fintech y servicios digitales complejos: de la investigación a los sistemas de diseño y la entrega a desarrollo. Combino diseño con frontend e integro IA en todo el proceso; actualmente curso un Máster en Full Stack Development.</p>
+      </section>
+
+      <section class="cvd-section" aria-labelledby="experience-title">
+        <h2 id="experience-title">Experiencia</h2>
+        <ol class="cvd-timeline">
+          {roles.map(item => (
+            <li class="cvd-row">
+              <p class="cvd-years">{item.years}</p>
+              <article class="cvd-entry">
+                <h3>{item.role} <span class="cvd-at">· {item.company}</span></h3>
+                <p class="cvd-detail">{item.detail}</p>
+                <ul class="cvd-bullets">{item.bullets.map(text => <li set:html={text} />)}</ul>
+                <ul class="cvd-tags" aria-label="Herramientas y ámbitos">{item.tags.map(tag => <li><Tag category="Neutral">{tag}</Tag></li>)}</ul>
+                {item.cases.length > 0 && (
+                  <p class="cvd-cases"><span>Case studies</span>{item.cases.map(c => <TextLink href={caseUrl(c.slug)}>{c.label}</TextLink>)}</p>
+                )}
+              </article>
+            </li>
+          ))}
+        </ol>
+        <details class="cvd-earlier">
+          <summary>Experiencia anterior <span class="cvd-count">· 2 puestos · 2016 — 2018</span></summary>
+          <ol class="cvd-timeline cvd-timeline--compact">
+            {earlier.map(item => (
+              <li class="cvd-row">
+                <p class="cvd-years">{item.years}</p>
+                <article class="cvd-entry">
+                  <h3>{item.role} <span class="cvd-at">· {item.company}</span></h3>
+                  <p class="cvd-detail">{item.detail}</p>
+                  <p class="cvd-text">{item.text}</p>
+                </article>
+              </li>
+            ))}
+          </ol>
+        </details>
+      </section>
+
+      <section class="cvd-section" aria-labelledby="projects-title">
+        <h2 id="projects-title">Proyectos técnicos</h2>
+        <div class="cvd-projects">
+          {projects.map(project => (
+            <article class="cvd-project">
+              <h3>{project.name}</h3>
+              <p class="cvd-detail">{project.meta}</p>
+              <p class="cvd-text">{project.text}</p>
+              <ul class="cvd-tags" aria-label="Tecnologías">{project.tags.map(tag => <li><Tag category="Neutral">{tag}</Tag></li>)}</ul>
+              <p class="cvd-cases">{project.links.map(({ label, href, ...rest }) => <TextLink href={href} {...rest}>{label}</TextLink>)}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="cvd-section" aria-labelledby="skills-title">
+        <h2 id="skills-title">Competencias</h2>
+        <div class="cvd-skills">
+          <div class="cvd-skills__col">
+            <p class="cvd-skills__head">Diseño</p>
+            {skills.design.map(s => <div class="cvd-skill"><h3>{s.title}</h3><p>{s.text}</p></div>)}
+          </div>
+          <div class="cvd-skills__col">
+            <p class="cvd-skills__head">Código</p>
+            {skills.code.map(s => <div class="cvd-skill"><h3>{s.title}</h3><p>{s.text}</p></div>)}
+          </div>
+        </div>
+        <div class="cvd-skills__wide">
+          <div class="cvd-skill"><h3>AI-Augmented Product Development</h3><p>Research y síntesis, ideación, documentación, soluciones funcionales, AI-assisted coding, debugging, refactoring, automatización y QA.</p></div>
+          <div class="cvd-skill"><h3>Herramientas</h3><p>Figma, FigJam, Framer, Git, GitHub, VS Code, Postman, DevTools, Make, Tally y Notion.</p></div>
+        </div>
+      </section>
+
+      <section class="cvd-section cvd-band" aria-label="Formación, certificaciones e idiomas">
+        <div>
+          <h2>Formación</h2>
+          <div class="cvd-compact"><h3>Máster en Full Stack Development</h3><p>Grupo Atrium · Online · 2025 — 2026</p></div>
+          <div class="cvd-compact"><h3>Máster en Diseño y Dirección de Proyectos para Internet</h3><p>ELISAVA · Barcelona · 2018 — 2019</p></div>
+          <div class="cvd-compact"><h3>Licenciatura en Diseño Gráfico</h3><p>Universidad del Azuay · Cuenca · 2010 — 2015</p></div>
+        </div>
+        <div>
+          <h2>Certificaciones y reconocimientos</h2>
+          <div class="cvd-compact"><h3>UXCEL</h3><p>UX Design Patterns, Accessibility, Color Psychology, Design Composition y UI Components · 2021 — 2025</p></div>
+          <div class="cvd-compact"><h3>Galardones SENESCYT</h3><p>III Concurso de Reconocimiento a la Investigación Universitaria Estudiantil y Mérito Académico · 2015</p></div>
+        </div>
+        <div>
+          <h2>Idiomas</h2>
+          <div class="cvd-compact"><h3>Español</h3><p>Nativo</p></div>
+          <div class="cvd-compact"><h3>Inglés</h3><p>B2 · Intermedio alto</p></div>
+          <div class="cvd-compact"><h3>Catalán</h3><p>Buena comprensión · Básico al hablar</p></div>
+        </div>
+      </section>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .cvd { box-sizing: border-box; width: 100%; max-width: calc(1280px * var(--ui-scale)); margin-inline: auto; padding: calc(var(--component-header-height-desktop) + var(--space-12)) var(--gutter-desktop) var(--space-24); }
+  .cvd-demo-note { margin: 0 0 var(--space-8); color: var(--color-text-muted); font-size: calc(14px * var(--ui-scale)); }
+  .cvd-demo-note a { color: var(--color-action-ghost-text); }
+
+  /* Hero: identity left, contact + PDF right. */
+  .cvd-hero { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-8); padding-bottom: var(--space-12); border-bottom: var(--border-width) solid var(--color-border-strong); }
+  h1 { margin: 0; font-family: var(--font-heading); font-size: clamp(calc(52px * var(--ui-scale)), 6vw, calc(88px * var(--ui-scale))); font-weight: 700; line-height: .95; letter-spacing: -.045em; }
+  .cvd-role { margin: var(--space-4) 0 var(--space-2); font-family: var(--font-heading); font-size: clamp(calc(20px * var(--ui-scale)), 2vw, calc(28px * var(--ui-scale))); font-weight: 600; line-height: 1.25; }
+  .cvd-role span { color: var(--color-action-ghost-text); }
+  .cvd-place { margin: 0; color: var(--color-text-secondary); }
+  .cvd-contact { display: grid; justify-items: end; gap: var(--space-4); }
+  .cvd-contact nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-3) var(--space-6); }
+  .cvd-print { padding: var(--space-3) var(--space-6); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-sm); background: transparent; color: var(--color-text); font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 600; cursor: pointer; }
+  .cvd-print:hover { background: var(--color-action-secondary-bg-hover); }
+  .cvd-print:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+
+  /* Sections share the years column: label left, content right. */
+  .cvd-section { display: grid; grid-template-columns: calc(200px * var(--ui-scale)) minmax(0, 1fr); column-gap: var(--space-12); padding-block: var(--space-16); border-bottom: var(--border-width) solid var(--color-border); }
+  .cvd-section > * { grid-column: 2; }
+  .cvd-section > h2 { grid-column: 1; grid-row: 1 / span 9; align-self: start; margin: 0; font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2.5px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
+  .cvd-summary p { max-width: calc(820px * var(--ui-scale)); margin: 0; font-size: calc(22px * var(--ui-scale)); line-height: 1.55; color: var(--color-text); }
+
+  /* Timeline: years column inside the content column. */
+  .cvd-timeline { margin: 0; padding: 0; list-style: none; }
+  .cvd-row { display: grid; grid-template-columns: calc(140px * var(--ui-scale)) minmax(0, 1fr); column-gap: var(--space-8); padding-block: var(--space-12); border-top: var(--border-width) solid var(--color-border); }
+  .cvd-row:first-child { padding-top: 0; border-top: 0; }
+  .cvd-years { margin: 0; padding-top: var(--space-1); font-family: var(--font-heading); font-size: calc(15px * var(--ui-scale)); font-weight: 600; color: var(--color-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cvd-entry h3, .cvd-project h3, .cvd-skill h3, .cvd-compact h3 { margin: 0; font-family: var(--font-heading); font-weight: 700; color: var(--color-text); letter-spacing: -.01em; }
+  .cvd-entry h3 { font-size: calc(26px * var(--ui-scale)); line-height: 1.25; }
+  .cvd-at { color: var(--color-action-ghost-text); }
+  .cvd-detail { margin: var(--space-2) 0 0; color: var(--color-text-muted); font-size: calc(15px * var(--ui-scale)); }
+  .cvd-bullets { display: grid; gap: var(--space-3); margin: var(--space-6) 0 0; padding-left: var(--space-6); }
+  .cvd-bullets li, .cvd-text { font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
+  .cvd-bullets li::marker { color: var(--color-text-muted); }
+  .cvd-bullets :global(strong) { font-weight: 700; color: var(--color-text); }
+  .cvd-text { margin: var(--space-4) 0 0; }
+  .cvd-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-6) 0 0; padding: 0; list-style: none; }
+  .cvd-cases { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-6); margin: var(--space-6) 0 0; }
+  .cvd-cases > span { color: var(--color-text-muted); font-size: calc(12px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2px * var(--ui-scale)); text-transform: uppercase; }
+
+  /* Older roles, collapsed. */
+  .cvd-earlier { margin-top: var(--space-8); border-top: var(--border-width) solid var(--color-border); }
+  .cvd-earlier summary { padding-block: var(--space-6); font-family: var(--font-heading); font-size: calc(18px * var(--ui-scale)); font-weight: 700; cursor: pointer; }
+  .cvd-earlier summary:focus-visible { outline: var(--focus-width) solid var(--color-focus); outline-offset: var(--space-1); }
+  .cvd-count { color: var(--color-text-muted); font-weight: 600; }
+  .cvd-timeline--compact .cvd-row { padding-block: var(--space-8); }
+  .cvd-timeline--compact .cvd-entry h3 { font-size: calc(20px * var(--ui-scale)); }
+
+  .cvd-projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+  .cvd-project { padding: var(--space-8); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-bg-subtle); }
+  .cvd-project h3 { font-size: calc(24px * var(--ui-scale)); }
+
+  /* Design | Code, then the cross-cutting rows. */
+  .cvd-skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-12); }
+  .cvd-skills__head { margin: 0 0 var(--space-6); padding-bottom: var(--space-3); border-bottom: var(--border-width) solid var(--color-border-strong); font-family: var(--font-heading); font-size: calc(22px * var(--ui-scale)); font-weight: 700; color: var(--color-action-ghost-text); }
+  .cvd-skill + .cvd-skill { margin-top: var(--space-6); }
+  .cvd-skill h3 { font-size: calc(17px * var(--ui-scale)); }
+  .cvd-skill p { margin: var(--space-2) 0 0; font-size: calc(16px * var(--ui-scale)); line-height: 1.55; color: var(--color-text-secondary); }
+  .cvd-skills__wide { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-12); margin-top: var(--space-8); padding-top: var(--space-8); border-top: var(--border-width) solid var(--color-border); }
+  .cvd-skills__wide .cvd-skill + .cvd-skill { margin-top: 0; }
+
+  /* Education · certifications · languages in one band. */
+  .cvd-band { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-12); border-bottom: 0; }
+  .cvd-band > * { grid-column: auto; }
+  .cvd-band h2 { margin: 0 0 var(--space-6); font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 700; letter-spacing: calc(2.5px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
+  .cvd-compact + .cvd-compact { margin-top: var(--space-6); }
+  .cvd-compact h3 { font-size: calc(17px * var(--ui-scale)); line-height: 1.4; }
+  .cvd-compact p { margin: var(--space-1) 0 0; font-size: calc(15px * var(--ui-scale)); line-height: 1.5; color: var(--color-text-secondary); }
+
+  @media (max-width: 1080px) {
+    .cvd-section { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-8); }
+    .cvd-section > h2, .cvd-section > * { grid-column: 1; grid-row: auto; }
+    .cvd-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 839px) {
+    .cvd { padding: calc(var(--component-header-height-mobile) + var(--space-8)) var(--gutter-mobile) var(--space-16); }
+    .cvd-hero { align-items: flex-start; }
+    .cvd-contact { justify-items: start; }
+    .cvd-contact nav { justify-content: flex-start; }
+    .cvd-section { padding-block: var(--space-12); }
+    .cvd-row { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-2); }
+    .cvd-projects, .cvd-skills, .cvd-skills__wide, .cvd-band { grid-template-columns: minmax(0, 1fr); }
+    .cvd-project { padding: var(--space-6); }
+  }
+  @media print {
+    :global(.header), :global(.sidebar), :global(.footer) { display: none !important; }
+    .cvd-demo-note, .cvd-print { display: none; }
+    .cvd { max-width: none; padding: 0; }
+    .cvd-earlier { display: block; }
+    .cvd-earlier:not([open]) > :not(summary) { display: block; }
+    .cvd-row, .cvd-project, .cvd-skill, .cvd-compact { break-inside: avoid; }
+  }
+</style>

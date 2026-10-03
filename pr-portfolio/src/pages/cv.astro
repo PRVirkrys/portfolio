@@ -23,7 +23,7 @@ const external = { target: '_blank', rel: 'noopener noreferrer' };
       <header class="cv-hero">
         <p class="cv-eyebrow">Curriculum vitae</p>
         <h1>Paula Rodas Ruiz</h1>
-        <p class="cv-role">Senior Product Designer <span aria-hidden="true">·</span> Product Builder <span aria-hidden="true">·</span> UX Engineering</p>
+        <p class="cv-role">Senior Product Designer&nbsp;<span aria-hidden="true">·</span> Product Builder&nbsp;<span aria-hidden="true">·</span> UX Engineering</p>
         <p class="cv-location">Barcelona, España · Remoto</p>
         <nav class="cv-contact" aria-label="Contacto y perfiles profesionales">
           <TextLink href="mailto:bypaularodas@gmail.com" showIcon={false}>Email</TextLink>
@@ -197,42 +197,49 @@ const external = { target: '_blank', rel: 'noopener noreferrer' };
   .cv-section:last-child { border-bottom: 0; }
   .cv-section > h2, .cv-side-section > h2 { margin: 0 0 var(--space-8); font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 700; line-height: 1.3; letter-spacing: calc(2.5px * var(--ui-scale)); text-transform: uppercase; color: var(--color-text-muted); }
   .cv-prose { max-width: calc(820px * var(--ui-scale)); }
-  .cv-prose p { margin: 0 0 var(--space-6); font-size: calc(19px * var(--ui-scale)); line-height: 1.65; color: color-mix(in srgb, var(--color-text) 90%, transparent); }
+  .cv-prose p { margin: 0 0 var(--space-6); font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
   .cv-prose p:last-child { margin-bottom: 0; }
-  .cv-entry { padding-block: var(--space-10); border-top: var(--border-width) solid var(--color-border); }
+  .cv-prose :global(strong) { font-weight: 700; color: var(--color-text); }
+  .cv-entry { padding-block: var(--space-12); border-top: var(--border-width) solid var(--color-border); }
   .cv-entry:first-of-type { padding-top: 0; border-top: 0; }
-  .cv-entry__header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4) var(--space-8); align-items: baseline; margin-bottom: var(--space-5); }
-  .cv-entry h3, .cv-project h3, .cv-compact-entry h3 { margin: 0; font-family: var(--font-heading); font-weight: 650; letter-spacing: -.01em; }
+  .cv-entry__header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4) var(--space-8); align-items: baseline; margin-bottom: var(--space-6); }
+  .cv-entry h3, .cv-project h3, .cv-compact-entry h3 { margin: 0; font-family: var(--font-heading); font-weight: 700; letter-spacing: -.01em; color: var(--color-text); }
   .cv-entry h3 { font-size: calc(26px * var(--ui-scale)); line-height: 1.25; }
-  .cv-entry__header p { margin: var(--space-1) 0 0; color: var(--color-text-secondary); }
-  .cv-entry__meta { font-size: calc(14px * var(--ui-scale)); white-space: nowrap; }
-  .cv-entry ul { display: grid; gap: var(--space-3); margin: 0 0 var(--space-5); padding-left: var(--space-6); }
-  .cv-entry li { padding-left: var(--space-1); line-height: 1.55; color: color-mix(in srgb, var(--color-text) 90%, transparent); }
+  .cv-entry__header p { margin: var(--space-2) 0 0; color: var(--color-text-secondary); font-size: calc(16px * var(--ui-scale)); line-height: 1.4; }
+  .cv-entry__header .cv-entry__meta { margin: 0; color: var(--color-text-muted); font-family: var(--font-heading); font-size: calc(14px * var(--ui-scale)); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cv-entry ul { display: grid; gap: var(--space-3); margin: 0; padding-left: var(--space-6); list-style: disc; }
+  .cv-entry ul + :global(.text-link) { margin-top: var(--space-6); }
+  .cv-entry li { padding-left: var(--space-1); font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
+  .cv-entry li::marker { color: var(--color-text-muted); }
   .cv-project { display: grid; gap: var(--space-4); padding: var(--space-8); border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-bg-subtle); }
   .cv-project + .cv-project { margin-top: var(--space-6); }
   .cv-project h3 { font-size: calc(24px * var(--ui-scale)); }
-  .cv-project p { margin: 0; line-height: 1.55; color: var(--color-text-secondary); }
-  .cv-project > div > p { margin-top: var(--space-1); font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
-  .cv-project .cv-stack { color: var(--color-text); }
-  .cv-project__links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
-  .cv-sidebar { position: sticky; top: calc(var(--component-header-height-desktop) + var(--space-8)); padding-top: calc(88px * var(--ui-scale)); }
+  .cv-project p { margin: 0; font-size: calc(18px * var(--ui-scale)); line-height: 1.6; color: var(--color-text-secondary); }
+  .cv-project > div > p { margin-top: var(--space-2); font-size: calc(14px * var(--ui-scale)); color: var(--color-text-muted); }
+  .cv-project .cv-stack :global(strong) { font-weight: 700; color: var(--color-text); }
+  .cv-project__links { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); margin-top: var(--space-2); }
+  /* Not sticky: the column is taller than the viewport, so a sticky one
+     would hide its own end until the page did. */
+  .cv-sidebar { padding-top: calc(88px * var(--ui-scale)); }
   .cv-side-section { padding-bottom: var(--space-12); margin-bottom: var(--space-12); border-bottom: var(--border-width) solid var(--color-border); }
   .cv-side-section:last-child { border-bottom: 0; }
   .cv-side-section > h2 { margin-bottom: var(--space-6); }
   .cv-skills { display: grid; gap: var(--space-6); margin: 0; }
   .cv-skills div { display: grid; gap: var(--space-2); }
-  .cv-skills dt { font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 700; line-height: 1.35; }
-  .cv-skills dd { margin: 0; color: var(--color-text-secondary); font-size: calc(14px * var(--ui-scale)); line-height: 1.55; }
+  .cv-skills dt { font-family: var(--font-heading); font-size: calc(16px * var(--ui-scale)); font-weight: 700; line-height: 1.35; color: var(--color-text); }
+  .cv-skills dd { margin: 0; color: var(--color-text-secondary); font-size: calc(15px * var(--ui-scale)); line-height: 1.55; }
   .cv-compact-entry + .cv-compact-entry { margin-top: var(--space-6); }
   .cv-compact-entry h3 { font-size: calc(17px * var(--ui-scale)); line-height: 1.4; }
-  .cv-compact-entry p { margin: var(--space-1) 0 0; color: var(--color-text-secondary); font-size: calc(14px * var(--ui-scale)); line-height: 1.45; }
-  .cv-prose--compact p { font-size: calc(14px * var(--ui-scale)); line-height: 1.55; }
+  .cv-compact-entry p { margin: var(--space-1) 0 0; color: var(--color-text-secondary); font-size: calc(15px * var(--ui-scale)); line-height: 1.45; }
+  .cv-compact-entry p:last-child { color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+  .cv-prose--compact p { margin-bottom: var(--space-4); font-size: calc(15px * var(--ui-scale)); line-height: 1.55; }
   .cv-languages { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
   .cv-languages li { display: grid; gap: var(--space-1); }
-  .cv-languages span { color: var(--color-text-secondary); font-size: calc(14px * var(--ui-scale)); }
+  .cv-languages strong { font-weight: 700; color: var(--color-text); }
+  .cv-languages span { color: var(--color-text-secondary); font-size: calc(15px * var(--ui-scale)); }
   @media (max-width: 1080px) {
     .cv-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
-    .cv-sidebar { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-10); padding-top: calc(72px * var(--ui-scale)); border-top: var(--border-width) solid var(--color-border); }
+    .cv-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-12); padding-top: calc(72px * var(--ui-scale)); border-top: var(--border-width) solid var(--color-border); }
     .cv-side-section { margin: 0; }
   }
   @media (max-width: 839px) {
@@ -242,17 +249,20 @@ const external = { target: '_blank', rel: 'noopener noreferrer' };
     .cv-entry__header { grid-template-columns: minmax(0, 1fr); }
     .cv-entry__meta { white-space: normal; }
     .cv-sidebar { grid-template-columns: minmax(0, 1fr); }
+    .cv-project { padding: var(--space-6); }
   }
   @media print {
     :global(body) { background: white; color: black; font-size: 10pt; }
-    :global(header), :global(.prefooter), :global(footer) { display: none !important; }
+    /* Site chrome only — a bare `header` would also hide the CV's own hero
+       and every entry header. */
+    :global(.header), :global(.sidebar), :global(.prefooter), :global(.footer), :global(.home-footer) { display: none !important; }
     .cv-page { max-width: none; padding: 0; }
     .cv-hero { padding-bottom: 18pt; }
     h1 { font-size: 34pt; }
     .cv-role { font-size: 15pt; }
     .cv-layout { grid-template-columns: 2fr 1fr; gap: 28pt; }
     .cv-section { padding-block: 24pt; }
-    .cv-sidebar { position: static; display: block; padding-top: 24pt; }
+    .cv-sidebar { display: block; padding-top: 24pt; }
     .cv-side-section, .cv-entry, .cv-project { break-inside: avoid; }
     .cv-project { background: transparent; }
     :global(a) { color: black; }

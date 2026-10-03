@@ -17,7 +17,7 @@ export default defineConfig({
     site: siteUrl,
     base: '/portfolio',
     devToolbar: { enabled: false },
-    integrations: [mdx(), sitemap(), react()],
+    integrations: [mdx(), sitemap({ filter: page => !page.includes('/demo/') }), react()],
     vite: {
         plugins: [tailwindcss()],
     },
